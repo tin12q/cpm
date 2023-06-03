@@ -4,7 +4,9 @@
   "description": "An application to manage projects at college",
   "main": "index.js",
   "scripts": {
-    "test": "dev"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "tin12q",
   "devDependencies": {
@@ -14,8 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.1.3",
     "express": "^4.18.2",
-    "firebase": "^9.21.0",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.5.0",
     "mongoose": "^7.2.1"
