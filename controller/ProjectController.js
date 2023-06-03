@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const Project = require('../models/project');
-
+const Project = require('../models/project.model');
+const jwt = require('jsonwebtoken');
 
 const addProject = async (req, res) => {
   try {
+
     const project = new Project(req.body);
     await project.save();
     res.status(201).json(project);
@@ -14,6 +15,7 @@ const addProject = async (req, res) => {
 
 const getProjects = async (req, res) => {
   try {
+    
     const projects = await Project.find();
     console.log(res);
     res.json(projects);
