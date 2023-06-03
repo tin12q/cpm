@@ -6,8 +6,8 @@ const { addProject, deleteProject, getProjectById, getProjects } = require("../c
 
 router.post("/add", authenticate, requireRole({ collection: 0, task: 1 }), addProject);
 router.delete("/delete/:idp", authenticate, requireRole({ collection: 0, task: 3 }), deleteProject);
-router.get("/:idp", authenticate, requireRole({ collection: 0, task: 1 }), getProjectById);
+router.get("/:idp", authenticate, requireRole({ collection: 0, task: 0 }), getProjectById);
 //router.patch("/update/:id", updateProject);
-router.get("/", authenticate, requireRole({ collection: 0, task: 1 }), getProjects);
+router.get("/", authenticate, requireRole({ collection: 0, task: 0 }), getProjects);
 
 module.exports = router;

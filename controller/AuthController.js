@@ -18,11 +18,11 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log(username + " " + password);
+
     const user = await Auth.findOne({ username: username });
-    console.log(user);
+
     const users = await Auth.find();
-    console.log(users);
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -34,6 +34,7 @@ const login = async (req, res) => {
       username: user.username,
       role: user.role
     }, process.env.JWT_SECRET);
+    console.log(token);
     res.set('Authorization', token);
     res.json({ message: 'Login successful' });
   } catch (error) {

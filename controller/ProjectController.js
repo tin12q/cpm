@@ -15,9 +15,7 @@ const addProject = async (req, res) => {
 
 const getProjects = async (req, res) => {
   try {
-    
     const projects = await Project.find();
-    console.log(res);
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: error.message });
