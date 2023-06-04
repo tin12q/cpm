@@ -26,12 +26,8 @@ function Card1(props) {
 }
 function CardList(props) {
   const [projects, setProjects] = useState([]);
-  const timerId = setInterval(() => {
-    axios.get("http://localhost:1337/api/projects").then((res) => {
-      setProjects(res.data);
-    }, 100000);
-  });
-  
+
+
   return (
     <div>
       {projects.map((project) => {

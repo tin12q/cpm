@@ -13,10 +13,6 @@ function App() {
         element={
           <div>
             <Sidebar />
-
-            <Routes>
-
-            </Routes>
           </div>
         }
       />
@@ -25,7 +21,7 @@ function App() {
         element={
           <div>
             <Sidebar />
-            <h1>ecom</h1>
+
           </div>
         }
       />

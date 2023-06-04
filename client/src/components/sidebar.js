@@ -38,7 +38,7 @@ export default function Sidebar() {
     <Card className="max-w-[20rem] sidebar-nav fixed top-4 left-4 h-[calc(100vh-2rem)] w-full p-4 shadow-xl shadow-blue-gray-900/5">
       <div className="mb-2 p-4">
         <Typography variant="h5" color="blue-gray">
-          Sidebar
+          <Link to="/">CPM Dashboard</Link>
         </Typography>
       </div>
       <List>
@@ -47,9 +47,8 @@ export default function Sidebar() {
           icon={
             <ChevronDownIcon
               strokeWidth={2.5}
-              className={`mx-auto h-4 w-4 transition-transform ${
-                open === 1 ? "rotate-180" : ""
-              }`}
+              className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""
+                }`}
             />
           }
         >
@@ -62,7 +61,7 @@ export default function Sidebar() {
                 <PresentationChartBarIcon className="h-5 w-5" />
               </ListItemPrefix>
               <Typography color="blue-gray" className="mr-auto font-normal">
-                Dashboard
+                Project
               </Typography>
             </AccordionHeader>
           </ListItem>
@@ -98,9 +97,8 @@ export default function Sidebar() {
           icon={
             <ChevronDownIcon
               strokeWidth={2.5}
-              className={`mx-auto h-4 w-4 transition-transform ${
-                open === 2 ? "rotate-180" : ""
-              }`}
+              className={`mx-auto h-4 w-4 transition-transform ${open === 2 ? "rotate-180" : ""
+                }`}
             />
           }
         >
@@ -113,7 +111,7 @@ export default function Sidebar() {
                 <ShoppingBagIcon className="h-5 w-5" />
               </ListItemPrefix>
               <Typography color="blue-gray" className="mr-auto font-normal">
-                E-Commerce
+                Tasks
               </Typography>
             </AccordionHeader>
           </ListItem>
