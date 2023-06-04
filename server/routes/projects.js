@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { authenticate, requireRole } = require('../helpers/roleValidator')
+const { authenticate, requireRole } = require('../helpers/roleValidator');
 const { addProject, deleteProject, getProjectById, getProjects } = require("../controller/ProjectController");
 
 

@@ -11,7 +11,7 @@ function roleNum(role) {
     case 'employee':
       return 3;
     default:
-      return 0;
+      return 4;
   }
 }
 
@@ -24,11 +24,11 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: 'Missing authorization header' });
     }
     const token = authHeader.split(' ')[1];
-    console.log(token);
+
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decodedToken);
     req.user = decodedToken;
+
     next();
   } catch (error) {
     res.status(401).json({ error: error.message });

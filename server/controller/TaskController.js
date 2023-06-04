@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-
+const Team = require('../models/team.model');
 const Task = require('../models/task.model');
-
+const Project = require('../models/project.model');
 const createTask = async (req, res) => {
   try {
     const task = new Task(req.body);
@@ -14,9 +14,20 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
+    if (req.user.role == 'admin') {
+      const tasks = await Task.find();
+      res.json(tasks);
+    }
+    else {
+      //return tasks if user in the same project of task
+      const teams = await Team.find({ members: { $elemMatch: { $eq: req.user.id } } });
+      const teamIds = teams.map((team) => team._id);
+      const projects = await Project.find({ team: { $in: teamIds } });
+      const projectIds = projects.map((project) => project._id);
+      const tasks = await Task.find({ project: { $in: projectIds } });
+      res.json(tasks);
+    }
 
-    res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

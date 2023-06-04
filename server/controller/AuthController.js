@@ -14,15 +14,11 @@ const register = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-//FIXME: malformed token
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
     const user = await Auth.findOne({ username: username });
-
-    const users = await Auth.find();
-
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -30,11 +26,12 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
     const token = jwt.sign({
-      username: user.username,
+      id: user.user,
       role: user.role
     }, process.env.JWT_SECRET);
-    console.log(token);
+
     res.set('Authorization', token);
     res.json({ message: 'Login successful' });
   } catch (error) {
