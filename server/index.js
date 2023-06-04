@@ -8,12 +8,17 @@ require('dotenv').config({ path: '.env' })
 const port = process.env.PORT || 1337;
 const routes = require("./routes/index");
 
+const corsOptions = {
+  exposedHeaders: 'Authorization',
+};
+
 connectDB();
+
 app.use(morgan("combined"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOptions));
 
 routes(app);
 
