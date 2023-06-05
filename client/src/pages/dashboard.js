@@ -24,7 +24,8 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 gap-5 justify-items-center overflow-auto mt-20">
             {projects.map(project => (
                 <ProjectCard
-                    key={project.id}
+                    key={project._id}
+                    id={project._id}
                     title={project.title}
                     due_date={project.due_date}
                     status={project.status}

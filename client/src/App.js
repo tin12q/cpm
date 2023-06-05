@@ -7,6 +7,9 @@ import { Routes, Route } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import ComplexNavbar from "./components/navbar";
 import Dashboard from "./pages/dashboard";
+import Project from "./pages/project";
+import { useParams } from "react-router-dom";
+
 function App() {
   const location = useLocation();
   return (<>
@@ -19,26 +22,11 @@ function App() {
           <Dashboard />
         }
       />
-      <Route
-        path="/ecom"
-        element={
-          <div>
-
-          </div>
-        }
-      />
-      <Route
-        path="/analytics"
-        element={
-          <div>
-
-          </div>
-        }
-      />
+      <Route path="/projects/*">
+        <Route path=":id" element={<Project/>} />
+      </Route>
     </Routes>
-  </>
-
-  );
+  </>);
 }
 
 export default App;

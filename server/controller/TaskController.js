@@ -32,6 +32,17 @@ const getTasks = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const getTasksByProjectId = async (req, res) => {
+  try {
+    const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id)});
+    if (!tasks) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 const getTaskById = async (req, res) => {
   try {
@@ -75,4 +86,5 @@ module.exports = {
   getTaskById,
   updateTask,
   deleteTask,
+  getTasksByProjectId
 };

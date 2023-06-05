@@ -7,6 +7,7 @@ import {
 } from "@material-tailwind/react";
 import { RocketLaunchIcon } from "@heroicons/react/24/solid";
 import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 export default function ProjectCard(props) {
     return (
@@ -37,12 +38,12 @@ export default function ProjectCard(props) {
                 </Typography>
             </CardBody>
             <CardFooter className="pt-0">
-                <a href="#" className="inline-block">
+                    <Link to={`/projects/${props.id}`}>
                     <Button size="sm" variant="text" className="flex items-center gap-2">
                         View
                         <ArrowLongRightIcon strokeWidth={2} className="w-4 h-4" />
                     </Button>
-                </a>
+                    </Link>
             </CardFooter>
         </Card>
     );
