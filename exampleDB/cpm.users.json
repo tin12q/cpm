@@ -1,0 +1,30 @@
+[{
+  "_id": {
+    "$oid": "647d5743847d13b58548faa6"
+  },
+  "name": "John Doe",
+  "dob": {
+    "$numberLong": "946684800000"
+  },
+  "email": "johndoe@example.com"
+},
+{
+  "_id": {
+    "$oid": "647d5743847d13b58548faa7"
+  },
+  "name": "Jane Smith",
+  "dob": {
+    "$numberLong": "1009843200000"
+  },
+  "email": "janesmith@example.com"
+},
+{
+  "_id": {
+    "$oid": "647d5743847d13b58548faa8"
+  },
+  "name": "Bob Johnson",
+  "dob": {
+    "$numberLong": "1041379200000"
+  },
+  "email": "bobjohnson@example.com"
+}]

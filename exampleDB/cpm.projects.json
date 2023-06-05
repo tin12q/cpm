@@ -1,0 +1,32 @@
+[{
+  "_id": {
+    "$oid": "647d5816847d13b58548facd"
+  },
+  "title": "Project A",
+  "description": "This is project A",
+  "due_date": {
+    "$numberLong": "1662057600000"
+  },
+  "status": "in progress",
+  "team": [
+    {
+      "$oid": "647d571c847d13b58548fa99"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "647d5816847d13b58548face"
+  },
+  "title": "Project B",
+  "description": "This is project B",
+  "due_date": {
+    "$numberLong": "1664736000000"
+  },
+  "status": "completed",
+  "team": [
+    {
+      "$oid": "647d571c847d13b58548fa9a"
+    }
+  ]
+}]
