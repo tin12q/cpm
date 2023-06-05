@@ -16,6 +16,7 @@ import cookie from "cookie";
 
 
 export default function SignIn() {
+
   const navigate = useNavigate();
   useEffect(() => {
     const cookies = cookie.parse(document.cookie);
@@ -36,7 +37,7 @@ export default function SignIn() {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://localhost:1337/api/auth/login',
+      url: (!process.env.API_URI) ? 'http://localhost:1337/api/auth/login' : process.env.API_URI + '/api/auth/login',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
