@@ -29,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cookie from "cookie";
 import "../css/navbar.css";
+import Project from "../pages/project";
 // profile menu component
 
 const profileMenuItems = [
@@ -216,12 +217,15 @@ function NavListMenu() {
 // nav list component
 const navListItems = [
     {
-        label: "Account",
-        icon: UserCircleIcon,
+        label: "Projects",
+        icon: CodeBracketSquareIcon,
+        path: ''
+       
     },
     {
-        label: "Blocks",
+        label: "Tasks",
         icon: CubeTransparentIcon,
+        path: '/tasks'
     },
     {
         label: "Docs",
@@ -233,7 +237,8 @@ function NavList() {
     return (
         <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
             <NavListMenu />
-            {navListItems.map(({ label, icon }, key) => (
+            {navListItems.map(({ label, icon,path }, key) => (
+                <Link to={path}>
                 <Typography
                     key={label}
                     as="a"
@@ -247,6 +252,7 @@ function NavList() {
                         {label}
                     </MenuItem>
                 </Typography>
+                </Link>
             ))}
         </ul>
     );
@@ -267,13 +273,14 @@ export default function ComplexNavbar() {
     return (
         <Navbar className="Navbar mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6">
             <div className="relative mx-auto flex items-center text-blue-gray-900">
+                <Link to="/">
                 <Typography
                     as="a"
                     href="#"
                     className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
                 >
                     CPM Dashboard
-                </Typography>
+                </Typography></Link>
                 <div className="absolute top-2/4 left-2/4 hidden -translate-x-2/4 -translate-y-2/4 lg:block">
                     <NavList />
                 </div>

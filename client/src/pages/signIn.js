@@ -18,8 +18,9 @@ import cookie from "cookie";
 export default function SignIn() {
 
   const navigate = useNavigate();
+  const cookies = cookie.parse(document.cookie);
   useEffect(() => {
-    const cookies = cookie.parse(document.cookie);
+    
     if (cookies.token) {
       navigate("/");
     }
@@ -70,13 +71,9 @@ export default function SignIn() {
         alert("User not found");
       }
     });
-
-
-
-
   }
   // END: abpxx6d04wxr
-
+  if(cookies.token) return <div><h1>Loading...</h1></div>
   return (
     <div className="flex justify-evenly items-center  h-screen">
       <div className="flex justify-center items-center w-full max-w-md">
