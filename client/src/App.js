@@ -9,6 +9,7 @@ import ComplexNavbar from "./components/navbar";
 import Dashboard from "./pages/dashboard";
 import Project from "./pages/project";
 import { useParams } from "react-router-dom";
+import Tasks from "./pages/tasks";
 
 function App() {
   const location = useLocation();
@@ -23,7 +24,12 @@ function App() {
         }
       />
       <Route path="/projects/*">
-        <Route path=":id" element={<Project/>} />
+        <Route path="" element={<Dashboard />} />
+        <Route path=":id" element={<Project />} />
+      </Route>
+      <Route path="/tasks/*">
+        <Route path="" element={<Tasks />} />
+        <Route path=":id" element={<></>} />
       </Route>
     </Routes>
   </>);

@@ -33,8 +33,8 @@ const getProjects = async (req, res) => {
 
 const getProjectById = async (req, res) => {
   try {
-    const project = await Project.findById(req.params.idp);
-    console.log(req.params.idp);
+    const project = await Project.findById(req.params.id);
+    console.log(req.params.id);
     console.log(req.user.role);
     console.log(project);
     if (!project) {
@@ -59,6 +59,7 @@ const getProjectById = async (req, res) => {
 const updateProject = async (req, res) => {
   try {
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    console.log(req.params.id);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }

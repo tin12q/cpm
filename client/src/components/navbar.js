@@ -24,6 +24,7 @@ import {
     PowerIcon,
     RocketLaunchIcon,
     Bars2Icon,
+    BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -218,9 +219,9 @@ function NavListMenu() {
 const navListItems = [
     {
         label: "Projects",
-        icon: CodeBracketSquareIcon,
-        path: ''
-       
+        icon: BriefcaseIcon,
+        path: '/projects'
+
     },
     {
         label: "Tasks",
@@ -237,21 +238,21 @@ function NavList() {
     return (
         <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
             <NavListMenu />
-            {navListItems.map(({ label, icon,path }, key) => (
+            {navListItems.map(({ label, icon, path }, key) => (
                 <Link to={path}>
-                <Typography
-                    key={label}
-                    as="a"
-                    href="#"
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                >
-                    <MenuItem className="flex items-center gap-2 lg:rounded-full">
-                        {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
-                        {label}
-                    </MenuItem>
-                </Typography>
+                    <Typography
+                        key={label}
+                        as="a"
+                        href="#"
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                    >
+                        <MenuItem className="flex items-center gap-2 lg:rounded-full">
+                            {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
+                            {label}
+                        </MenuItem>
+                    </Typography>
                 </Link>
             ))}
         </ul>
@@ -274,13 +275,13 @@ export default function ComplexNavbar() {
         <Navbar className="Navbar mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6">
             <div className="relative mx-auto flex items-center text-blue-gray-900">
                 <Link to="/">
-                <Typography
-                    as="a"
-                    href="#"
-                    className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
-                >
-                    CPM Dashboard
-                </Typography></Link>
+                    <Typography
+                        as="a"
+                        href="#"
+                        className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
+                    >
+                        CPM Dashboard
+                    </Typography></Link>
                 <div className="absolute top-2/4 left-2/4 hidden -translate-x-2/4 -translate-y-2/4 lg:block">
                     <NavList />
                 </div>
