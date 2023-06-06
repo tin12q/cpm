@@ -4,7 +4,7 @@ const { authenticate, requireRole } = require('../helpers/roleValidator');
 const { createTask, getTaskById, deleteTask, getTasks, getTasksByProjectId, updateTask } = require("../controller/TaskController");
 
 
-router.get("/project/:id", authenticate, requireRole({ collection: 1, task: 3 }), getTasksByProjectId);
+router.get("/project/:id", authenticate, requireRole({ collection: 1, task: 0 }), getTasksByProjectId);
 router.post("/add", authenticate, requireRole({ collection: 1, task: 1 }), createTask);
 router.get("/:id", authenticate, requireRole({ collection: 1, task: 0 }), getTaskById);
 router.delete("/:id", authenticate, requireRole({ collection: 1, task: 3 }), deleteTask);
