@@ -1,4 +1,3 @@
-"use client";
 const { useState } = require("react");
 const axios = require("axios");
 function CardTest(props) {

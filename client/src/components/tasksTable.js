@@ -229,9 +229,9 @@ export default function TaskTable() {
                                 <tr key={_id}>
                                     <td className={classes}>
                                         <div className="flex items-center gap-3">
-                                            <Avatar src={img} alt={title} size="sm" />
+                                            {/* <Avatar src={img} alt={title} size="sm" /> */}
                                             <div className="flex flex-col">
-                                                <Typography variant="small" color="blue-gray" className="font-normal">
+                                                <Typography variant="medium" color="blue-gray" className="font-normal">
                                                     {title}
                                                 </Typography>
                                                 <Typography
@@ -263,8 +263,8 @@ export default function TaskTable() {
                                             <Chip
                                                 variant="ghost"
                                                 size="sm"
-                                                value={(status == 'in progress') ? "In progress" : (status == "completed") ? "Completed" : "Late"}
-                                                color={(status == 'in progress') ? "blue-gray" : (status == "completed") ? "green" : "red"}
+                                                value={(status === 'in progress') ? "In progress" : (status === "completed") ? "Completed" : "Late"}
+                                                color={(status === 'in progress') ? "blue-gray" : (status === "completed") ? "green" : "red"}
                                             />
                                         </div>
                                     </td>

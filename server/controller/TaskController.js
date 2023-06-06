@@ -34,7 +34,7 @@ const getTasks = async (req, res) => {
 };
 const getTasksByProjectId = async (req, res) => {
   try {
-    const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id)});
+    const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) });
     if (!tasks) {
       return res.status(404).json({ error: 'Task not found' });
     }
@@ -58,6 +58,7 @@ const getTaskById = async (req, res) => {
 
 const updateTask = async (req, res) => {
   try {
+    console.log(req.body);
     const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });

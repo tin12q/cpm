@@ -10,6 +10,7 @@ import Dashboard from "./pages/dashboard";
 import Project from "./pages/project";
 import { useParams } from "react-router-dom";
 import Tasks from "./pages/tasks";
+import Task from "./pages/task";
 
 function App() {
   const location = useLocation();
@@ -29,7 +30,7 @@ function App() {
       </Route>
       <Route path="/tasks/*">
         <Route path="" element={<Tasks />} />
-        <Route path=":id" element={<></>} />
+        <Route path=":id" element={<Task />} />
       </Route>
     </Routes>
   </>);
