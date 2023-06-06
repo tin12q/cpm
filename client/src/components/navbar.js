@@ -231,6 +231,16 @@ const navListItems = [
         label: "Docs",
         icon: CodeBracketSquareIcon,
     },
+    {
+        label: "Calendar",
+        icon: CodeBracketSquareIcon,
+        
+    },
+    {
+        label: "Employees",
+        icon: CodeBracketSquareIcon,
+
+    }
 ];
 
 function NavList() {

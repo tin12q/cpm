@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 import ComplexNavbar from "./components/navbar";
 import Dashboard from "./pages/dashboard";
 import Project from "./pages/project";
-import { useParams } from "react-router-dom";
+
 
 function App() {
   const location = useLocation();
