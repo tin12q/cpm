@@ -5,7 +5,13 @@ const jwt = require('jsonwebtoken');
 
 const addProject = async (req, res) => {
   try {
-    const project = new Project(req.body);
+    const project = new Project({
+      title: req.body.title,
+      description: req.body.description,
+      due_date: req.body.due_date,
+      status: req.body.status,
+      team: req.body.team
+    });
     await project.save();
     res.status(201).json(project);
   } catch (error) {
