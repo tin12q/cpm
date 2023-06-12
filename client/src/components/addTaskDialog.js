@@ -13,20 +13,42 @@ import {
     MenuList,
     MenuItem,
     Menu,
-    MenuHandler
+    MenuHandler,
+    Select,
+    Option
 } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 import { useParams } from "react-router-dom";
-export default function AddTask() {
-    const { id } = useParams().id;
+import { useEffect } from "react";
+import { useState } from "react";
+
+export default function AddTask(props) {
+    const  id  = props.id;
+    const [members, setMembers] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [title, setTitle] = React.useState("");
     const [description, setDescription] = React.useState("");
     const [dueDate, setDueDate] = React.useState("");
     const [status, setStatus] = React.useState("");
-    const [assignedTo, setAssignedTo] = React.useState("");
-    const handleOpen = () => setOpen((cur) => !cur);
+    const [assignedTo, setAssignedTo] = React.useState([]);
+    const handleOpen = () => {
+        setOpen((cur) => !cur);
+        setAssignedTo([]);
+    };
+
+    useEffect(() => {
+        console.log(id);
+        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        .then(res => {
+            setMembers(res.data[0].members);
+        })
+        .catch(err => { console.log(err); });
+
+    }, []);
+    if (!members) {
+        return <h1>Loading...</h1>
+    }
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
@@ -69,18 +91,25 @@ export default function AddTask() {
                             <Input label="Due Date" size="lg" type="date" onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
                             {/* <Input label="Assigned To" size="lg"  onChange={(e) => setAssignedTo(e.target.value)} /> */}
                             {/*TODO: create menu list */}
-                            <Menu placement="bottom-start">
-                                <MenuHandler>
-                                    <Button color="blue" size="lg" ripple="light">
-                                        Assigned To
-                                    </Button>
-                                </MenuHandler>
-                                <MenuList>
-                                    <MenuItem>a</MenuItem>
-                                    <MenuItem>b</MenuItem>
-                                    <MenuItem>c</MenuItem>
-                                </MenuList>
-                            </Menu>
+
+
+                            <Select
+                                label="Assign to"
+                                selected={assignedTo}
+                                onChange={(value) => {
+                                    setAssignedTo(a => [...a, value]);
+                                    console.log(assignedTo);
+                                }}
+                            >
+                                {members &&
+                                    members.map((member) => {
+                                        return (
+                                            <Option key={member._id} value={member._id}>
+                                                {member.name}
+                                            </Option>
+                                        );
+                                    })}
+                            </Select>
                             <Button type="submit" variant="gradient" onClick={handleOpen} fullWidth>
                                 Add Task
                             </Button>

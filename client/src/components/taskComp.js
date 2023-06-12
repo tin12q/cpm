@@ -41,60 +41,16 @@ const TABS = [
 
 const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", "Edit"];
 
-const TABLE_ROWS = [
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-        name: "John Michael",
-        email: "john@creative-tim.com",
-        job: "Manager",
-        org: "Organization",
-        online: true,
-        date: "23/04/18",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-        name: "Alexa Liras",
-        email: "alexa@creative-tim.com",
-        job: "Programator",
-        org: "Developer",
-        online: false,
-        date: "23/04/18",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-        name: "Laurent Perrier",
-        email: "laurent@creative-tim.com",
-        job: "Executive",
-        org: "Projects",
-        online: false,
-        date: "19/09/17",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-        name: "Michael Levi",
-        email: "michael@creative-tim.com",
-        job: "Programator",
-        org: "Developer",
-        online: true,
-        date: "24/12/08",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-        name: "Richard Gran",
-        email: "richard@creative-tim.com",
-        job: "Manager",
-        org: "Executive",
-        online: false,
-        date: "04/10/21",
-    },
-];
 
-export default function TaskComp() {
-    const id = useParams().id;
+
+export default function TaskComp(props) {
+    const idt = useParams().id;
+    const id = props.id;
     const [tasks, setTasks] = useState(null);
-    useEffect(() => {
+    useEffect(() => {   
+
         const cookies = cookie.parse(document.cookie);
-        axios.get(`http://localhost:1337/api/tasks/project/${id}`,
+        axios.get(`http://localhost:1337/api/tasks/project/${idt}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 console.log(res.data);
@@ -124,7 +80,7 @@ export default function TaskComp() {
                                 view all
                             </Button>
                         </Link>
-                        <AddTask />
+                        <AddTask id={id}/>
                     </div>
                 </div>
                 <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -162,7 +118,7 @@ export default function TaskComp() {
 
                     <tbody>
                         {tasks.map(({ _id, img, title, email, due_date, description, org, status, assigned_to }, index) => {
-                            const isLast = index === TABLE_ROWS.length - 1;
+                            const isLast = index === tasks.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
                             return (

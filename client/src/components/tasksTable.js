@@ -39,53 +39,6 @@ const TABS = [
 
 const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", "Edit"];
 
-const TABLE_ROWS = [
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-        name: "John Michael",
-        email: "john@creative-tim.com",
-        job: "Manager",
-        org: "Organization",
-        online: true,
-        date: "23/04/18",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-        name: "Alexa Liras",
-        email: "alexa@creative-tim.com",
-        job: "Programator",
-        org: "Developer",
-        online: false,
-        date: "23/04/18",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-        name: "Laurent Perrier",
-        email: "laurent@creative-tim.com",
-        job: "Executive",
-        org: "Projects",
-        online: false,
-        date: "19/09/17",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-        name: "Michael Levi",
-        email: "michael@creative-tim.com",
-        job: "Programator",
-        org: "Developer",
-        online: true,
-        date: "24/12/08",
-    },
-    {
-        img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-        name: "Richard Gran",
-        email: "richard@creative-tim.com",
-        job: "Manager",
-        org: "Executive",
-        online: false,
-        date: "04/10/21",
-    },
-];
 
 export default function TaskTable() {
     const cookies = cookie.parse(document.cookie);
@@ -131,20 +84,7 @@ export default function TaskTable() {
                         }
                     </div>
                 </div>
-                <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-                    <Tabs value="all" className="w-full md:w-max">
-                        <TabsHeader>
-                            {TABS.map(({ label, value }) => (
-                                <Tab key={value} value={value}>
-                                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                                </Tab>
-                            ))}
-                        </TabsHeader>
-                    </Tabs>
-                    <div className="w-full md:w-72">
-                        <Input label="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} />
-                    </div>
-                </div>
+
             </CardHeader>
             <CardBody className="overflow-scroll px-0">
                 <table className="mt-4 w-full min-w-max table-auto text-left">
@@ -166,7 +106,7 @@ export default function TaskTable() {
 
                     <tbody>
                         {tasks.map(({ _id, img, title, email, due_date, description, org, status, assigned_to }, index) => {
-                            const isLast = index === TABLE_ROWS.length - 1;
+                            const isLast = index === tasks.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
                             return (
@@ -217,6 +157,7 @@ export default function TaskTable() {
                                             {new Date(due_date).toLocaleDateString()}
                                         </Typography>
                                     </td>
+                                    <td></td>
                                     <td className={classes}>
                                         <Link to={`/tasks/${_id}`}>
                                             <Tooltip content="View Task">

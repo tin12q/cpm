@@ -1,64 +1,21 @@
 import { Card, CardHeader, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 import cookie from "cookie";
 const TABLE_HEAD = ["Name", "Job"];
 
-const TABLE_ROWS = [
-    {
-        name: "John Michael",
-        job: "Manager",
-        date: "23/04/18",
-    },
-    {
-        name: "Alexa Liras",
-        job: "Developer",
-        date: "23/04/18",
-    },
-    {
-        name: "Laurent Perrier",
-        job: "Executive",
-        date: "19/09/17",
-    },
-    {
-        name: "Michael Levi",
-        job: "Developer",
-        date: "24/12/08",
-    },
-    {
-        name: "Richard Gran",
-        job: "Manager",
-        date: "04/10/21",
-    },
-];
-
 export default function MemberComp(props) {
-    const [members, setMembers] = useState(null);
-    const [team, setTeam] = useState(null);
+    const [members, setMembers] = useState([]);
     const id = props.id;
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
-            .then(res => {
-                console.log(res.data);
-                setTeam(res.data);
-            })
-            .catch(err => console.log(err));
-        //FIXME:
-        team.members.forEach(member => {
-            console.log(member);
-            axios.get(`http://localhost:1337/api/users/${member}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
-                .then(res => {
-                    console.log(res.data);
-                    setMembers(res.data);
-                })
-                .catch(err => console.log(err));
-        });
+        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        .then(res => {
+            setMembers(res.data[0].members);
+        })
+        .catch(err => { console.log(err); });
 
-    }, []);
-    if (!members || !team) {
-        return <div>Loading...</div>
-    }
+    },[]);
+    if(!members) return (<div></div>);
     return (
         <Card className="overflow-scroll h-full w-full">
             <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -90,12 +47,11 @@ export default function MemberComp(props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {members.map(({ name, email }, index) => {
+                    {members.map(({ _id,name, email }, index) => {
                         const isLast = index === members.length - 1;
                         const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-
                         return (
-                            <tr key={name}>
+                            <tr key={_id}>
                                 <td className={classes}>
                                     <Typography variant="small" color="blue-gray" className="font-normal">
                                         {name}

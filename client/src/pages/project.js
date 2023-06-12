@@ -27,19 +27,19 @@ function Project() {
       .catch(error => console.error(error));
     axios.get(`http://localhost:1337/api/tasks/project/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
       .then(res => {
-        console.log(res.data);
+
         setTasks(res.data);
       })
       .catch(err => { console.log(err); });
     axios.get(`http://localhost:1337/api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
       .then(res => {
-        console.log(res.data);
+
         setCompletedTasks(res.data);
       })
       .catch(err => { console.log(err); });
     axios.get(`http://localhost:1337/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
       .then(res => {
-        console.log(res.data);
+
         setLate(res.data);
       })
       .catch(err => { console.log(err); });
@@ -83,9 +83,7 @@ function Project() {
 
       <div className='mt-10 mb-10 row '>
         <div className='w-3/4 pr-10'>
-
-          <TaskComp />
-
+          <TaskComp id={projectData.team}/>
         </div>
         <div className='w-1/4'>
           <MemberComp id={projectData.team} />
