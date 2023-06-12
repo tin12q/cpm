@@ -2,17 +2,15 @@
   "_id": {
     "$oid": "647d5816847d13b58548facd"
   },
-  "title": "Project A",
+  "title": "Project C",
   "description": "This is project A",
   "due_date": {
     "$numberLong": "1662057600000"
   },
   "status": "in progress",
-  "team": [
-    {
-      "$oid": "647d571c847d13b58548fa99"
-    }
-  ]
+  "team": {
+    "$oid": "647d571c847d13b58548fa99"
+  }
 },
 {
   "_id": {
@@ -24,9 +22,22 @@
     "$numberLong": "1664736000000"
   },
   "status": "completed",
-  "team": [
-    {
-      "$oid": "647d571c847d13b58548fa9a"
-    }
-  ]
+  "team": {
+    "$oid": "647d571c847d13b58548fa99"
+  }
+},
+{
+  "_id": {
+    "$oid": "6486e793d4607ab782f37b2f"
+  },
+  "title": "Làm Đồ Án",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas fermentum nisi vitae sodales laoreet. Nullam at interdum nunc. Ut eu euismod orci. Aenean interdum arcu vitae enim maximus, vitae blandit lacus tristique. Phasellus facilisis mollis dignissim. Duis interdum consequat felis, eget dignissim libero ornare eget. Nulla sollicitudin nisi ut felis malesuada dictum. Vivamus eu nibh aliquam diam maximus imperdiet non quis sapien. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris vel enim mauris. Duis accumsan massa ut volutpat bibendum. Duis lacus ex, faucibus ac risus ac, suscipit mattis nibh. Nulla a justo vestibulum ipsum eleifend venenatis. Sed in ultricies lectus. Praesent sed massa sed massa ultrices condimentum. Aliquam lacinia, est vel faucibus posuere, velit urna rhoncus dolor, et vestibulum justo odio et magna.",
+  "due_date": {
+    "$numberLong": "1688860800000"
+  },
+  "status": "in progress",
+  "team": {
+    "$oid": "647d571c847d13b58548fa99"
+  },
+  "__v": 0
 }]
