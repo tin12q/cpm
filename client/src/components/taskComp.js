@@ -18,8 +18,10 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import cookie from "cookie";
+import AddTask from "./addTaskDialog";
 
 
 const TABS = [
@@ -87,13 +89,12 @@ const TABLE_ROWS = [
     },
 ];
 
-export default function TaskTable() {
-    const cookies = cookie.parse(document.cookie);
+export default function TaskComp() {
+    const id = useParams().id;
     const [tasks, setTasks] = useState(null);
     useEffect(() => {
-        console.log(cookies);
-
-        axios.get("http://localhost:1337/api/tasks",
+        const cookies = cookie.parse(document.cookie);
+        axios.get(`http://localhost:1337/api/tasks/project/${id}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 console.log(res.data);
@@ -121,14 +122,7 @@ export default function TaskTable() {
                         <Button variant="outlined" color="blue-gray" size="sm">
                             view all
                         </Button>
-                        {
-                            (cookies.role === "admin" || cookies.role === "manager") && (
-                                <Button className="flex items-center gap-3" color="blue" size="sm">
-                                    <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Task
-                                </Button>
-                            )
-
-                        }
+                        <AddTask />
                     </div>
                 </div>
                 <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
