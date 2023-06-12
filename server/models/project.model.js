@@ -5,7 +5,7 @@ const projectSchema = new mongoose.Schema({
   description: { type: String },
   due_date: { type: Number },
   status: { type: String },
-  team: [{ type: mongoose.Schema.Types.ObjectId, ref: 'teams' }]
+  team: { type: mongoose.Schema.Types.ObjectId, ref: 'teams' }
 });
 
 const Project = mongoose.model('projects', projectSchema);

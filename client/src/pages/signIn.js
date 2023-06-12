@@ -20,7 +20,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const cookies = cookie.parse(document.cookie);
   useEffect(() => {
-    
+
     if (cookies.token) {
       navigate("/");
     }
@@ -73,7 +73,7 @@ export default function SignIn() {
     });
   }
   // END: abpxx6d04wxr
-  if(cookies.token) return <div><h1>Loading...</h1></div>
+  if (cookies.token) return <div><h1>Loading...</h1></div>
   return (
     <div className="flex justify-evenly items-center  h-screen">
       <div className="flex justify-center items-center w-full max-w-md">

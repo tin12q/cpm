@@ -80,12 +80,50 @@ const deleteTask = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+const completedPercentage = async (req, res) => {
+  try {
+    const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) });
+    if (!tasks) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    let completed = 0;
+    tasks.forEach(task => {
+      if (task.status == 'completed') {
+        completed++;
+      }
+    });
+    const percentage = (completed / tasks.length) * 100;
+    res.json({ completed: percentage });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+const latedPercentage = async (req, res) => {
+  try {
+    const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) });
+    if (!tasks) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    let lated = 0;
+    tasks.forEach(task => {
+      if ((new Date().getTime() - task.due_date > 0) && task.status != 'completed') {
+        lated++;
+      }
+    });
+    const percentage = (lated / tasks.length) * 100;
+    res.json({ lated: percentage });
+  }
+  catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 module.exports = {
   createTask,
   getTasks,
   getTaskById,
   updateTask,
   deleteTask,
-  getTasksByProjectId
+  getTasksByProjectId,
+  completedPercentage,
+  latedPercentage
 };

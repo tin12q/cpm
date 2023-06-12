@@ -10,7 +10,7 @@ const addProject = async (req, res) => {
       description: req.body.description,
       due_date: req.body.due_date,
       status: req.body.status,
-      team: req.body.team
+      team: new mongoose.Types.ObjectId(req.body.team),
     });
     await project.save();
     res.status(201).json(project);

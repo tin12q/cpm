@@ -39,7 +39,7 @@ const TABS = [
     },
 ];
 
-const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To"];
+const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", "Edit"];
 
 const TABLE_ROWS = [
     {
@@ -119,9 +119,11 @@ export default function TaskComp() {
                         </Typography>
                     </div>
                     <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-                        <Button variant="outlined" color="blue-gray" size="sm">
-                            view all
-                        </Button>
+                        <Link to='/tasks'>
+                            <Button variant="outlined" color="blue-gray" size="sm">
+                                view all
+                            </Button>
+                        </Link>
                         <AddTask />
                     </div>
                 </div>
@@ -211,9 +213,14 @@ export default function TaskComp() {
                                             {new Date(due_date).toLocaleDateString()}
                                         </Typography>
                                     </td>
+                                    <td className="classes">
+                                        <Typography variant="small" color="blue-gray" className="font-normal">
+                                            Test
+                                        </Typography>
+                                    </td>
                                     <td className={classes}>
                                         <Link to={`/tasks/${_id}`}>
-                                            <Tooltip content="View Task">
+                                            <Tooltip content="Edit Task">
                                                 <IconButton variant="text" color="blue-gray">
                                                     <PencilIcon className="h-4 w-4" />
                                                 </IconButton>

@@ -37,7 +37,7 @@ const TABS = [
     },
 ];
 
-const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To"];
+const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", "Edit"];
 
 const TABLE_ROWS = [
     {

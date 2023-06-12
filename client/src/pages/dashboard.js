@@ -6,6 +6,7 @@ import { Input, Button, Card, CardHeader, CardBody, Typography, CardFooter } fro
 import '../css/navbar.css';
 import PCWM from '../components/projectCardWithMember';
 import AddTask from '../components/addTaskDialog';
+import AddProject from '../components/addProjectDialog';
 
 const Dashboard = () => {
     const [projects, setProjects] = useState([]);
@@ -61,10 +62,8 @@ const Dashboard = () => {
                             </Typography>
                         </div>
                         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-                            <Button variant="outlined" color="blue-gray" size="sm">
-                                view all
-                            </Button>
-                            <AddTask />
+
+                            <AddProject />
                         </div>
                     </div>
                 </CardHeader>
@@ -83,19 +82,7 @@ const Dashboard = () => {
                         ))}
                     </div>
                 </CardBody>
-                <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-normal">
-                        Page 1 of 10
-                    </Typography>
-                    <div className="flex gap-2">
-                        <Button variant="outlined" color="blue-gray" size="sm">
-                            Previous
-                        </Button>
-                        <Button variant="outlined" color="blue-gray" size="sm">
-                            Next
-                        </Button>
-                    </div>
-                </CardFooter>
+
             </Card>
         </div>
 
