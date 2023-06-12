@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { getUser } = require('../controller/UserController');
+const { authenticate, requireRole } = require("../helpers/roleValidator");
 
-const userController = require("../controller/UserController");
-
-router.post("/signup", userController.signUp);
-router.post("/signin", userController.signIn);
+router.get('/:id', authenticate, requireRole({ collection: 2, task: 0 }), getUser);
 module.exports = router;

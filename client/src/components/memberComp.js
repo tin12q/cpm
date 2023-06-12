@@ -1,5 +1,8 @@
 import { Card, CardHeader, Typography } from "@material-tailwind/react";
-
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import cookie from "cookie";
 const TABLE_HEAD = ["Name", "Job"];
 
 const TABLE_ROWS = [
@@ -30,7 +33,32 @@ const TABLE_ROWS = [
     },
 ];
 
-export default function MemberComp() {
+export default function MemberComp(props) {
+    const [members, setMembers] = useState(null);
+    const [team, setTeam] = useState(null);
+    const id = props.id;
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/teams/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+            .then(res => {
+                console.log(res.data);
+                setTeam(res.data);
+            })
+            .catch(err => console.log(err));
+        //FIXME:
+        team.members.forEach(member => {
+            console.log(member);
+            axios.get(`http://localhost:1337/api/users/${member}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+                .then(res => {
+                    console.log(res.data);
+                    setMembers(res.data);
+                })
+                .catch(err => console.log(err));
+        });
+
+    }, []);
+    if (!members || !team) {
+        return <div>Loading...</div>
+    }
     return (
         <Card className="overflow-scroll h-full w-full">
             <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -62,8 +90,8 @@ export default function MemberComp() {
                     </tr>
                 </thead>
                 <tbody>
-                    {TABLE_ROWS.map(({ name, job, date }, index) => {
-                        const isLast = index === TABLE_ROWS.length - 1;
+                    {members.map(({ name, email }, index) => {
+                        const isLast = index === members.length - 1;
                         const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
                         return (
@@ -75,7 +103,7 @@ export default function MemberComp() {
                                 </td>
                                 <td className={`${classes} bg-blue-gray-50/50`}>
                                     <Typography variant="small" color="blue-gray" className="font-normal">
-                                        {job}
+                                        {email}
                                     </Typography>
                                 </td>
 

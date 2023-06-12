@@ -88,7 +88,7 @@ function Project() {
 
         </div>
         <div className='w-1/4'>
-          <MemberComp />
+          <MemberComp id={projectData.team} />
         </div>
       </div>
     </div>
