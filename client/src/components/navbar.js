@@ -185,7 +185,8 @@ function NavList() {
 }
 
 export default function ComplexNavbar() {
-
+    const navigate = useNavigate();
+    const cookies = cookie.parse(document.cookie);
     const [isNavOpen, setIsNavOpen] = React.useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -194,6 +195,9 @@ export default function ComplexNavbar() {
             "resize",
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
+        if (!cookies.token) {
+            navigate('/signin')
+        }
     }, []);
 
     return (

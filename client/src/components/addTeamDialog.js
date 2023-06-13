@@ -47,6 +47,7 @@ export default function AddTeam() {
         return <h1>Loading...</h1>
     }
     const handleSubmit = async e => {
+        e.preventDefault();
         const cookies = cookie.parse(document.cookie);
         axios.post('http://localhost:1337/api/teams',
             {
