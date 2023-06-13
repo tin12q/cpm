@@ -40,8 +40,9 @@ const userInTeam = async (req, res) => {
                 }
             },
         ]);
-        res.json(users);
-    }   
+
+        res.json(users[0].members);
+    }
 
     catch (error) {
         res.status(500).json({ error: error.message });

@@ -4,7 +4,14 @@ const Task = require('../models/task.model');
 const Project = require('../models/project.model');
 const createTask = async (req, res) => {
   try {
-    const task = new Task(req.body);
+    const task = new Task({
+      title: req.body.title,
+      description: req.body.description,
+      due_date: req.body.due_date,
+      status: req.body.status,
+      project: new mongoose.Types.ObjectId(req.body.project),
+      assigned_to: req.body.assigned_to.map((id) => new mongoose.Types.ObjectId(id)),
+    });
     await task.save();
     res.status(201).json(task);
   } catch (error) {

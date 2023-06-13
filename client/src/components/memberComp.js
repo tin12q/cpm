@@ -9,13 +9,13 @@ export default function MemberComp(props) {
     const id = props.id;
     useEffect(() => {
         axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
-        .then(res => {
-            setMembers(res.data[0].members);
-        })
-        .catch(err => { console.log(err); });
+            .then(res => {
+                setMembers(res.data);
+            })
+            .catch(err => { console.log(err); });
 
-    },[]);
-    if(!members) return (<div></div>);
+    }, []);
+    if (!members) return (<div></div>);
     return (
         <Card className="overflow-scroll h-full w-full">
             <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -47,7 +47,7 @@ export default function MemberComp(props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {members.map(({ _id,name, email }, index) => {
+                    {members.map(({ _id, name, email }, index) => {
                         const isLast = index === members.length - 1;
                         const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
                         return (

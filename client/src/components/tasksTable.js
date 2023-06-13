@@ -43,18 +43,26 @@ const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", 
 export default function TaskTable() {
     const cookies = cookie.parse(document.cookie);
     const [tasks, setTasks] = useState(null);
+    const [userMap, setUserMap] = useState(null);
     useEffect(() => {
-        console.log(cookies);
-
         axios.get("http://localhost:1337/api/tasks",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 console.log(res.data);
                 setTasks(res.data);
             });
+        axios.get("http://localhost:1337/api/users",
+            { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then((res) => {
+                setUserMap(res.data.reduce((map, user) => {
+                    map[user._id] = user;
+                    return map;
+                }, {}));
+            })
+            .catch(err => { console.log(err); });
     }, []);
     //Loading
-    if (!tasks) {
+    if (!tasks || !userMap) {
         return <div>Loading...</div>
     }
     //Loaded
@@ -157,7 +165,11 @@ export default function TaskTable() {
                                             {new Date(due_date).toLocaleDateString()}
                                         </Typography>
                                     </td>
-                                    <td></td>
+                                    <td className={classes}>
+                                        <Typography variant='small' color="blue-gray" >
+                                            {assigned_to.map((user) => (userMap[user].name + ", "))}
+                                        </Typography>
+                                    </td>
                                     <td className={classes}>
                                         <Link to={`/tasks/${_id}`}>
                                             <Tooltip content="View Task">

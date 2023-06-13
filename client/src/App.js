@@ -32,6 +32,10 @@ function App() {
         <Route path="" element={<Tasks />} />
         <Route path=":id" element={<Task />} />
       </Route>
+      <Route path='employees/*'>
+        <Route path='' element={<Dashboard />} />
+        <Route path=':id' element={<Dashboard />} />
+      </Route>
     </Routes>
   </>);
 }

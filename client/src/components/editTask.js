@@ -8,25 +8,24 @@ import {
     CardBody,
     Typography,
     Input,
+    Select,
+    Option
 } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Select from "react-select";
+import { useEffect } from "react";
+import { useState } from "react";
 
 export default function AddTask(props) {
-    const id = props.id;
-    const idp = useParams().id;
-    const [members, setMembers] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState("");
-    const [assignedTo, setAssignedTo] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
-
-
+    const  id  = props.id;
+    const [members, setMembers] = React.useState(null);
+    const [open, setOpen] = React.useState(false);
+    const [title, setTitle] = React.useState("");
+    const [description, setDescription] = React.useState("");
+    const [dueDate, setDueDate] = React.useState("");
+    const [status, setStatus] = React.useState("");
+    const [assignedTo, setAssignedTo] = React.useState([]);
     const handleOpen = () => {
         setOpen((cur) => !cur);
         setAssignedTo([]);
@@ -36,14 +35,7 @@ export default function AddTask(props) {
         console.log(id);
         axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
-                console.log(res.data);
-
-                setMembers(res.data.map((member) => {
-                    return {
-                        value: member._id,
-                        label: member.name
-                    }
-                }));
+                setMembers(res.data[0].members);
             })
             .catch(err => { console.log(err); });
 
@@ -60,16 +52,15 @@ export default function AddTask(props) {
                 description,
                 due_date: dueDate,
                 status: 'in progress',
-                project: idp,
+                project: id,
                 assigned_to: assignedTo
             }
             , { headers: { Authorization: `Bearer ${cookies.token}` } });
-        window.location.reload();
     }
     return (
         <React.Fragment>
             <Button className="flex items-center gap-3" color="blue" size="sm" onClick={handleOpen}>
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Task
+                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Edit Task
             </Button>
             <Dialog
                 size="xs"
@@ -84,7 +75,7 @@ export default function AddTask(props) {
                         className="mb-4 grid h-28 place-items-center"
                     >
                         <Typography variant="h3" color="white">
-                            Add Task
+                            Edit Task
                         </Typography>
                     </CardHeader>
                     <CardBody className="">
@@ -95,17 +86,24 @@ export default function AddTask(props) {
                             {/* <Input label="Assigned To" size="lg"  onChange={(e) => setAssignedTo(e.target.value)} /> */}
                             {/*TODO: create menu list */}
 
+
                             <Select
-                                isMulti
-                                options={members}
-                                onChange={(selected) => {
-                                    setSelectedOption(selected);
-                                    setAssignedTo(selected.map((option) => option.value));
+                                label="Assign to"
+                                selected={assignedTo}
+                                onChange={(value) => {
+                                    setAssignedTo(a => [...a, value]);
                                     console.log(assignedTo);
                                 }}
-                                value={selectedOption}
-                                placeholder="Assign to members"
-                            />
+                            >
+                                {members &&
+                                    members.map((member) => {
+                                        return (
+                                            <Option key={member._id} value={member._id}>
+                                                {member.name}
+                                            </Option>
+                                        );
+                                    })}
+                            </Select>
                             <Button type="submit" variant="gradient" onClick={handleOpen} fullWidth>
                                 Add Task
                             </Button>

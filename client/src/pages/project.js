@@ -63,9 +63,9 @@ function Project() {
 
           </div>
           <div className='w-4/12 mt-5 '>
-            <Progress color="lightBlue" value={(completedTasks.completed == null) ? '0' : completedTasks.completed} label='Completed' className='h-7 mb-5' />
+            <Progress color="lightBlue" value={(completedTasks.completed == 0) ? '0' : completedTasks.completed} label={(completedTasks.completed == 0) ? 'Đang thực hiện' : 'Completed'} className='h-7 mb-5'> Đang thực hiện</Progress>
 
-            <Progress color='red' value={(late.lated == null) ? '0' : late.lated} label='Late' className='h-7' />
+            <Progress color='red' value={(late.lated == 0) ? '0' : late.lated} label='Late' className='h-7' />
           </div>
           <div className='w-1/12 text-right mr-10'>
             <Chip
@@ -83,7 +83,7 @@ function Project() {
 
       <div className='mt-10 mb-10 row '>
         <div className='w-3/4 pr-10'>
-          <TaskComp id={projectData.team}/>
+          <TaskComp id={projectData.team} />
         </div>
         <div className='w-1/4'>
           <MemberComp id={projectData.team} />

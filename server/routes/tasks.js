@@ -6,7 +6,7 @@ const { createTask, getTaskById, deleteTask, getTasks, getTasksByProjectId, upda
 router.get('/lated/:id', authenticate, requireRole({ collection: 1, task: 0 }), latedPercentage);
 router.get("/completed/:id", authenticate, requireRole({ collection: 1, task: 0 }), completedPercentage);
 router.get("/project/:id", authenticate, requireRole({ collection: 1, task: 0 }), getTasksByProjectId);
-router.post("/add", authenticate, requireRole({ collection: 1, task: 1 }), createTask);
+router.post("/", authenticate, requireRole({ collection: 1, task: 1 }), createTask);
 router.get("/:id", authenticate, requireRole({ collection: 1, task: 0 }), getTaskById);
 router.delete("/:id", authenticate, requireRole({ collection: 1, task: 3 }), deleteTask);
 router.put("/:id", authenticate, requireRole({ collection: 1, task: 2 }), updateTask);

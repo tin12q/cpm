@@ -47,7 +47,8 @@ export default function TaskComp(props) {
     const idt = useParams().id;
     const id = props.id;
     const [tasks, setTasks] = useState(null);
-    useEffect(() => {   
+    const [userMap, setUserMap] = useState(null);
+    useEffect(() => {
 
         const cookies = cookie.parse(document.cookie);
         axios.get(`http://localhost:1337/api/tasks/project/${idt}`,
@@ -56,9 +57,18 @@ export default function TaskComp(props) {
                 console.log(res.data);
                 setTasks(res.data);
             });
+        axios.get("http://localhost:1337/api/users",
+            { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then((res) => {
+                setUserMap(res.data.reduce((map, user) => {
+                    map[user._id] = user;
+                    return map;
+                }, {}));
+            })
+            .catch(err => { console.log(err); });
     }, []);
     //Loading
-    if (!tasks) {
+    if (!tasks || !userMap) {
         return <div>Loading...</div>
     }
     //Loaded
@@ -80,7 +90,7 @@ export default function TaskComp(props) {
                                 view all
                             </Button>
                         </Link>
-                        <AddTask id={id}/>
+                        <AddTask id={id} />
                     </div>
                 </div>
                 <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -170,9 +180,11 @@ export default function TaskComp(props) {
                                         </Typography>
                                     </td>
                                     <td className="classes">
-                                        <Typography variant="small" color="blue-gray" className="font-normal">
-                                            Test
-                                        </Typography>
+                                        <td className={classes}>
+                                            <Typography variant='small' color="blue-gray" >
+                                                {assigned_to.map((user) => (userMap[user].name + ", "))}
+                                            </Typography>
+                                        </td>
                                     </td>
                                     <td className={classes}>
                                         <Link to={`/tasks/${_id}`}>
