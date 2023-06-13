@@ -20,7 +20,6 @@ export default function SignIn() {
   const navigate = useNavigate();
   const cookies = cookie.parse(document.cookie);
   useEffect(() => {
-
     if (cookies.token) {
       navigate("/");
     }
