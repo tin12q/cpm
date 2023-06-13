@@ -167,7 +167,10 @@ export default function TaskTable() {
                                     </td>
                                     <td className={classes}>
                                         <Typography variant='small' color="blue-gray" >
-                                            {assigned_to.map((user) => (userMap[user].name + ", "))}
+                                            {assigned_to.map((user, index) => {
+                                                if (index === assigned_to.length - 1) return (userMap[user].name);
+                                                return (userMap[user].name + ", ");
+                                            })}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
