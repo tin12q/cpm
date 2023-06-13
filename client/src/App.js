@@ -11,6 +11,7 @@ import Project from "./pages/project";
 import { useParams } from "react-router-dom";
 import Tasks from "./pages/tasks";
 import Task from "./pages/task";
+import EmployeeTable from "./pages/employee";
 
 function App() {
   const location = useLocation();
@@ -33,7 +34,7 @@ function App() {
         <Route path=":id" element={<Task />} />
       </Route>
       <Route path='employees/*'>
-        <Route path='' element={<Dashboard />} />
+        <Route path='' element={<EmployeeTable />} />
         <Route path=':id' element={<Dashboard />} />
       </Route>
     </Routes>
