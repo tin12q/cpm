@@ -34,7 +34,7 @@ const login = async (req, res) => {
     }, process.env.JWT_SECRET);
 
     res.set('Authorization', "Bearer " + token);
-    res.json({ message: 'Login successful' });
+    res.json({ message: 'Login successful', role: user.role });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

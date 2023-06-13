@@ -22,6 +22,7 @@ import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import cookie from "cookie";
 import AddTask from "./addTaskDialog";
+import EditTask from "./editTask";
 
 
 const TABS = [
@@ -190,13 +191,7 @@ export default function TaskComp(props) {
                                         </td>
                                     </td>
                                     <td className={classes}>
-                                        <Link to={`/tasks/${_id}`}>
-                                            <Tooltip content="Edit Task">
-                                                <IconButton variant="text" color="blue-gray">
-                                                    <PencilIcon className="h-4 w-4" />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </Link>
+                                        <EditTask id={id} idt={_id} />
                                     </td>
                                 </tr>
                             );

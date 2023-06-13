@@ -9,6 +9,7 @@ import AddTask from '../components/addTaskDialog';
 import AddProject from '../components/addProjectDialog';
 
 const Dashboard = () => {
+    const cookies = cookie.parse(document.cookie);
     const [projects, setProjects] = useState([]);
 
     useEffect(() => {
@@ -25,7 +26,7 @@ const Dashboard = () => {
             });
     }, []);
     const handleCreateProject = () => {
-        const cookies = cookie.parse(document.cookie);
+
         console.log(cookies.token);
         axios.post('http://localhost:1337/api/projects', {
 
@@ -49,7 +50,7 @@ const Dashboard = () => {
         // handle create project logic
     };
     return (
-        <div className="justify-items-center overflow-auto mt-20 ml-20 mr-20">
+        <div className=" justify-items-center overflow-auto mt-20 ml-20 mr-20 ">
             <Card className="h-full w-full">
                 <CardHeader floated={false} shadow={false} className="rounded-none">
                     <div className="mb-8 flex items-center justify-between gap-8">
@@ -63,7 +64,7 @@ const Dashboard = () => {
                         </div>
                         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
 
-                            <AddProject />
+                            {(cookies.role === 'admin') && <AddProject />}
                         </div>
                     </div>
                 </CardHeader>

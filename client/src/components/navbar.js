@@ -149,7 +149,7 @@ const navListItems = [
     {
         label: "Calendar",
         icon: CalendarDaysIcon,
-
+        path: '/calendar'
     },
     {
         label: "Employees",

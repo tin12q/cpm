@@ -54,7 +54,10 @@ export default function SignIn() {
         maxAge: 60 * 60 * 24 * 7, // 1 week
         path: "/",
       });
-
+      document.cookie = cookie.serialize("role", res.data.role, {
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        path: "/",
+      });
       navigate("/");
     }).catch((err) => {
       console.log(err);
