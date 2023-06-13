@@ -8,7 +8,7 @@ export default function MemberComp(props) {
     const [members, setMembers] = useState([]);
     const id = props.id;
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setMembers(res.data);
             })

@@ -33,7 +33,7 @@ export default function EditUser(props) {
         setOpen((cur) => !cur);
     };
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 console.log(res.data);
                 setUsername(res.data.username);
@@ -43,7 +43,7 @@ export default function EditUser(props) {
                 setSelectedTeam(res.data.team);
             })
             .catch(err => { console.log(err); });
-        axios.get(`http://localhost:1337/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 console.log(res.data);
                 setTeam(res.data);
@@ -57,7 +57,7 @@ export default function EditUser(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.put('http://localhost:1337/api/users', {
+        axios.put('/api/users', {
             name,
             dob: dob,
             role,

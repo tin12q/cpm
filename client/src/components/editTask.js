@@ -34,7 +34,7 @@ export default function EditTask(props) {
 
     useEffect(() => {
         console.log(id);
-        axios.get(`http://localhost:1337/api/tasks/${idt}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/tasks/${idt}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 console.log(res.data);
                 setTitle(res.data.title);
@@ -43,7 +43,7 @@ export default function EditTask(props) {
                 setAssignedTo(res.data.assigned_to);
             })
             .catch(err => { console.log(err); });
-        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 console.log(res.data);
 
@@ -63,7 +63,7 @@ export default function EditTask(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.put(`http://localhost:1337/api/tasks/${idt}`,
+        axios.put(`/api/tasks/${idt}`,
             {
                 title,
                 description,

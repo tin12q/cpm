@@ -17,7 +17,7 @@ const Dashboard = () => {
         if (!cookies.token) {
             window.location.href = '/login';
         }
-        axios.get('http://localhost:1337/api/projects', {
+        axios.get('/api/projects', {
             headers: { Authorization: `Bearer ${cookies.token}` }
         })
             .then(res => {
@@ -30,7 +30,7 @@ const Dashboard = () => {
     }, []);
     const handleCreateProject = () => {
         console.log(cookies.token);
-        axios.post('http://localhost:1337/api/projects', {
+        axios.post('/api/projects', {
 
             title: 'test1',
             description: 'test1',

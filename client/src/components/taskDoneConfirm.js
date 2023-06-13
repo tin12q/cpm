@@ -22,7 +22,7 @@ export default function TaskDone(props) {
     const [isDone, setDone] = useState(false);
     const [title, setTitle] = useState("");
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/tasks/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/tasks/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTitle(res.data.title);
             })
@@ -35,7 +35,7 @@ export default function TaskDone(props) {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
         try {
-            axios.post(`http://localhost:1337/api/tasks/done/${id}`,
+            axios.post(`/api/tasks/done/${id}`,
                 {
                     isDone
                 }

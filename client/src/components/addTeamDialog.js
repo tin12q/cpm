@@ -30,7 +30,7 @@ export default function AddTeam() {
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/users`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 console.log(res.data);
                 setMembers(res.data.map((member) => {
@@ -49,7 +49,7 @@ export default function AddTeam() {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/teams',
+        axios.post('/api/teams',
             {
                 name,
                 members: assignedTo

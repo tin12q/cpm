@@ -17,12 +17,12 @@ export default function PCWM({ title, dueDate, status, id }) {
     const [complete, setComplete] = useState(0);
     const [late, setLate] = useState(0);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
                 setComplete(res.data.completed);
             })
             .catch(err => { console.log(err); });
-        axios.get(`http://localhost:1337/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
 
                 setLate(res.data.lated);

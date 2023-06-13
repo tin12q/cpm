@@ -34,7 +34,7 @@ export default function AddTask(props) {
 
     useEffect(() => {
         console.log(id);
-        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 console.log(res.data);
 
@@ -54,7 +54,7 @@ export default function AddTask(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/tasks',
+        axios.post('/api/tasks',
             {
                 title,
                 description,

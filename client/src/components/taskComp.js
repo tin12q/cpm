@@ -55,13 +55,13 @@ export default function TaskComp(props) {
     useEffect(() => {
         console.log(cookies.role);
 
-        axios.get(`http://localhost:1337/api/tasks/project/${idt}`,
+        axios.get(`/api/tasks/project/${idt}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 console.log(res.data);
                 setTasks(res.data);
             });
-        axios.get("http://localhost:1337/api/users",
+        axios.get("/api/users",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setUserMap(res.data.reduce((map, user) => {

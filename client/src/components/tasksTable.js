@@ -47,13 +47,13 @@ export default function TaskTable() {
     const [tasks, setTasks] = useState(null);
     const [userMap, setUserMap] = useState(null);
     useEffect(() => {
-        axios.get("http://localhost:1337/api/tasks",
+        axios.get("/api/tasks",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 console.log(res.data);
                 setTasks(res.data);
             });
-        axios.get("http://localhost:1337/api/users",
+        axios.get("/api/users",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setUserMap(res.data.reduce((map, user) => {

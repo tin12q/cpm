@@ -44,7 +44,7 @@ export default function EmployeeTable() {
         if (!cookies.token) {
             window.location.href = '/login';
         }
-        axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/users`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 console.log(res.data);
                 setEmployees(res.data);
