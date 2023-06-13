@@ -89,13 +89,14 @@ export default function AddTask(props) {
                     </CardHeader>
                     <CardBody className="">
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                            <Input label="Title" size="lg" onChange={(e) => setTitle(e.target.value)} />
-                            <Input label="Description" size="lg" onChange={(e) => setDescription(e.target.value)} />
-                            <Input label="Due Date" size="lg" type="date" onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
+                            <Input required label="Title" size="lg" onChange={(e) => setTitle(e.target.value)} />
+                            <Input required label="Description" size="lg" onChange={(e) => setDescription(e.target.value)} />
+                            <Input required label="Due Date" size="lg" type="date" onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
                             {/* <Input label="Assigned To" size="lg"  onChange={(e) => setAssignedTo(e.target.value)} /> */}
                             {/*TODO: create menu list */}
 
                             <Select
+                                required
                                 isMulti
                                 options={members}
                                 onChange={(selected) => {
