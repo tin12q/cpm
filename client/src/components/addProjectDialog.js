@@ -75,9 +75,9 @@ export default function AddProject() {
                     </CardHeader>
                     <CardBody className="">
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                            <Input label="Title" size="lg" onChange={(e) => setTitle(e.target.value)} />
-                            <Input label="Description" size="lg" onChange={(e) => setDescription(e.target.value)} />
-                            <Input label="Due Date" size="lg" type="date" onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
+                            <Input required label="Title" size="lg" onChange={(e) => setTitle(e.target.value)} />
+                            <Input required label="Description" size="lg" onChange={(e) => setDescription(e.target.value)} />
+                            <Input required label="Due Date" size="lg" type="date" onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
                             <Select label='Team' onChange={(value) => setSelectedTeam(value)}>
                                 {teams.map((team) => {
                                     return <Option key={team._id} value={team._id}>{team.name}</Option>
