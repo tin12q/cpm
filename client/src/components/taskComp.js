@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import cookie from "cookie";
 import AddTask from "./addTaskDialog";
 import EditTask from "./editTask";
+import TaskDone from "./taskDoneConfirm";
 
 
 const TABS = [
@@ -40,18 +41,20 @@ const TABS = [
     },
 ];
 
-const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", "Edit"];
+
 
 
 
 export default function TaskComp(props) {
+    const cookies = cookie.parse(document.cookie);
+    const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", ((cookies.role != 'employee') && "Edit"), "Done"];
     const idt = useParams().id;
     const id = props.id;
     const [tasks, setTasks] = useState(null);
     const [userMap, setUserMap] = useState(null);
     useEffect(() => {
+        console.log(cookies.role);
 
-        const cookies = cookie.parse(document.cookie);
         axios.get(`http://localhost:1337/api/tasks/project/${idt}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
@@ -191,7 +194,10 @@ export default function TaskComp(props) {
                                         </td>
                                     </td>
                                     <td className={classes}>
-                                        <EditTask id={id} idt={_id} />
+                                        {(cookies.role != 'employee') && <EditTask id={id} idt={_id} />}
+                                    </td>
+                                    <td className={classes}>
+                                        {(status === 'in progress') && <TaskDone id={_id} />}
                                     </td>
                                 </tr>
                             );

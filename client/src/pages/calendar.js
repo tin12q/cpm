@@ -1,5 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Scheduler } from '@aldabil/react-scheduler';
+import axios from "axios";
+import cookie from "cookie";
+export default function CalendarPage(props) {
+    const id = props.id;
+    const [events, setEvents] = useState(null);
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/tasks/user/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+            .then(res => {
+                setEvents(res.data.map((event) => {
+                    return {
+                        event_id: event._id,
+                        title: event.title,
+                        start: new Date(event.due_date),
+                        end: new Date(event.due_date),
+                        editable: false,
+                        color: ((event.status === "completed") && "green"),
+                        deletable: false,
+                    }
+                }));
+            })
+            .catch(err => { console.log(err); });
+        console.log(events);
 
-export default function CalendarPage() {
-    return (<></>)
+    }, []);
+    if (!events) {
+        return <div>Loading...</div>
+    }
+    return (<div className=" justify-items-center overflow-auto mt-20 ml-20 mr-20 ">
+        <Scheduler
+            view="month"
+            events={events}
+        />
+    </div>)
 }
