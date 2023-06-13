@@ -4,6 +4,7 @@
     left: 0;
     right: 0;
     z-index: 999;
+
   }
 .Header{
   position:  fixed;
@@ -11,4 +12,17 @@
   left: 0;
   right: 0;
   z-index: 999;
+}.Navbar {
+  --bg-color: #fff;
+  --text-color: #333;
+}
+
+.Navbar.dark {
+  --bg-color: #333;
+  --text-color: #fff;
+}
+
+.Navbar {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
