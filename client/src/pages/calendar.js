@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Scheduler } from '@aldabil/react-scheduler';
 import axios from "axios";
 import cookie from "cookie";
-export default function CalendarPage(props) {
-    const id = props.id;
+export default function CalendarPage() {
     const [events, setEvents] = useState(null);
+    const cookies = cookie.parse(document.cookie);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/tasks/user/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        if (!cookies.token) {
+            window.location.href = '/login';
+        }
+        axios.get(`http://localhost:1337/api/tasks/user`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setEvents(res.data.map((event) => {
                     return {

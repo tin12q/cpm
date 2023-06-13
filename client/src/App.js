@@ -1,7 +1,5 @@
 import logo from "./logo.svg";
 import "./App.css";
-import CardList from "./components/card.js";
-import Sidebar from "./components/sidebar.js";
 import SignIn from "./pages/signIn.js";
 import { Routes, Route } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -13,9 +11,11 @@ import Tasks from "./pages/tasks";
 import Task from "./pages/task";
 import EmployeeTable from "./pages/employee";
 import CalendarPage from "./pages/calendar";
+import LandingPage from "./pages/landing";
 
 function App() {
   const location = useLocation();
+
   return (<>
     {location.pathname !== "/signin" && <ComplexNavbar />}
     <Routes>
@@ -23,7 +23,7 @@ function App() {
       <Route
         path="/"
         element={
-          <Dashboard />
+          <LandingPage />
         }
       />
       <Route path="/projects/*">

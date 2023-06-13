@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import cookie from "cookie";
 import AddUser from "../components/addUserDialog";
 import EditUser from "../components/editUser";
-const TABLE_HEAD = ["Name", "Job", "Date Of Birth", ""];
+import AddTeam from "../components/addTeamDialog";
+
 
 const TABLE_ROWS = [
     {
@@ -38,7 +39,11 @@ const TABLE_ROWS = [
 export default function EmployeeTable() {
     const [employees, setEmployees] = useState([]);
     const cookies = cookie.parse(document.cookie);
+    const TABLE_HEAD = ["Name", "Job", "Date Of Birth", ((cookies.role === 'admin') && "")];
     useEffect(() => {
+        if (!cookies.token) {
+            window.location.href = '/login';
+        }
         axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 console.log(res.data);
@@ -60,13 +65,8 @@ export default function EmployeeTable() {
                             </Typography>
                         </div>
                         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-                            <Button variant="outlined" color="blue-gray" size="sm">
-                                view all
-                            </Button>
-                            <AddUser />
-
-
-
+                            {(cookies.role === 'admin') && <AddTeam />}
+                            {(cookies.role === 'admin') && <AddUser />}
                         </div>
                     </div>
 
@@ -110,9 +110,10 @@ export default function EmployeeTable() {
                                                 {new Date(dob).toLocaleDateString()}
                                             </Typography>
                                         </td>
-                                        <td className={`${classes} bg-blue-gray-50/50 flex justify-center`}>
-                                            <EditUser id={_id} />
-                                        </td>
+                                        {(cookies.role === 'admin') && (
+                                            <td className={`${classes} bg-blue-gray-50/50 flex justify-center`}>
+                                                <EditUser id={_id} />
+                                            </td>)}
                                     </tr>
                                 );
                             })}

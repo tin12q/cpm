@@ -7,6 +7,7 @@ import '../css/project.css';
 import TaskTable from '../components/tasksTable';
 import TaskComp from '../components/taskComp';
 import MemberComp from '../components/memberComp';
+import PieChart from '../components/PieChart';
 
 function Project() {
   const [projectData, setProjectData] = useState(null);
@@ -43,7 +44,7 @@ function Project() {
         setLate(res.data);
       })
       .catch(err => { console.log(err); });
-  }, [id]);
+  }, []);
 
   //get tasks that in this project
 
@@ -63,7 +64,10 @@ function Project() {
 
           </div>
           <div className='w-4/12 mt-5 '>
-            <div className="w-full mb-4">
+            <div className='w-96 h-96'>
+              <PieChart completed={completedTasks.completed} late={late.lated} />
+            </div>
+            {/* <div className="w-full mb-4">
               <div className="flex items-center justify-between gap-4 mb-2">
                 <Typography color="blue" variant="h6">Completed</Typography>
                 <Typography color="blue" variant="h6">{completedTasks.completed + '%'}</Typography>
@@ -76,7 +80,7 @@ function Project() {
                 <Typography color="red" variant="h6">{late.lated + '%'}</Typography>
               </div>
               <Progress color='red' value={late.lated} />
-            </div>
+            </div> */}
           </div>
           <div className='w-1/12 text-right mr-10'>
             <Chip

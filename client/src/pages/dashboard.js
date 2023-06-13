@@ -14,6 +14,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         const cookies = cookie.parse(document.cookie);
+        if (!cookies.token) {
+            window.location.href = '/login';
+        }
         axios.get('http://localhost:1337/api/projects', {
             headers: { Authorization: `Bearer ${cookies.token}` }
         })
@@ -26,7 +29,6 @@ const Dashboard = () => {
             });
     }, []);
     const handleCreateProject = () => {
-
         console.log(cookies.token);
         axios.post('http://localhost:1337/api/projects', {
 
@@ -78,7 +80,7 @@ const Dashboard = () => {
                                 title={project.title}
                                 dueDate={project.due_date}
                                 status={project.status}
-                                members={project.members}
+                                members={project.team}
                             />
                         ))}
                     </div>

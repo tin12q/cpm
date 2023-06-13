@@ -20,6 +20,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import cookie from "cookie";
+import EditTask from "./editTask";
 
 
 const TABS = [
@@ -37,11 +38,12 @@ const TABS = [
     },
 ];
 
-const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", "Edit"];
+
 
 
 export default function TaskTable() {
     const cookies = cookie.parse(document.cookie);
+    const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", (cookies.role === "admin" || cookies.role === "manager") && "Actions"].filter(Boolean);
     const [tasks, setTasks] = useState(null);
     const [userMap, setUserMap] = useState(null);
     useEffect(() => {
@@ -173,15 +175,9 @@ export default function TaskTable() {
                                             })}
                                         </Typography>
                                     </td>
-                                    <td className={classes}>
-                                        <Link to={`/tasks/${_id}`}>
-                                            <Tooltip content="View Task">
-                                                <IconButton variant="text" color="blue-gray">
-                                                    <PencilIcon className="h-4 w-4" />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </Link>
-                                    </td>
+                                    {(cookies.role === "admin" || cookies.role === "manager") && (<td className={classes}>
+                                        <EditTask id={_id} />
+                                    </td>)}
                                 </tr>
                             );
                         })}

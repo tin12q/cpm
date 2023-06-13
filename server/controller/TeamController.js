@@ -48,4 +48,19 @@ const userInTeam = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-module.exports = { getTeams, getTeamWithId, userInTeam };
+const addTeam = async (req, res) => {
+    try {
+        const { name, members } = req.body;
+        const team = new Team({
+            name, members: members.map(
+                (member) => new mongoose.Types.ObjectId(member)
+            )
+        });
+        await team.save();
+        res.status(201).json({ message: 'Team added successfully' });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+module.exports = { getTeams, getTeamWithId, userInTeam, addTeam };

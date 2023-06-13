@@ -5,12 +5,30 @@ import {
     CardFooter,
     Typography,
     Chip,
-    Avatar,
-    Tooltip,
+    Progress
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import cookie from "cookie";
 
-export default function PCWM({ title, dueDate, status, members, id }) {
+export default function PCWM({ title, dueDate, status, id }) {
+    const cookies = cookie.parse(document.cookie);
+    const [complete, setComplete] = useState(0);
+    const [late, setLate] = useState(0);
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then(res => {
+                setComplete(res.data.completed);
+            })
+            .catch(err => { console.log(err); });
+        axios.get(`http://localhost:1337/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then(res => {
+
+                setLate(res.data.lated);
+            })
+            .catch(err => { console.log(err); });
+    }, []);
     return (
         <Link to={`/projects/${id}`}>
             <Card className="max-w-[24rem] overflow-hidden">
@@ -33,16 +51,24 @@ export default function PCWM({ title, dueDate, status, members, id }) {
                         Due Date: {new Date(dueDate).toLocaleDateString()}
                     </Typography>
 
-                    <Chip
-                        className="w-max mt-2"
-                        variant="ghost"
-                        size="sm"
-                        value={(status === 'in progress') ? "In progress" : (status === "completed") ? "Completed" : "Late"}
-                        color={(status === 'in progress') ? "blue-gray" : (status === "completed") ? "green" : "red"}
-                    />
+
                     {/* <Typography variant="lead" color="gray" className="mt-3 font-normal">
                         Members: {members.join(", ")}
                     </Typography> */}
+                    <div className="w-full mt-4 mb-4">
+                        <div className="flex items-center justify-between gap-4 mb-2">
+                            <Typography color="blue" variant="h6">Completed</Typography>
+                            <Typography color="blue" variant="h6">{complete + '%'}</Typography>
+                        </div>
+                        <Progress value={complete} />
+                    </div>
+                    <div className="w-full">
+                        <div className="flex items-center justify-between gap-4 mb-2">
+                            <Typography color="red" variant="h6">Late</Typography>
+                            <Typography color="red" variant="h6">{late + '%'}</Typography>
+                        </div>
+                        <Progress color='red' value={late} />
+                    </div>
                 </CardBody>
                 <CardFooter className="flex items-center justify-between">
                     {/* <div className="flex items-center -space-x-3">
@@ -59,6 +85,13 @@ export default function PCWM({ title, dueDate, status, members, id }) {
                         ))}
                     </div> */}
                     <Typography className="font-normal">{new Date(dueDate).toLocaleDateString()}</Typography>
+                    <Chip
+                        className="w-max mt-2"
+                        variant="ghost"
+                        size="sm"
+                        value={(status === 'in progress') ? "In progress" : (status === "completed") ? "Completed" : "Late"}
+                        color={(status === 'in progress') ? "blue-gray" : (status === "completed") ? "green" : "red"}
+                    />
                 </CardFooter>
             </Card>
         </Link>

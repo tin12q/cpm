@@ -24,7 +24,7 @@ export default function SignIn() {
     if (cookies.token) {
       navigate("/");
     }
-  }, [navigate]);
+  }, []);
   function handleSubmit(e) {
     e.preventDefault();
     console.log("submit");

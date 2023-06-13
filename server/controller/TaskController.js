@@ -50,7 +50,24 @@ const getTasksByProjectId = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+const getTaskByUserId = async (req, res) => {
+  try {
+    if (req.user.role == 'admin') {
+      const tasks = await Task.find();
+      if (!tasks) {
+        return res.status(404).json({ error: 'Task not found' });
+      }
+      return res.json(tasks);
+    }
+    const tasks = await Task.find({ assigned_to: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.user.id) } } });
+    if (!tasks) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 const getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -100,12 +117,12 @@ const completedPercentage = async (req, res) => {
       }
     });
     const percentage = (completed / tasks.length) * 100;
-    res.json({ completed: percentage });
+    res.json({ completed: percentage.toPrecision(3) });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
-const latedPercentage = async (req, res) => {
+const latePercentage = async (req, res) => {
   try {
     const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) });
     if (!tasks) {
@@ -118,13 +135,42 @@ const latedPercentage = async (req, res) => {
       }
     });
     const percentage = (lated / tasks.length) * 100;
-    res.json({ lated: percentage });
+    res.json({ lated: percentage.toPrecision(3) });
   }
   catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
-
+const doneCheck = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    if (req.user.role === 'employee') {
+      if (!task.assigned_to.includes(req.user.id)) {
+        return res.status(401).json({ error: 'You are not assigned to this task' });
+      }
+    }
+    if (task.status == 'completed') {
+      return res.json({ message: 'Task is already completed' });
+    }
+    const isDone = req.body.isDone;
+    if (isDone) {
+      if (task.due_date - new Date().getTime() < 0) {
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, { status: 'late' }, { new: true });
+        return res.json(updatedTask);
+      }
+      const updatedTask = await Task.findByIdAndUpdate(req.params.id, { status: 'completed' }, { new: true });
+      return res.json(updatedTask);
+    }
+    const updatedTask = await Task.findByIdAndUpdate(req.params.id, { status: 'completed' }, { new: true });
+    res.json(updatedTask);
+  }
+  catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 module.exports = {
   createTask,
   getTasks,
@@ -132,6 +178,8 @@ module.exports = {
   updateTask,
   deleteTask,
   getTasksByProjectId,
+  getTaskByUserId,
   completedPercentage,
-  latedPercentage
+  latePercentage,
+  doneCheck
 };
