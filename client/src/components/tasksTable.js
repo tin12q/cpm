@@ -24,7 +24,7 @@ const TABS = [
 
 export default function TaskTable() {
     const cookies = cookie.parse(document.cookie);
-    const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To"].filter(Boolean);
+    const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", (cookies.role === "admin" || cookies.role === "manager") && "Actions"].filter(Boolean);
     const [tasks, setTasks] = useState(null);
     const [userMap, setUserMap] = useState(null);
     useEffect(() => {
@@ -157,7 +157,9 @@ export default function TaskTable() {
                                             })}
                                         </Typography>
                                     </td>
-                                   
+                                    {(cookies.role === "admin" || cookies.role === "manager") && (<td className={classes}>
+                                        <EditTask id={_id} />
+                                    </td>)}
                                 </tr>
                             );
                         })}
