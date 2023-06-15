@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography, } from "@material-tailwind/react";
+import { Alert, Button, Card, CardBody, CardHeader, Dialog, Input, Typography, } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 import Select from "react-select";
@@ -11,13 +11,16 @@ export default function AddTeam() {
     const [name, setName] = useState("");
     const [assignedTo, setAssignedTo] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
-
+    const [alert, setAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
 
     const handleOpen = () => {
         setOpen((cur) => !cur);
         setAssignedTo([]);
     };
-
+    const handleAlert = () => {
+        setAlert((cur) => !cur);
+    }
     useEffect(() => {
         axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
@@ -33,6 +36,14 @@ export default function AddTeam() {
             });
 
     }, []);
+
+    useEffect(() => {
+        if (alert) {
+            setTimeout(() => {
+                handleAlert();
+            }, 3000);
+        }
+    }, [alert]);
     if (!members) {
         return <h1>Loading...</h1>
     }
@@ -44,8 +55,17 @@ export default function AddTeam() {
                 name,
                 members: assignedTo
             }
-            , { headers: { Authorization: `Bearer ${cookies.token}` } });
-        window.location.reload();
+            , { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then(res => {
+                //render alert success
+                setAlertMessage("Team added successfully!");
+            }).catch(err => {
+                setAlertMessage("Team not added!");
+
+            });
+            setAlert((cur) => !cur);
+
+       
     }
     return (
         <React.Fragment>
@@ -87,9 +107,14 @@ export default function AddTeam() {
                             </Button>
                         </form>
                     </CardBody>
-
                 </Card>
             </Dialog>
+            <Alert className="fixed bottom-0 right-0" open={alert}   >
+                <div className="flex items-center gap-2">
+                    <Typography color="white">{alertMessage}</Typography>
+                </div>
+            </Alert>
+
         </React.Fragment>
     );
 }

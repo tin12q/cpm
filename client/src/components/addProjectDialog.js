@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography,Alert } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 
@@ -12,7 +12,10 @@ export default function AddProject() {
     const [status, setStatus] = React.useState("");
     const [teams, setTeams] = React.useState(null);
     const [selectedTeam, setSelectedTeam] = React.useState("");
+    const [alert, setAlert] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState("");
     const handleOpen = () => setOpen((cur) => !cur);
+    const handleAlert = () => {setAlert((cur) => !cur);}
     useEffect(() => {
         axios.get('http://localhost:1337/api/teams', { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
@@ -20,6 +23,14 @@ export default function AddProject() {
             })
             .catch(err => alert(err));
     }, []);
+    useEffect(() => {
+        if (alert) {
+            setTimeout(() => {
+                handleAlert();
+            }, 3000);
+        }
+    }, [alert]);
+
     if (!teams) {
         return <h1>Loading...</h1>
     }
@@ -34,7 +45,14 @@ export default function AddProject() {
                 status: 'in progress',
                 team: selectedTeam
             }
-            , { headers: { Authorization: `Bearer ${cookies.token}` } });
+            , { headers: { Authorization: `Bearer ${cookies.token}` } }).
+            then(res => {
+                setAlertMessage("Project added successfully!");
+            }).
+            catch(err => {
+                setAlertMessage("Error adding project!");
+            });
+        handleAlert();
     }
     return (
         <React.Fragment>
@@ -77,6 +95,11 @@ export default function AddProject() {
 
                 </Card>
             </Dialog>
+            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+                <div className="flex items-center gap-2">
+                    <Typography color="white">{alertMessage}</Typography>
+                </div>
+            </Alert>
         </React.Fragment>
     );
 }

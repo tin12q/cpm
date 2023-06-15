@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography } from "@material-tailwind/react";
+import { Alert, Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 
@@ -16,9 +16,14 @@ export default function AddUser() {
     const [team, setTeam] = useState([]);
     const [teamMap, setTeamMap] = useState({});
     const [selectedTeam, setSelectedTeam] = useState('');
+    const [alert, setAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
     const handleOpen = () => {
         setOpen((cur) => !cur);
     };
+    const handleAlert = () => {
+        setAlert((cur) => !cur);
+    }
     useEffect(() => {
         axios.get(`http://localhost:1337/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
@@ -28,7 +33,13 @@ export default function AddUser() {
                 alert(err);
             });
     }, []);
-
+    useEffect(() => {
+        if (alert) {
+            setTimeout(() => {
+                handleAlert();
+            }, 3000);
+        }
+    }, [alert]);
     if (!team) {
         return <h1>Loading...</h1>
     }
@@ -44,10 +55,14 @@ export default function AddUser() {
             password,
             team: selectedTeam,
         }, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+            .then(res => {
+                //render alert success
+                setAlertMessage("User added successfully");
+            })
             .catch(err => {
-                alert(err);
+                setAlertMessage(err);
             });
-        window.location.reload();
+        handleAlert();
     }
     return (
         <React.Fragment>
@@ -105,6 +120,11 @@ export default function AddUser() {
 
                 </Card>
             </Dialog>
+            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+                <div className="flex items-center gap-2">
+                    <Typography color="white">{alertMessage}</Typography>
+                </div>
+            </Alert>
         </React.Fragment>
     );
 }

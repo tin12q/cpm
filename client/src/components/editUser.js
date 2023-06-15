@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography,Alert } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 
@@ -17,9 +17,21 @@ export default function EditUser(props) {
     const [team, setTeam] = useState([]);
     const [teamMap, setTeamMap] = useState({});
     const [selectedTeam, setSelectedTeam] = useState('');
+    const [alert, setAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
     const handleOpen = () => {
         setOpen((cur) => !cur);
     };
+    const handleAlert = () => {
+        setAlert((cur) => !cur);
+    }
+    useEffect(() => {
+        if (alert) {
+            setTimeout(() => {
+                handleAlert();
+            }, 3000);
+        }
+    }, [alert]);
     useEffect(() => {
         axios.get(`http://localhost:1337/api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
@@ -56,10 +68,13 @@ export default function EditUser(props) {
             password,
             team: selectedTeam,
         }, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+            .then(res => {
+                setAlertMessage("User Updated Successfully");
+            })
             .catch(err => {
-                alert(err);
+                setAlertMessage("User Updation Failed");
             });
-        window.location.reload();
+        handleAlert();
     }
     return (
         <React.Fragment>
@@ -116,6 +131,11 @@ export default function EditUser(props) {
 
                 </Card>
             </Dialog>
+            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+                <div className="flex items-center gap-2">
+                    <Typography color="white">{alertMessage}</Typography>
+                </div>
+            </Alert>
         </React.Fragment>
     );
 }

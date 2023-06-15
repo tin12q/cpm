@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography, } from "@material-tailwind/react";
+import { Alert, Button, Card, CardBody, CardHeader, Dialog, Input, Typography, } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 import Select from "react-select";
@@ -15,13 +15,23 @@ export default function EditTask(props) {
     const [dueDate, setDueDate] = useState("");
     const [assignedTo, setAssignedTo] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
-
+    const [alert, setAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
 
     const handleOpen = () => {
         setOpen((cur) => !cur);
         setAssignedTo([]);
     };
-
+    const handleAlert = () => {
+        setAlert((cur) => !cur);
+    }
+    useEffect(() => {
+        if (alert) {
+            setTimeout(() => {
+                handleAlert();
+            }, 3000);
+        }
+    }, [alert]);
     useEffect(() => {
         axios.get(`http://localhost:1337/api/tasks/${idt}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
@@ -62,8 +72,15 @@ export default function EditTask(props) {
                 status: 'in progress',
                 assigned_to: assignedTo
             }
-            , { headers: { Authorization: `Bearer ${cookies.token}` } });
-        window.location.reload();
+            , { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then(res => {
+                setAlertMessage("Task updated successfully!");
+            })
+            .catch(err => {
+                setAlertMessage("Error updating task!");
+            });
+        handleAlert();
+        
     }
     return (
         <React.Fragment>
@@ -97,8 +114,7 @@ export default function EditTask(props) {
                             {/* <Input label="Assigned To" size="lg"  onChange={(e) => setAssignedTo(e.target.value)} /> */}
                             {/*TODO: create menu list */}
 
-                            <Select
-                                required
+                            <Select 
                                 isMulti
                                 options={members}
                                 onChange={(selected) => {
@@ -116,6 +132,11 @@ export default function EditTask(props) {
 
                 </Card>
             </Dialog>
+            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+                <div className="flex items-center gap-2">
+                    <Typography color="white">{alertMessage}</Typography>
+                </div>
+            </Alert>
         </React.Fragment>
     );
 }

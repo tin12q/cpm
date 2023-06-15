@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography, } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography,Alert } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 import { useParams } from "react-router-dom";
@@ -16,13 +16,23 @@ export default function AddTask(props) {
     const [dueDate, setDueDate] = useState("");
     const [assignedTo, setAssignedTo] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
-
+    const [alert, setAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
 
     const handleOpen = () => {
         setOpen((cur) => !cur);
         setAssignedTo([]);
     };
-
+    const handleAlert = () => {
+        setAlert((cur) => !cur);
+    }
+    useEffect(() => {
+        if (alert) {
+            setTimeout(() => {
+                handleAlert();
+            }, 3000);
+        }
+    }, [alert]);
     useEffect(() => {
         axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
@@ -54,9 +64,17 @@ export default function AddTask(props) {
                 project: idp,
                 assigned_to: assignedTo
             }
-            , { headers: { Authorization: `Bearer ${cookies.token}` } });
-        window.location.reload();
+            , { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then(res => {
+                setAlertMessage("Task added successfully");
+            })
+            .catch(err => {
+                setAlertMessage("Something went wrong");
+            });
+            handleAlert();
+
     }
+
     return (
         <React.Fragment>
             <Button className="flex items-center gap-3" color="blue" size="sm" onClick={handleOpen}>
@@ -107,6 +125,11 @@ export default function AddTask(props) {
 
                 </Card>
             </Dialog>
+            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+                <div className="flex items-center gap-2">
+                    <Typography color="white">{alertMessage}</Typography>
+                </div>
+            </Alert>
         </React.Fragment>
     );
 }
