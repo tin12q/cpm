@@ -43,9 +43,7 @@ export default function PCWM({ title, dueDate, status, id }) {
                     <Typography variant="h4" color="blue-gray">
                         {title}
                     </Typography>
-                    <Typography variant="lead" color="gray" className="mt-3 font-normal">
-                        Due Date: {new Date(dueDate).toLocaleDateString()}
-                    </Typography>
+        
 
 
                     {/* <Typography variant="lead" color="gray" className="mt-3 font-normal">

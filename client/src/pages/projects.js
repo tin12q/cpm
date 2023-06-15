@@ -6,7 +6,7 @@ import '../css/navbar.css';
 import PCWM from '../components/projectCardWithMember';
 import AddProject from '../components/addProjectDialog';
 
-const Dashboard = () => {
+const Projects = () => {
     const cookies = cookie.parse(document.cookie);
     const [projects, setProjects] = useState([]);
 
@@ -91,4 +91,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default Projects;

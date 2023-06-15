@@ -114,6 +114,9 @@ const completedPercentage = async (req, res) => {
                 completed++;
             }
         });
+        if (tasks.length == 0) {
+            return res.json({ completed: 0 });
+        }
         const percentage = (completed / tasks.length) * 100;
         res.json({ completed: percentage.toPrecision(3) });
     } catch (error) {
@@ -132,6 +135,9 @@ const latePercentage = async (req, res) => {
                 lated++;
             }
         });
+        if (tasks.length == 0) {
+            return res.json({ lated: 0 });
+        }
         const percentage = (lated / tasks.length) * 100;
         res.json({ lated: percentage.toPrecision(3) });
     } catch (error) {
@@ -176,7 +182,7 @@ const completionByTeam = async (req, res) => {
 
         const teamIds = team.map(t => t._id);
 
-        const response = await Project.aggregate([
+        let response = await Project.aggregate([
             {
                 $match: {
                     team: { $in: teamIds }
@@ -244,15 +250,19 @@ const completionByTeam = async (req, res) => {
         if (!response) {
             return res.status(404).json({ error: 'No data found' });
         }
-
-
-
+        for (let i = 0; i < response.length; i++) {
+            const team = await Team.findOne({ _id: new mongoose.Types.ObjectId(response[i].team) });
+            if (!team) {
+                return res.status(404).json({ error: 'Team not found' });
+            }
+            response[i].team = team.name;
+        }
         res.json(response);
     }
     catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+} 
 module.exports = {
     createTask,
     getTasks,
