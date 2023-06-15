@@ -1,18 +1,7 @@
-import React from "react";
-import { UserPlusIcon } from "@heroicons/react/24/solid";
-import {
-    Button,
-    Dialog,
-    Card,
-    CardHeader,
-    CardBody,
-    Typography,
-    Input,
-} from "@material-tailwind/react";
+import React, { useEffect, useState } from "react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography, } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import Select from "react-select";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 
@@ -32,7 +21,6 @@ export default function AddTeam() {
     useEffect(() => {
         axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
-                console.log(res.data);
                 setMembers(res.data.map((member) => {
                     return {
                         value: member._id,
@@ -40,7 +28,9 @@ export default function AddTeam() {
                     }
                 }));
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
 
     }, []);
     if (!members) {
@@ -80,7 +70,8 @@ export default function AddTeam() {
                     </CardHeader>
                     <CardBody className="">
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                            <Input required label="Name" size="lg" type="text" onChange={(e) => setName(e.target.value)} />
+                            <Input required label="Name" size="lg" type="text"
+                                onChange={(e) => setName(e.target.value)} />
                             <Select
                                 required
                                 isMulti
@@ -88,7 +79,6 @@ export default function AddTeam() {
                                 onChange={(selected) => {
                                     setSelectedOption(selected);
                                     setAssignedTo(selected.map((option) => option.value));
-                                    console.log(assignedTo);
                                 }}
                                 value={selectedOption}
                                 placeholder="Assign to members"

@@ -4,8 +4,7 @@ const getTeams = async (req, res) => {
     try {
         const teams = await Team.find();
         res.json(teams);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
@@ -17,14 +16,12 @@ const getTeamWithId = async (req, res) => {
         }
         res.json(team);
 
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 const userInTeam = async (req, res) => {
     try {
-        console.log(req.params.id);
         const users = await Team.aggregate([
             {
                 $lookup: {
@@ -42,9 +39,7 @@ const userInTeam = async (req, res) => {
         ]);
 
         res.json(users[0].members);
-    }
-
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
@@ -58,8 +53,7 @@ const addTeam = async (req, res) => {
         });
         await team.save();
         res.status(201).json({ message: 'Team added successfully' });
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }

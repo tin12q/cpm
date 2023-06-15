@@ -1,24 +1,9 @@
 import React, { useEffect } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import {
-    Button,
-    Dialog,
-    Card,
-    CardHeader,
-    CardBody,
-    CardFooter,
-    Typography,
-    Input,
-    Checkbox,
-    MenuList,
-    MenuItem,
-    Menu,
-    MenuHandler,
-    Select,
-    Option
-} from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
+
 export default function AddProject() {
     const [open, setOpen] = React.useState(false);
     const [title, setTitle] = React.useState("");
@@ -31,10 +16,9 @@ export default function AddProject() {
     useEffect(() => {
         axios.get('http://localhost:1337/api/teams', { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
-                console.log(res.data);
                 setTeams(res.data);
             })
-            .catch(err => console.log(err));
+            .catch(err => alert(err));
     }, []);
     if (!teams) {
         return <h1>Loading...</h1>
@@ -76,8 +60,10 @@ export default function AddProject() {
                     <CardBody className="">
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                             <Input required label="Title" size="lg" onChange={(e) => setTitle(e.target.value)} />
-                            <Input required label="Description" size="lg" onChange={(e) => setDescription(e.target.value)} />
-                            <Input required label="Due Date" size="lg" type="date" onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
+                            <Input required label="Description" size="lg"
+                                onChange={(e) => setDescription(e.target.value)} />
+                            <Input required label="Due Date" size="lg" type="date"
+                                onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
                             <Select label='Team' onChange={(value) => setSelectedTeam(value)}>
                                 {teams.map((team) => {
                                     return <Option key={team._id} value={team._id}>{team.name}</Option>
