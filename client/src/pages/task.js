@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import cookie from 'cookie';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import Layout from '../components/layout';
-import { Input, Textarea, Button } from '@material-tailwind/react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button, Input, Textarea } from '@material-tailwind/react';
 
 const Task = () => {
     const [task, setTask] = useState(null);
@@ -20,7 +19,6 @@ const Task = () => {
         const cookies = cookie.parse(document.cookie);
         axios.get(`http://localhost:1337/api/tasks/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
-                console.log(res.data);
                 setTask(res.data);
                 setTitle(res.data.title);
                 setDescription(res.data.description);
@@ -28,7 +26,9 @@ const Task = () => {
                 setStatus(res.data.status);
                 setAssignedTo(res.data.assigned_to);
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
     }, [id]);
     const handleSubmit = async e => {
         e.preventDefault();
@@ -45,10 +45,9 @@ const Task = () => {
                 },
                 { headers: { Authorization: `Bearer ${cookies.token}` } }
             );
-            console.log(res.data);
             navigate('/tasks');
         } catch (error) {
-            console.log(error);
+            alert(error);
         }
     };
 

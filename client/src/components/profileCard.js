@@ -1,17 +1,10 @@
-import {
-    Card,
-    CardHeader,
-    CardBody,
-    CardFooter,
-    Typography,
-    Tooltip,
-} from "@material-tailwind/react";
+import {Card, CardBody, CardFooter, CardHeader, Tooltip, Typography,} from "@material-tailwind/react";
 
 export default function ProfileCard() {
     return (
         <Card className="w-96">
             <CardHeader floated={false} className="h-80">
-                <img src="/img/team-3.jpg" alt="profile-picture" />
+                <img src="/img/team-3.jpg" alt="profile-picture"/>
             </CardHeader>
             <CardBody className="text-center">
                 <Typography variant="h4" color="blue-gray" className="mb-2">
@@ -30,7 +23,7 @@ export default function ProfileCard() {
                         color="blue"
                         textGradient
                     >
-                        <i className="fab fa-facebook" />
+                        <i className="fab fa-facebook"/>
                     </Typography>
                 </Tooltip>
                 <Tooltip content="Follow">
@@ -41,7 +34,7 @@ export default function ProfileCard() {
                         color="light-blue"
                         textGradient
                     >
-                        <i className="fab fa-twitter" />
+                        <i className="fab fa-twitter"/>
                     </Typography>
                 </Tooltip>
                 <Tooltip content="Follow">
@@ -52,7 +45,7 @@ export default function ProfileCard() {
                         color="purple"
                         textGradient
                     >
-                        <i className="fab fa-instagram" />
+                        <i className="fab fa-instagram"/>
                     </Typography>
                 </Tooltip>
             </CardFooter>

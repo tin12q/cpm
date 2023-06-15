@@ -1,19 +1,13 @@
-import {
-    Card,
-    CardBody,
-    CardFooter,
-    Typography,
-    Button,
-} from "@material-tailwind/react";
-import { RocketLaunchIcon } from "@heroicons/react/24/solid";
-import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import {Button, Card, CardBody, CardFooter, Typography,} from "@material-tailwind/react";
+import {RocketLaunchIcon} from "@heroicons/react/24/solid";
+import {ArrowLongRightIcon} from "@heroicons/react/24/outline";
+import {Link} from "react-router-dom";
 
 export default function ProjectCard(props) {
     return (
         <Card className="mt-6 w-96">
             <CardBody>
-                <RocketLaunchIcon className="text-blue-500 w-12 h-12 mb-4" />
+                <RocketLaunchIcon className="text-blue-500 w-12 h-12 mb-4"/>
                 {/* row of 2 compone */}
                 <Typography variant="h5" color="blue-gray" className="mb-2">
                     {props.title}
@@ -38,12 +32,12 @@ export default function ProjectCard(props) {
                 </Typography>
             </CardBody>
             <CardFooter className="pt-0">
-                    <Link to={`/projects/${props.id}`}>
+                <Link to={`/projects/${props.id}`}>
                     <Button size="sm" variant="text" className="flex items-center gap-2">
                         View
-                        <ArrowLongRightIcon strokeWidth={2} className="w-4 h-4" />
+                        <ArrowLongRightIcon strokeWidth={2} className="w-4 h-4"/>
                     </Button>
-                    </Link>
+                </Link>
             </CardFooter>
         </Card>
     );

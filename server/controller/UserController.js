@@ -22,9 +22,8 @@ const getUsers = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-const addUser = async (req, res) => {
+async function addUser(req, res) {
     try {
-        console.log(req.body);
         const { name, dob, email, role, username, password, team } = req.body;
         const ifExists = await User.findOne({ username: username });
         if (ifExists) {
@@ -43,8 +42,7 @@ const addUser = async (req, res) => {
         await Team.updateOne({ _id: teamId }, { $push: { members: id } });
 
         res.status(201).json({ message: 'User added successfully' });
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
@@ -63,8 +61,7 @@ const deleteUser = async (req, res) => {
             await Team.updateOne({ _id: team._id }, { $pull: { members: new mongoose.Types.ObjectId(req.params.id) } });
         }
         res.json({ message: 'User deleted successfully' });
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
@@ -78,8 +75,7 @@ const updateUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         await User.updateOne({ _id: req.params.id }, { name, dob, email, role, password: hashedPassword, team });
         res.json({ message: 'User updated successfully' });
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }

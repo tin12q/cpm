@@ -1,38 +1,32 @@
 import React from "react";
 import {
-    Navbar,
-    MobileNav,
-    Typography,
+    Avatar,
     Button,
+    IconButton,
     Menu,
     MenuHandler,
-    MenuList,
     MenuItem,
-    Avatar,
-    Card,
-    IconButton,
+    MenuList,
+    MobileNav,
+    Navbar,
+    Typography,
 } from "@material-tailwind/react";
 import {
-    CubeTransparentIcon,
-    UserCircleIcon,
-    CodeBracketSquareIcon,
-    Square3Stack3DIcon,
+    Bars2Icon,
+    BriefcaseIcon,
     ChevronDownIcon,
     Cog6ToothIcon,
+    CubeTransparentIcon,
     InboxArrowDownIcon,
     LifebuoyIcon,
     PowerIcon,
-    RocketLaunchIcon,
-    Bars2Icon,
-    BriefcaseIcon,
+    UserCircleIcon,
     UserGroupIcon
 } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import cookie from "cookie";
 import "../css/navbar.css";
-import Project from "../pages/project";
-import { CalendarDaysIcon } from "@heroicons/react/24/solid";
+import {CalendarDaysIcon} from "@heroicons/react/24/solid";
 // profile menu component
 
 const profileMenuItems = [
@@ -57,7 +51,9 @@ const profileMenuItems = [
 function ProfileMenu() {
     const navigate = useNavigate();
     const handleLogout = () => {
-        document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+        document.cookie.split(";").forEach(function (c) {
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
         navigate("/signin");
     };
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -81,12 +77,12 @@ function ProfileMenu() {
                     <ChevronDownIcon
                         strokeWidth={2.5}
                         className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
-                            }`}
+                        }`}
                     />
                 </Button>
             </MenuHandler>
             <MenuList className="p-1">
-                {profileMenuItems.map(({ label, icon }, key) => {
+                {profileMenuItems.map(({label, icon}, key) => {
                     const isLastItem = key === profileMenuItems.length - 1;
                     return (
                         <MenuItem
@@ -110,8 +106,8 @@ function ProfileMenu() {
                     );
                 })}
                 <MenuItem key='Sign Out'
-                    onClick={handleLogout}
-                    className={`flex items-center gap-2 rounded 
+                          onClick={handleLogout}
+                          className={`flex items-center gap-2 rounded 
                                 hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10
                                 }`}>
                     {React.createElement(PowerIcon, {
@@ -163,7 +159,7 @@ function NavList() {
     return (
         <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
 
-            {navListItems.map(({ label, icon, path }, key) => (
+            {navListItems.map(({label, icon, path}, key) => (
                 <Link to={path}>
                     <Typography
                         key={label}
@@ -174,7 +170,7 @@ function NavList() {
                         className="font-normal"
                     >
                         <MenuItem className="flex items-center gap-2 lg:rounded-full">
-                            {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
+                            {React.createElement(icon, {className: "h-[18px] w-[18px]"})}{" "}
                             {label}
                         </MenuItem>
                     </Typography>
@@ -212,7 +208,7 @@ export default function ComplexNavbar() {
                         CPM Dashboard
                     </Typography></Link>
                 <div className="absolute top-2/4 left-2/4 hidden -translate-x-2/4 -translate-y-2/4 lg:block">
-                    <NavList />
+                    <NavList/>
                 </div>
                 <IconButton
                     size="sm"
@@ -221,12 +217,12 @@ export default function ComplexNavbar() {
                     onClick={toggleIsNavOpen}
                     className="ml-auto mr-2 lg:hidden"
                 >
-                    <Bars2Icon className="h-6 w-6" />
+                    <Bars2Icon className="h-6 w-6"/>
                 </IconButton>
-                <ProfileMenu />
+                <ProfileMenu/>
             </div>
             <MobileNav open={isNavOpen} className="overflow-scroll">
-                <NavList />
+                <NavList/>
             </MobileNav>
         </Navbar>
     );

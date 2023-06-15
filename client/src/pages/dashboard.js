@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import cookie from 'cookie';
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Input, Button, Card, CardHeader, CardBody, Typography, CardFooter } from '@material-tailwind/react';
+import { Card, CardBody, CardHeader, Typography } from '@material-tailwind/react';
 import '../css/navbar.css';
 import PCWM from '../components/projectCardWithMember';
-import AddTask from '../components/addTaskDialog';
 import AddProject from '../components/addProjectDialog';
 
 const Dashboard = () => {
@@ -21,15 +19,13 @@ const Dashboard = () => {
             headers: { Authorization: `Bearer ${cookies.token}` }
         })
             .then(res => {
-                console.log(res.data);
                 setProjects(res.data);
             })
             .catch(err => {
-                console.log(err);
+                alert(err);
             });
     }, []);
     const handleCreateProject = () => {
-        console.log(cookies.token);
         axios.post('http://localhost:1337/api/projects', {
 
             title: 'test1',
@@ -43,7 +39,6 @@ const Dashboard = () => {
 
         },)
             .then(res => {
-                console.log(res.data);
                 setProjects(...res.data);
             })
             .catch(err => {

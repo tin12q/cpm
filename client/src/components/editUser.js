@@ -1,20 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import {
-    Button,
-    Dialog,
-    Card,
-    CardHeader,
-    CardBody,
-    Typography,
-    Input,
-    Select,
-    Option
-} from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
 
 export default function EditUser(props) {
@@ -35,20 +23,22 @@ export default function EditUser(props) {
     useEffect(() => {
         axios.get(`http://localhost:1337/api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
-                console.log(res.data);
                 setUsername(res.data.username);
                 setName(res.data.name);
                 setEmail(res.data.email);
                 setRole(res.data.role);
                 setSelectedTeam(res.data.team);
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
         axios.get(`http://localhost:1337/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
-                console.log(res.data);
                 setTeam(res.data);
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
     }, []);
 
     if (!team) {
@@ -66,7 +56,9 @@ export default function EditUser(props) {
             password,
             team: selectedTeam,
         }, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
         window.location.reload();
     }
     return (
@@ -93,14 +85,20 @@ export default function EditUser(props) {
                     <CardBody className="">
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                             <Input required disabled label="Username" type="text" color="lightBlue" value={username} />
-                            <Input required label='Password' type="password" color="lightBlue" value={password} onChange={(e) => setPassword(e.target.value)} />
-                            <Input required label='Name' type="text" color="lightBlue" value={name} onChange={(e) => setName(e.target.value)} />
-                            <Input required label='Email' type="email" color="lightBlue" value={email} onChange={(e) => setEmail(e.target.value)} />
-                            <Input required label='Date of Birth' type="date" color="lightBlue" onChange={(e) => setDob(new Date(e.target.value).getTime())} />
+                            <Input required label='Password' type="password" color="lightBlue" value={password}
+                                onChange={(e) => setPassword(e.target.value)} />
+                            <Input required label='Name' type="text" color="lightBlue" value={name}
+                                onChange={(e) => setName(e.target.value)} />
+                            <Input required label='Email' type="email" color="lightBlue" value={email}
+                                onChange={(e) => setEmail(e.target.value)} />
+                            <Input required label='Date of Birth' type="date" color="lightBlue"
+                                onChange={(e) => setDob(new Date(e.target.value).getTime())} />
                             <Select
                                 label='Role'
                                 value={role}
-                                onChange={(value) => { setRole(value) }}>
+                                onChange={(value) => {
+                                    setRole(value)
+                                }}>
                                 <Option value="admin">Admin</Option>
                                 <Option value="manager">Manager</Option>
                                 <Option value="employee">Employee</Option>

@@ -1,5 +1,4 @@
-import { Card, Typography, CardHeader, CardBody, Button } from "@material-tailwind/react";
-import { UserPlusIcon } from "@heroicons/react/24/outline";
+import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import cookie from "cookie";
@@ -46,10 +45,11 @@ export default function EmployeeTable() {
         }
         axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
-                console.log(res.data);
                 setEmployees(res.data);
             })
-            .catch((err) => { console.log(err); });
+            .catch((err) => {
+                alert(err);
+            });
     }, []);
     return (
         <div className="justify-items-center overflow-auto mt-20 ml-20 mr-20">

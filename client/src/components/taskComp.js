@@ -1,20 +1,16 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import {
-    Card,
-    CardHeader,
-    Input,
-    Typography,
     Button,
+    Card,
     CardBody,
-    Chip,
     CardFooter,
+    CardHeader,
+    Chip,
+    Input,
+    Tab,
     Tabs,
     TabsHeader,
-    Tab,
-    Avatar,
-    IconButton,
-    Tooltip,
+    Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -42,9 +38,6 @@ const TABS = [
 ];
 
 
-
-
-
 export default function TaskComp(props) {
     const cookies = cookie.parse(document.cookie);
     const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", ((cookies.role != 'employee') && "Edit"), "Done"];
@@ -53,12 +46,10 @@ export default function TaskComp(props) {
     const [tasks, setTasks] = useState(null);
     const [userMap, setUserMap] = useState(null);
     useEffect(() => {
-        console.log(cookies.role);
 
         axios.get(`http://localhost:1337/api/tasks/project/${idt}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
-                console.log(res.data);
                 setTasks(res.data);
             });
         axios.get("http://localhost:1337/api/users",
@@ -69,7 +60,9 @@ export default function TaskComp(props) {
                     return map;
                 }, {}));
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
     }, []);
     //Loading
     if (!tasks || !userMap) {
@@ -185,7 +178,7 @@ export default function TaskComp(props) {
                                     </td>
                                     <td className="classes">
                                         <td className={classes}>
-                                            <Typography variant='small' color="blue-gray" >
+                                            <Typography variant='small' color="blue-gray">
                                                 {assigned_to.map((user, index) => {
                                                     if (index === assigned_to.length - 1) return (userMap[user].name);
                                                     return (userMap[user].name + ", ");

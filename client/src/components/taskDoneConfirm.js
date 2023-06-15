@@ -1,20 +1,7 @@
-import React from "react";
-import { UserPlusIcon } from "@heroicons/react/24/solid";
-import {
-    Button,
-    Dialog,
-    Card,
-    CardHeader,
-    CardBody,
-    Typography,
-    Input,
-    Switch,
-} from "@material-tailwind/react";
+import React, { useEffect, useState } from "react";
+import { Button, Card, CardBody, CardHeader, Dialog, Switch, Typography, } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import Select from "react-select";
 
 export default function TaskDone(props) {
     const id = props.id;
@@ -26,7 +13,9 @@ export default function TaskDone(props) {
             .then(res => {
                 setTitle(res.data.title);
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
     }, []);
     const handleOpen = () => {
         setOpen((cur) => !cur);

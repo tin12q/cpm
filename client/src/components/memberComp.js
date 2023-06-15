@@ -2,6 +2,7 @@ import { Card, CardHeader, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import cookie from "cookie";
+
 const TABLE_HEAD = ["Name", "Job"];
 
 export default function MemberComp(props) {
@@ -12,7 +13,9 @@ export default function MemberComp(props) {
             .then(res => {
                 setMembers(res.data);
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
 
     }, []);
     if (!members) return (<div></div>);

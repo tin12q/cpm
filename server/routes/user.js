@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { getUser, getUsers, addUser, deleteUser, updateUser } = require('../controller/UserController');
-const { authenticate, requireRole } = require("../helpers/roleValidator");
+const {getUser, getUsers, addUser, deleteUser, updateUser} = require('../controller/UserController');
+const {authenticate, requireRole} = require("../helpers/roleValidator");
 
-router.delete('/:id', authenticate, requireRole({ collection: 2, task: 3 }), deleteUser);
-router.put('/:id', authenticate, requireRole({ collection: 2, task: 1 }), updateUser);
-router.get('/:id', authenticate, requireRole({ collection: 2, task: 0 }), getUser);
+router.delete('/:id', authenticate, requireRole({collection: 2, task: 3}), deleteUser);
+router.put('/:id', authenticate, requireRole({collection: 2, task: 1}), updateUser);
+router.get('/:id', authenticate, requireRole({collection: 2, task: 0}), getUser);
 
 
-router.post('/', authenticate, requireRole({ collection: 2, task: 2 }), addUser);
+router.post('/', authenticate, requireRole({collection: 2, task: 2}), addUser);
 
-router.get('/', authenticate, requireRole({ collection: 2, task: 0 }), getUsers);
+router.get('/', authenticate, requireRole({collection: 2, task: 0}), getUsers);
 module.exports = router;

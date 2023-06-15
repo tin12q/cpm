@@ -1,8 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const { authenticate, requireRole } = require('../helpers/roleValidator');
-const { createTask, getTaskById, deleteTask, getTasks, getTasksByProjectId, updateTask, completedPercentage, latePercentage, doneCheck, getTaskByUserId } = require("../controller/TaskController");
+const {
+    createTask,
+    getTaskById,
+    deleteTask,
+    getTasks,
+    getTasksByProjectId,
+    updateTask,
+    completedPercentage,
+    latePercentage,
+    doneCheck,
+    getTaskByUserId,
+    completionByTeam
+} = require("../controller/TaskController");
 
+
+router.get('/team', authenticate, requireRole({ collection: 2, task: 1 }), completionByTeam);
 router.get('/user', authenticate, requireRole({ collection: 1, task: 0 }), getTaskByUserId);
 router.post('/done/:id', authenticate, requireRole({ collection: 1, task: 0 }), doneCheck);
 router.get('/lated/:id', authenticate, requireRole({ collection: 1, task: 0 }), latePercentage);

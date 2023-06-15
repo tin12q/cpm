@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 import cookie from "cookie";
 
 const signedIn = (Component) => {
@@ -10,8 +10,7 @@ const signedIn = (Component) => {
             const cookies = cookie.parse(document.cookie);
             if (cookies.token) {
                 navigate("/");
-            }
-            else return <Component {...props} />;
+            } else return <Component {...props} />;
         }, [navigate]);
 
         return '';

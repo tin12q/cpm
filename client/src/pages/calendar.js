@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Scheduler } from '@aldabil/react-scheduler';
 import axios from "axios";
 import cookie from "cookie";
+
 export default function CalendarPage() {
     const [events, setEvents] = useState(null);
     const cookies = cookie.parse(document.cookie);
@@ -23,8 +24,9 @@ export default function CalendarPage() {
                     }
                 }));
             })
-            .catch(err => { console.log(err); });
-        console.log(events);
+            .catch(err => {
+                alert(err);
+            });
 
     }, []);
     if (!events) {

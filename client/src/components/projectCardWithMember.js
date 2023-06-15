@@ -1,14 +1,6 @@
-import {
-    Card,
-    CardHeader,
-    CardBody,
-    CardFooter,
-    Typography,
-    Chip,
-    Progress
-} from "@material-tailwind/react";
+import { Card, CardBody, CardFooter, CardHeader, Chip, Progress, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import cookie from "cookie";
 
@@ -21,13 +13,17 @@ export default function PCWM({ title, dueDate, status, id }) {
             .then(res => {
                 setComplete(res.data.completed);
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
         axios.get(`http://localhost:1337/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
 
                 setLate(res.data.lated);
             })
-            .catch(err => { console.log(err); });
+            .catch(err => {
+                alert(err);
+            });
     }, []);
     return (
         <Link to={`/projects/${id}`}>

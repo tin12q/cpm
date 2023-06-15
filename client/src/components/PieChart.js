@@ -1,10 +1,6 @@
-import React, { useState } from "react";
-import { Pie } from 'react-chartjs-2';
+import React from "react";
+import {Pie} from 'react-chartjs-2';
 import 'chart.js/auto';
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import axios from "axios";
-import cookie from "cookie";
 
 const PieChart = (props) => {
     const completed = props.completed;
@@ -38,7 +34,7 @@ const PieChart = (props) => {
 
     return (
         <React.Fragment>
-            <Pie data={data} options={options} />
+            <Pie data={data} options={options}/>
         </React.Fragment>
     )
 }
