@@ -131,7 +131,7 @@ const latePercentage = async (req, res) => {
         }
         let lated = 0;
         tasks.forEach(task => {
-            if ((new Date().getTime() - task.due_date > 0) && task.status != 'completed') {
+            if (((new Date().getTime() - task.due_date > 0) && task.status != 'completed') || task.status == 'late') {
                 lated++;
             }
         });
@@ -231,7 +231,7 @@ const completionByTeam = async (req, res) => {
                             },
                             total: { $size: '$tasks' }
                         }
-                    } 
+                    }
                 }
             },
             {
@@ -262,7 +262,7 @@ const completionByTeam = async (req, res) => {
     catch (error) {
         res.status(500).json({ error: error.message });
     }
-} 
+}
 module.exports = {
     createTask,
     getTasks,
