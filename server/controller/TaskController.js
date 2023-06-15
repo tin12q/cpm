@@ -214,16 +214,29 @@ const completionByTeam = async (req, res) => {
                                     }
                                 }
                             },
+                            in_progress: {
+                                $size: {
+                                    $filter: {
+                                        input: '$tasks',
+                                        as: 'task',
+                                        cond: { $eq: ['$$task.status', 'in progress'] }
+                                    }
+                                }
+                            },
                             total: { $size: '$tasks' }
                         }
-                    }
+                    } 
                 }
             },
             {
                 $project: {
                     team: '$_id',
                     projects: 1,
-                    _id: 0
+                    _id: 0,
+                    completed: { $sum: '$projects.completed' },
+                    late: { $sum: '$projects.late' },
+                    in_progress: { $sum: '$projects.in_progress' },
+                    total: { $sum: '$projects.total' },
                 }
             }
         ]);

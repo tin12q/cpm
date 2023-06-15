@@ -1,24 +1,98 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Timeline } from '@material-tailwind/react';
 import 'chart.js/auto';
+import axios from 'axios';
+import cookie from 'cookie';
+
 const LandingPage = () => {
-    const [data, setData] = React.useState({});
+    const data1 = {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [
+            {
+                label: 'Dataset 1',
+                data: [10, 20, 30, 40, 50, 60, 70],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'Dataset 2',
+                data: [20, 30, 40, 50, 60, 70, 80],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'Dataset 3',
+                data: [30, 40, 50, 60, 70, 80, 90],
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
+    const options = {
+        scales: {
+            x: {
+                stacked: true,
+            },
+            y: {
+                stacked: true,
+            },
+        },
+    };
 
+    const [data, setData] = React.useState(null);
+    
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/tasks/team`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        .then(res => {
 
-    if (!data) {
+            setData({   
+                labels: res.data.map((item) => item.team),
+                datasets: [
+                    {
+                        label: 'completed',
+                        data: res.data.map((item) => item.completed),
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'in progress',
+                        data: res.data.map((item) => item.in_progress),
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'late',
+                        data: res.data.map((item) => item.late),
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1,
+                    },
+                ],
+            });
+        })
+        .catch(err => {
+            alert(err);
+        });
+
+    }, []);
+
+    if (!data ) {
         return <div>Loading...</div>;
     }
 
+
     return (
         <div className='mt-20 pl-20 pr-20 w-screen justify-items-center overflow-auto'>
-            <h1>Landing Page</h1>
-            <div>
-                <Bar data={data} options={options} />
+   
+            <div className='w-8/12 '>
+            <Bar data={data} options={options}/>
             </div>
-            <div>
-                <Timeline items={timelineItems} options={timelineOptions} />
-            </div>
+         
         </div>
     );
 };

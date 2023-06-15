@@ -25,6 +25,9 @@ const Dashboard = () => {
                 alert(err);
             });
     }, []);
+    if (!projects) {
+        return <div>Loading...</div>;
+    }
     const handleCreateProject = () => {
         axios.post('http://localhost:1337/api/projects', {
 
