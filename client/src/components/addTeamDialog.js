@@ -73,7 +73,6 @@ export default function AddTeam() {
                             <Input required label="Name" size="lg" type="text"
                                 onChange={(e) => setName(e.target.value)} />
                             <Select
-                                required
                                 isMulti
                                 options={members}
                                 onChange={(selected) => {
