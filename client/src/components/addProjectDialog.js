@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography,Alert } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography, Alert } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 
@@ -15,7 +15,7 @@ export default function AddProject() {
     const [alert, setAlert] = React.useState(false);
     const [alertMessage, setAlertMessage] = React.useState("");
     const handleOpen = () => setOpen((cur) => !cur);
-    const handleAlert = () => {setAlert((cur) => !cur);}
+    const handleAlert = () => { setAlert((cur) => !cur); }
     useEffect(() => {
         axios.get('http://localhost:1337/api/teams', { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
@@ -56,7 +56,7 @@ export default function AddProject() {
     }
     return (
         <React.Fragment>
-            <Button className="flex items-center gap-3" color="blue" size="sm" onClick={handleOpen}>
+            <Button className="flex items-center gap-3" color="blue" size="md" onClick={handleOpen}>
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Project
             </Button>
             <Dialog
@@ -95,7 +95,7 @@ export default function AddProject() {
 
                 </Card>
             </Dialog>
-            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+            <Alert className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
                 <div className="flex items-center gap-2">
                     <Typography color="white">{alertMessage}</Typography>
                 </div>

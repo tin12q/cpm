@@ -1,56 +1,45 @@
-import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
+import { Card, CardBody, CardHeader, Typography, CardFooter, Button, Input } from "@material-tailwind/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import cookie from "cookie";
 import AddUser from "../components/addUserDialog";
 import EditUser from "../components/editUser";
 import AddTeam from "../components/addTeamDialog";
 
-
-const TABLE_ROWS = [
-    {
-        name: "John Michael",
-        job: "Manager",
-        date: "23/04/18",
-    },
-    {
-        name: "Alexa Liras",
-        job: "Developer",
-        date: "23/04/18",
-    },
-    {
-        name: "Laurent Perrier",
-        job: "Executive",
-        date: "19/09/17",
-    },
-    {
-        name: "Michael Levi",
-        job: "Developer",
-        date: "24/12/08",
-    },
-    {
-        name: "Richard Gran",
-        job: "Manager",
-        date: "04/10/21",
-    },
-];
-
 export default function EmployeeTable() {
     const [employees, setEmployees] = useState([]);
     const cookies = cookie.parse(document.cookie);
     const TABLE_HEAD = ["Name", "Job", "Date Of Birth", ((cookies.role === 'admin') && "")];
+    const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
+    function handleSearch(e) {
+        setSearch(e.target.value);
+    }
+    function handleNextPage() {
+        setPage(page + 1);
+    }
+    function handlePrevPage() {
+        if (page > 1) setPage(page - 1);
+    }
     useEffect(() => {
-        if (!cookies.token) {
-            window.location.href = '/login';
-        }
-        axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`http://localhost:1337/api/users?page=${page}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setEmployees(res.data);
             })
             .catch((err) => {
                 alert(err);
             });
-    }, []);
+    }, [page]);
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/users/search?search=${search}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then((res) => {
+                setEmployees(res.data);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+    }, [search]);
     return (
         <div className="justify-items-center overflow-auto mt-20 ml-20 mr-20">
             <Card className="overflow-scroll h-full w-full">
@@ -67,6 +56,9 @@ export default function EmployeeTable() {
                         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
                             {(cookies.role === 'admin') && <AddTeam />}
                             {(cookies.role === 'admin') && <AddUser />}
+                            <div className="w-full md:w-72 ">
+                                <Input label="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} onChange={handleSearch} />
+                            </div>
                         </div>
                     </div>
 
@@ -120,6 +112,19 @@ export default function EmployeeTable() {
                         </tbody>
                     </table>
                 </CardBody>
+                <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+                    <Typography variant="small" color="blue-gray" className="font-normal">
+                        Page {page}
+                    </Typography>
+                    <div className="flex gap-2">
+                        <Button variant="outlined" color="blue-gray" size="sm" onClick={handlePrevPage}>
+                            Previous
+                        </Button>
+                        <Button variant="outlined" color="blue-gray" size="sm" onClick={handleNextPage}>
+                            Next
+                        </Button>
+                    </div>
+                </CardFooter>
             </Card>
         </div>
 

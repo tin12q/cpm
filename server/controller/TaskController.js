@@ -20,9 +20,11 @@ const createTask = async (req, res) => {
 };
 
 const getTasks = async (req, res) => {
+    //param for pagination
+    const { page = 1, limit = 10 } = req.query;
     try {
         if (req.user.role == 'admin') {
-            const tasks = await Task.find();
+            const tasks = await Task.find().limit(limit).skip(limit * (page - 1));
             res.json(tasks);
         } else {
             //return tasks if user in the same project of task
@@ -30,7 +32,7 @@ const getTasks = async (req, res) => {
             const teamIds = teams.map((team) => team._id);
             const projects = await Project.find({ team: { $in: teamIds } });
             const projectIds = projects.map((project) => project._id);
-            const tasks = await Task.find({ project: { $in: projectIds } });
+            const tasks = await Task.find({ project: { $in: projectIds } }).limit(limit).skip(limit * (page - 1));
             res.json(tasks);
         }
 
@@ -39,8 +41,9 @@ const getTasks = async (req, res) => {
     }
 };
 const getTasksByProjectId = async (req, res) => {
+    const { page = 1, limit = 8 } = req.query;
     try {
-        const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) });
+        const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) }).limit(limit).skip(limit * (page - 1));
         if (!tasks) {
             return res.status(404).json({ error: 'Task not found' });
         }
@@ -50,20 +53,62 @@ const getTasksByProjectId = async (req, res) => {
     }
 };
 const getTaskByUserId = async (req, res) => {
+    // search by current month, previous month, next month
+    const { month = 1 } = req.query;
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth() - month, 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + month + 1, 0);
     try {
         if (req.user.role == 'admin') {
-            const tasks = await Task.find();
+            // due_date is in current month, previous month, next month
+            const tasks = await Task.find({
+                due_date: {
+                    $gte: startOfMonth,
+                    $lte: endOfMonth,
+                },
+            });
             if (!tasks) {
                 return res.status(404).json({ error: 'Task not found' });
             }
             return res.json(tasks);
         }
-        const tasks = await Task.find({ assigned_to: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.user.id) } } });
+        const tasks = await Task.find({
+            assigned_to: { $elemMatch: { $eq: userId } },
+            due_date: {
+                $gte: startOfMonth,
+                $lte: endOfMonth,
+            },
+        });
         if (!tasks) {
             return res.status(404).json({ error: 'Task not found' });
         }
         res.json(tasks);
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+const findByName = async (req, res) => {
+    const { page = 1, limit = 8 } = req.query;
+    const { name } = req.query;
+    const { project = null } = req.query;
+    try {
+        if (project === null) {
+            const tasks = await Task.find({ title: { $regex: name, $options: 'i' } }).limit(limit).skip(limit * (page - 1));
+            if (!tasks) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+            res.json(tasks);
+        }
+        else {
+            const tasks = await Task.find({ title: { $regex: name, $options: 'i' }, project: new mongoose.Types.ObjectId(project) }).limit(limit).skip(limit * (page - 1));
+            if (!tasks) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+            res.json(tasks);
+        }
+    }
+    catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
@@ -274,5 +319,6 @@ module.exports = {
     completedPercentage,
     latePercentage,
     doneCheck,
-    completionByTeam
+    completionByTeam,
+    findByName
 };

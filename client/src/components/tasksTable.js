@@ -1,25 +1,12 @@
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography, } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Typography, Input } from "@material-tailwind/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import cookie from "cookie";
 import EditTask from "./editTask";
 
 
-const TABS = [
-    {
-        label: "All",
-        value: "all",
-    },
-    {
-        label: "Monitored",
-        value: "monitored",
-    },
-    {
-        label: "Unmonitored",
-        value: "unmonitored",
-    },
-];
 
 
 export default function TaskTable() {
@@ -27,12 +14,19 @@ export default function TaskTable() {
     const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To"].filter(Boolean);
     const [tasks, setTasks] = useState(null);
     const [userMap, setUserMap] = useState(null);
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    function handleSearch(e) {
+        setSearch(e.target.value);
+    }
+    function handleNextPage() {
+        setPage(page + 1);
+    }
+    function handlePrevPage() {
+        if (page > 1) setPage(page - 1);
+    }
+
     useEffect(() => {
-        axios.get("http://localhost:1337/api/tasks",
-            { headers: { Authorization: `Bearer ${cookies.token}` } })
-            .then((res) => {
-                setTasks(res.data);
-            });
         axios.get("http://localhost:1337/api/users",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
@@ -45,6 +39,22 @@ export default function TaskTable() {
                 alert(err);
             });
     }, []);
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/tasks?page=${page}&limit=10`,
+            { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then((res) => {
+                setTasks(res.data);
+            });
+    }, [page]);
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/tasks/name?name=${search}&limit=10`,
+            { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then((res) => {
+                setTasks(res.data);
+            }).catch(err => {
+                alert(err);
+            });
+    }, [search]);
     //Loading
     if (!tasks || !userMap) {
         return <div>Loading...</div>
@@ -63,17 +73,11 @@ export default function TaskTable() {
                         </Typography>
                     </div>
                     <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-                        <Button variant="outlined" color="blue-gray" size="sm">
-                            view all
-                        </Button>
-                        {
-                            (cookies.role === "admin" || cookies.role === "manager") && (
-                                <Button className="flex items-center gap-3" color="blue" size="sm">
-                                    <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Task
-                                </Button>
-                            )
 
-                        }
+                        <div className="w-full md:w-72 ">
+                            <Input label="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} onChange={handleSearch} />
+                        </div>
+
                     </div>
                 </div>
 
@@ -123,7 +127,7 @@ export default function TaskTable() {
                                     <td className={classes}>
                                         <div className="flex flex-col">
                                             <Typography variant="small" color="blue-gray" className="font-normal">
-                                                {description}
+                                                {description.slice(0, 30)}
                                             </Typography>
                                             <Typography
                                                 variant="small"
@@ -157,7 +161,7 @@ export default function TaskTable() {
                                             })}
                                         </Typography>
                                     </td>
-                                   
+
                                 </tr>
                             );
                         })}
@@ -166,13 +170,13 @@ export default function TaskTable() {
             </CardBody>
             <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
                 <Typography variant="small" color="blue-gray" className="font-normal">
-                    Page 1 of 10
+                    Page {page}
                 </Typography>
                 <div className="flex gap-2">
-                    <Button variant="outlined" color="blue-gray" size="sm">
+                    <Button variant="outlined" color="blue-gray" size="sm" onClick={handlePrevPage}>
                         Previous
                     </Button>
-                    <Button variant="outlined" color="blue-gray" size="sm">
+                    <Button variant="outlined" color="blue-gray" size="sm" onClick={handleNextPage}>
                         Next
                     </Button>
                 </div>

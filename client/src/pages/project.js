@@ -89,12 +89,13 @@ function Project() {
                         <Chip
                             className='w-max ml-10'
                             variant="ghost"
-                            size="sm"
+                            size="lg"
                             value={(projectData.status === 'in progress') ? "In progress" : (projectData.status === "completed") ? "Completed" : "Late"}
                             color={(projectData.status === 'in progress') ? "blue-gray" : (projectData.status === "completed") ? "green" : "red"}
                         />
                         <Typography
-                            color="blue-gray">{new Date(projectData.due_date).toISOString().split('T')[0]}</Typography>
+                            variant="h5"
+                            color="blue-gray" >{new Date(projectData.due_date).toISOString().split('T')[0]}</Typography>
 
                     </div>
                 </CardBody>

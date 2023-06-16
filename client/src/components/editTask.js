@@ -80,7 +80,7 @@ export default function EditTask(props) {
                 setAlertMessage("Error updating task!");
             });
         handleAlert();
-        
+
     }
     return (
         <React.Fragment>
@@ -114,7 +114,7 @@ export default function EditTask(props) {
                             {/* <Input label="Assigned To" size="lg"  onChange={(e) => setAssignedTo(e.target.value)} /> */}
                             {/*TODO: create menu list */}
 
-                            <Select 
+                            <Select
                                 isMulti
                                 options={members}
                                 onChange={(selected) => {
@@ -132,7 +132,7 @@ export default function EditTask(props) {
 
                 </Card>
             </Dialog>
-            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+            <Alert className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
                 <div className="flex items-center gap-2">
                     <Typography color="white">{alertMessage}</Typography>
                 </div>
