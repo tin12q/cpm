@@ -20,14 +20,15 @@ const addProject = async (req, res) => {
 };
 
 const getProjects = async (req, res) => {
+    const { page = 1, limit = 3 } = req.query;
     try {
         if (req.user.role == 'admin') {
-            const projects = await Project.find();
+            const projects = await Project.find().limit(limit).skip(limit * (page - 1));
             res.json(projects);
         } else {
             const teams = await Team.find({ members: { $elemMatch: { $eq: req.user.id } } });
             const teamIds = teams.map((team) => team._id);
-            const projects = await Project.find({ team: { $in: teamIds } });
+            const projects = await Project.find({ team: { $in: teamIds } }).limit(limit).skip(limit * (page - 1));
             res.json(projects);
         }
 
@@ -81,11 +82,30 @@ const deleteProject = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
+const findProject = async (req, res) => {
+    const { page = 1, limit = 3 } = req.query;
+    const { search } = req.query;
+    console.log(search);
+    try {
+        if (req.user.role === 'admin') {
+            const projects = await Project.find({ title: { $regex: search, $options: 'i' } }).limit(limit).skip(limit * (page - 1));
+            res.json(projects);
+        } else {
+            const teams = await Team.find({ members: { $elemMatch: { $eq: req.user.id } } });
+            const teamIds = teams.map((team) => team._id);
+            const projects = await Project.find({ team: { $in: teamIds }, title: { $regex: search, $options: 'i' } }).limit(limit).skip(limit * (page - 1));
+            res.json(projects);
+        }
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 module.exports = {
     addProject,
     getProjects,
     getProjectById,
     updateProject,
     deleteProject,
+    findProject
 };

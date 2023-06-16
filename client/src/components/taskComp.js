@@ -21,23 +21,6 @@ import AddTask from "./addTaskDialog";
 import EditTask from "./editTask";
 import TaskDone from "./taskDoneConfirm";
 
-
-const TABS = [
-    {
-        label: "All",
-        value: "all",
-    },
-    {
-        label: "Monitored",
-        value: "monitored",
-    },
-    {
-        label: "Unmonitored",
-        value: "unmonitored",
-    },
-];
-
-
 export default function TaskComp(props) {
     const cookies = cookie.parse(document.cookie);
     const TABLE_HEAD = ["Task", "Description", "Status", "Due Date", "Assigned To", ((cookies.role != 'employee') && "Edit"), "Done"];
@@ -45,13 +28,18 @@ export default function TaskComp(props) {
     const id = props.id;
     const [tasks, setTasks] = useState(null);
     const [userMap, setUserMap] = useState(null);
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    function handleNextPage() {
+        setPage(page + 1);
+    }
+    function handlePrevPage() {
+        if (page > 1) setPage(page - 1);
+    }
+    function handleSearch(e) {
+        setSearch(e.target.value);
+    }
     useEffect(() => {
-
-        axios.get(`http://localhost:1337/api/tasks/project/${idt}`,
-            { headers: { Authorization: `Bearer ${cookies.token}` } })
-            .then((res) => {
-                setTasks(res.data);
-            });
         axios.get("http://localhost:1337/api/users",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
@@ -64,6 +52,21 @@ export default function TaskComp(props) {
                 alert(err);
             });
     }, []);
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/tasks/project/${idt}?page=${page}`,
+            { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then((res) => {
+                setTasks(res.data);
+            });
+    }, [page]);
+    useEffect(() => {
+        axios.get(`http://localhost:1337/api/tasks/name/?name=${search}&project=${idt}`,
+            { headers: { Authorization: `Bearer ${cookies.token}` } })
+            .then((res) => {
+                setTasks(res.data);
+            });
+    }, [search]);
+
     //Loading
     if (!tasks || !userMap) {
         return <div>Loading...</div>
@@ -83,27 +86,17 @@ export default function TaskComp(props) {
                     </div>
                     <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
                         <Link to='/tasks'>
-                            <Button variant="outlined" color="blue-gray" size="sm">
+                            <Button variant="outlined" color="blue-gray" size="md">
                                 view all
                             </Button>
                         </Link>
                         <AddTask id={id} />
+                        <div className="w-full md:w-72 ">
+                            <Input label="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} onChange={handleSearch} />
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-                    <Tabs value="all" className="w-full md:w-max">
-                        <TabsHeader>
-                            {TABS.map(({ label, value }) => (
-                                <Tab key={value} value={value}>
-                                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                                </Tab>
-                            ))}
-                        </TabsHeader>
-                    </Tabs>
-                    <div className="w-full md:w-72">
-                        <Input label="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} />
-                    </div>
-                </div>
+
             </CardHeader>
             <CardBody className="overflow-scroll px-0">
                 <table className="mt-4 w-full min-w-max table-auto text-left">
@@ -124,7 +117,7 @@ export default function TaskComp(props) {
                     </thead>
 
                     <tbody>
-                        {tasks.map(({ _id, img, title, email, due_date, description, org, status, assigned_to }, index) => {
+                        {tasks.map(({ _id, img, title, email, due_date, description, status, assigned_to }, index) => {
                             const isLast = index === tasks.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
@@ -150,15 +143,9 @@ export default function TaskComp(props) {
                                     <td className={classes}>
                                         <div className="flex flex-col">
                                             <Typography variant="small" color="blue-gray" className="font-normal">
-                                                {description}
+                                                {description.slice(0, 30)}
                                             </Typography>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal opacity-70"
-                                            >
-                                                {org}
-                                            </Typography>
+
                                         </div>
                                     </td>
                                     <td className={classes}>
@@ -200,13 +187,13 @@ export default function TaskComp(props) {
             </CardBody>
             <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
                 <Typography variant="small" color="blue-gray" className="font-normal">
-                    Page 1 of 10
+                    Page {page}
                 </Typography>
                 <div className="flex gap-2">
-                    <Button variant="outlined" color="blue-gray" size="sm">
+                    <Button variant="outlined" color="blue-gray" size="sm" onClick={handlePrevPage}>
                         Previous
                     </Button>
-                    <Button variant="outlined" color="blue-gray" size="sm">
+                    <Button variant="outlined" color="blue-gray" size="sm" onClick={handleNextPage}>
                         Next
                     </Button>
                 </div>

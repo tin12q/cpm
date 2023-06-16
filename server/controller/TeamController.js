@@ -21,6 +21,10 @@ const getTeamWithId = async (req, res) => {
     }
 }
 const userInTeam = async (req, res) => {
+    const { page = 1, limit = 12 } = req.query;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
     try {
         const users = await Team.aggregate([
             {
@@ -38,7 +42,9 @@ const userInTeam = async (req, res) => {
             },
         ]);
 
-        res.json(users[0].members);
+        const results = users[0].members.slice(startIndex, endIndex);
+
+        res.json(results);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

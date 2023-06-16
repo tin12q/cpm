@@ -1,4 +1,4 @@
-import { Card, CardHeader, Typography } from "@material-tailwind/react";
+import { Card, CardHeader, Typography, CardFooter, Button } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import cookie from "cookie";
@@ -6,10 +6,18 @@ import cookie from "cookie";
 const TABLE_HEAD = ["Name", "Job"];
 
 export default function MemberComp(props) {
-    const [members, setMembers] = useState([]);
     const id = props.id;
+    const [members, setMembers] = useState([]);
+    const [page, setPage] = useState(1);
+    function handleNextPage() {
+        setPage(page + 1);
+    }
+    function handlePrevPage() {
+        if (page > 1) setPage(page - 1);
+    }
+
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`http://localhost:1337/api/teams/users/${id}?page=${page}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setMembers(res.data);
             })
@@ -17,7 +25,7 @@ export default function MemberComp(props) {
                 alert(err);
             });
 
-    }, []);
+    }, [page]);
     if (!members) return (<div></div>);
     return (
         <Card className="overflow-scroll h-full w-full">
@@ -71,6 +79,19 @@ export default function MemberComp(props) {
                     })}
                 </tbody>
             </table>
+            <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                    Page {page}
+                </Typography>
+                <div className="flex gap-2">
+                    <Button variant="outlined" color="blue-gray" size="sm" onClick={handlePrevPage}>
+                        Previous
+                    </Button>
+                    <Button variant="outlined" color="blue-gray" size="sm" onClick={handleNextPage}>
+                        Next
+                    </Button>
+                </div>
+            </CardFooter>
         </Card>
     );
 }

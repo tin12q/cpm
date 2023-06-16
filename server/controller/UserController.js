@@ -15,8 +15,19 @@ const getUser = async (req, res) => {
     }
 }
 const getUsers = async (req, res) => {
+    const { page = 1, limit = 9 } = req.query;
     try {
-        const users = await User.find();
+        const users = await User.find().limit(limit).skip((page - 1) * limit);
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+const findByName = async (req, res) => {
+    const { page = 1, limit = 9 } = req.query;
+    const { search } = req.query;
+    try {
+        const users = await User.find({ name: { $regex: search, $options: 'i' } }).limit(limit);
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -79,4 +90,4 @@ const updateUser = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-module.exports = { getUser, getUsers, addUser, deleteUser, updateUser };
+module.exports = { getUser, getUsers, addUser, deleteUser, updateUser, findByName };
