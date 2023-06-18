@@ -31,7 +31,6 @@ const getMe = async (req, res) => {
                 }
             }
         ]);
-        console.log(user[0]);
         const response = {
             name: user[0].user[0].name,
             email: user[0].user[0].email,
