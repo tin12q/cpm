@@ -23,25 +23,19 @@ import {
     UserCircleIcon,
     UserGroupIcon
 } from "@heroicons/react/24/outline";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import cookie from "cookie";
 import "../css/navbar.css";
-import {CalendarDaysIcon} from "@heroicons/react/24/solid";
+import { CalendarDaysIcon } from "@heroicons/react/24/solid";
 // profile menu component
 
 const profileMenuItems = [
     {
-        label: "My Profile",
-        icon: UserCircleIcon,
-    },
-    {
         label: "Edit Profile",
-        icon: Cog6ToothIcon,
+        icon: UserCircleIcon,
+        path: '/me'
     },
-    {
-        label: "Inbox",
-        icon: InboxArrowDownIcon,
-    },
+
     {
         label: "Help",
         icon: LifebuoyIcon,
@@ -77,37 +71,39 @@ function ProfileMenu() {
                     <ChevronDownIcon
                         strokeWidth={2.5}
                         className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
-                        }`}
+                            }`}
                     />
                 </Button>
             </MenuHandler>
             <MenuList className="p-1">
-                {profileMenuItems.map(({label, icon}, key) => {
+                {profileMenuItems.map(({ label, icon, path }, key) => {
                     const isLastItem = key === profileMenuItems.length - 1;
                     return (
-                        <MenuItem
-                            key={label}
-                            onClick={closeMenu}
-                            className={`flex items-center gap-2 rounded `}
-                        >
-                            {React.createElement(icon, {
-                                className: `h-4 w-4 `,
-                                strokeWidth: 2,
-                            })}
-                            <Typography
-                                as="span"
-                                variant="small"
-                                className="font-normal"
-                                color="inherit"
+                        <Link to={path}>
+                            <MenuItem
+                                key={label}
+                                onClick={closeMenu}
+                                className={`flex items-center gap-2 rounded `}
                             >
-                                {label}
-                            </Typography>
-                        </MenuItem>
+                                {React.createElement(icon, {
+                                    className: `h-4 w-4 `,
+                                    strokeWidth: 2,
+                                })}
+                                <Typography
+                                    as="span"
+                                    variant="small"
+                                    className="font-normal"
+                                    color="inherit"
+                                >
+                                    {label}
+                                </Typography>
+                            </MenuItem>
+                        </Link>
                     );
                 })}
                 <MenuItem key='Sign Out'
-                          onClick={handleLogout}
-                          className={`flex items-center gap-2 rounded 
+                    onClick={handleLogout}
+                    className={`flex items-center gap-2 rounded 
                                 hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10
                                 }`}>
                     {React.createElement(PowerIcon, {
@@ -159,7 +155,7 @@ function NavList() {
     return (
         <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
 
-            {navListItems.map(({label, icon, path}, key) => (
+            {navListItems.map(({ label, icon, path }, key) => (
                 <Link to={path}>
                     <Typography
                         key={label}
@@ -170,7 +166,7 @@ function NavList() {
                         className="font-normal"
                     >
                         <MenuItem className="flex items-center gap-2 lg:rounded-full">
-                            {React.createElement(icon, {className: "h-[18px] w-[18px]"})}{" "}
+                            {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
                             {label}
                         </MenuItem>
                     </Typography>
@@ -208,7 +204,7 @@ export default function ComplexNavbar() {
                         CPM Dashboard
                     </Typography></Link>
                 <div className="absolute top-2/4 left-2/4 hidden -translate-x-2/4 -translate-y-2/4 lg:block">
-                    <NavList/>
+                    <NavList />
                 </div>
                 <IconButton
                     size="sm"
@@ -217,12 +213,12 @@ export default function ComplexNavbar() {
                     onClick={toggleIsNavOpen}
                     className="ml-auto mr-2 lg:hidden"
                 >
-                    <Bars2Icon className="h-6 w-6"/>
+                    <Bars2Icon className="h-6 w-6" />
                 </IconButton>
-                <ProfileMenu/>
+                <ProfileMenu />
             </div>
             <MobileNav open={isNavOpen} className="overflow-scroll">
-                <NavList/>
+                <NavList />
             </MobileNav>
         </Navbar>
     );

@@ -9,6 +9,7 @@ import Task from "./pages/task";
 import EmployeeTable from "./pages/employee";
 import CalendarPage from "./pages/calendar";
 import DashboardAdmin from "./pages/dashboardAdmin";
+import EditProfile from "./pages/editProfile";
 
 function App() {
     const location = useLocation();
@@ -36,6 +37,7 @@ function App() {
                 <Route path=':id' element={<Projects />} />
             </Route>
             <Route path='calendar' element={<CalendarPage />} />
+            <Route path="/me" element={<EditProfile />}></Route>
         </Routes>
     </>);
 }

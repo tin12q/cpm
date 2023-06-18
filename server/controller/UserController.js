@@ -14,6 +14,35 @@ const getUser = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+const getMe = async (req, res) => {
+    try {
+        //TODO: Add getMe
+        const uid = req.user.id;
+        const user = await Auth.aggregate([
+            {
+                $match: { user: new mongoose.Types.ObjectId(uid) }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            }
+        ]);
+        console.log(user[0]);
+        const response = {
+            name: user[0].user[0].name,
+            email: user[0].user[0].email,
+            dob: user[0].user[0].dob,
+        };
+        res.json(response);
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 const getUsers = async (req, res) => {
     const { page = 1, limit = 9 } = req.query;
     try {
@@ -90,4 +119,4 @@ const updateUser = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-module.exports = { getUser, getUsers, addUser, deleteUser, updateUser, findByName };
+module.exports = { getUser, getUsers, addUser, deleteUser, updateUser, findByName, getMe };
