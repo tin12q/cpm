@@ -111,8 +111,19 @@ const updateUser = async (req, res) => {
             res.status(404).json({ error: 'User not found' });
         }
         const { name, dob, email, role, username, password, team } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.updateOne({ _id: req.params.id }, { name, dob, email, role, password: hashedPassword, team });
+        const updateFields = {};
+        if (name) updateFields.name = name;
+        if (dob) updateFields.dob = dob;
+        if (email) updateFields.email = email;
+        if (role) updateFields.role = role;
+        const authUpdateFields = {};
+        if (username) authUpdateFields.username = username;
+        if (password) { authUpdateFields.password = hashedPassword; const hashedPassword = await bcrypt.hash(password, 10); }
+        if (role) authUpdateFields.role = role;
+        console.log(updateFields);
+        console.log(authUpdateFields);
+        if (updateFields) await User.updateOne({ _id: req.params.id }, updateFields);
+        if (authUpdateFields) await Auth.updateOne({ user: new mongoose.Types.ObjectId(req.params.id) }, authUpdateFields);
         res.json({ message: 'User updated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
