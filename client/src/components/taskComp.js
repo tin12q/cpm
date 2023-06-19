@@ -143,7 +143,7 @@ export default function TaskComp(props) {
                                     <td className={classes}>
                                         <div className="flex flex-col">
                                             <Typography variant="small" color="blue-gray" className="font-normal">
-                                                {description.slice(0, 30)}
+                                                {description}
                                             </Typography>
 
                                         </div>

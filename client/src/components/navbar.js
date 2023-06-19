@@ -199,9 +199,9 @@ export default function ComplexNavbar() {
                     <Typography
                         as="a"
                         href="#"
-                        className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
+                        className="mr-4 ml-2 cursor-pointer py-1.5 font-medium flex flex-row  "
                     >
-                        CPM Dashboard
+                        <img src="logo.jpg" width={25}></img> CPM Dashboard
                     </Typography></Link>
                 <div className="absolute top-2/4 left-2/4 hidden -translate-x-2/4 -translate-y-2/4 lg:block">
                     <NavList />

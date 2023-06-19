@@ -6,32 +6,7 @@ import cookie from 'cookie';
 import { CardBody, Typography, Card, CardHeader } from '@material-tailwind/react';
 
 const DashboardAdmin = () => {
-    const data1 = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-            {
-                label: 'Dataset 1',
-                data: [10, 20, 30, 40, 50, 60, 70],
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-            },
-            {
-                label: 'Dataset 2',
-                data: [20, 30, 40, 50, 60, 70, 80],
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-            },
-            {
-                label: 'Dataset 3',
-                data: [30, 40, 50, 60, 70, 80, 90],
-                backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                borderColor: 'rgba(255, 206, 86, 1)',
-                borderWidth: 1,
-            },
-        ],
-    };
+
     const options = {
         scales: {
             x: {
@@ -115,16 +90,22 @@ const DashboardAdmin = () => {
                     </div>
                 </div>
             </CardHeader>
-            <div className='w-8/12 flex flex-col text-center mb-4'>
-                <Card>
-                    <CardBody>
-                        <Bar data={data} options={options} />
-                        <Typography color="gray" variant='h4'>Tasks by team</Typography>
-                    </CardBody>
-                </Card>
-
+            <div className='flex flex-row justify-evenly'>
+                <div className='w-8/12 flex flex-col text-center mb-4'>
+                    <Card>
+                        <CardBody>
+                            <Bar data={data} options={options} />
+                            <Typography color="gray" variant='h4'>Tasks by team</Typography>
+                        </CardBody>
+                    </Card>
+                </div>
+                <div className='w-3/12'>
+                    <Card>
+                        <CardBody>
+                        </CardBody>
+                    </Card>
+                </div>
             </div>
-
         </div>
     );
 };
