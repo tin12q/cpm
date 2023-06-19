@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const Auth = require('../models/auth.model');
 const Team = require('../models/team.model');
+const Task = require('../models/task.model');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const getUser = async (req, res) => {
@@ -98,6 +99,11 @@ const deleteUser = async (req, res) => {
         const team = await Team.findOne({ members: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.user.id) } } });
         if (team) {
             await Team.updateOne({ _id: team._id }, { $pull: { members: new mongoose.Types.ObjectId(req.params.id) } });
+        }
+        const task = await Task.find({ assigned_to: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.user.id) } } });
+        if (task) {
+            //delete userid from assigned_to
+            await Task.updateMany({ assigned_to: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.user.id) } } }, { $pull: { assigned_to: new mongoose.Types.ObjectId(req.params.id) } });
         }
         res.json({ message: 'User deleted successfully' });
     } catch (error) {
