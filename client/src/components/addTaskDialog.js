@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography,Alert } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography, Alert } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 import { useParams } from "react-router-dom";
@@ -34,7 +34,7 @@ export default function AddTask(props) {
         }
     }, [alert]);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
 
                 setMembers(res.data.map((member) => {
@@ -55,7 +55,7 @@ export default function AddTask(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/tasks',
+        axios.post('/api/tasks',
             {
                 title,
                 description,
@@ -71,7 +71,7 @@ export default function AddTask(props) {
             .catch(err => {
                 setAlertMessage("Something went wrong");
             });
-            handleAlert();
+        handleAlert();
 
     }
 
@@ -125,7 +125,7 @@ export default function AddTask(props) {
 
                 </Card>
             </Dialog>
-            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+            <Alert className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
                 <div className="flex items-center gap-2">
                     <Typography color="white">{alertMessage}</Typography>
                 </div>

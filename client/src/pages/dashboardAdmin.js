@@ -35,7 +35,7 @@ const DashboardAdmin = () => {
     const [data, setData] = React.useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/tasks/team`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/tasks/team`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
 
                 setData({

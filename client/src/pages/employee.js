@@ -10,7 +10,7 @@ import AddTeam from "../components/addTeamDialog";
 export default function EmployeeTable() {
     const [employees, setEmployees] = useState([]);
     const cookies = cookie.parse(document.cookie);
-    const TABLE_HEAD = ["Name", "Job", "Date Of Birth", ((cookies.role === 'admin') && "")];
+    const TABLE_HEAD = ["Name", "Email", "Date Of Birth", ((cookies.role === 'admin') && "")];
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
     function handleSearch(e) {
@@ -23,7 +23,7 @@ export default function EmployeeTable() {
         if (page > 1) setPage(page - 1);
     }
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/users?page=${page}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/users?page=${page}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setEmployees(res.data);
             })
@@ -32,7 +32,7 @@ export default function EmployeeTable() {
             });
     }, [page]);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/users/search?search=${search}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/users/search?search=${search}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setEmployees(res.data);
             })

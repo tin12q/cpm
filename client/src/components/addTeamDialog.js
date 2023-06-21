@@ -22,7 +22,7 @@ export default function AddTeam() {
         setAlert((cur) => !cur);
     }
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/users`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/users`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setMembers(res.data.map((member) => {
                     return {
@@ -50,7 +50,7 @@ export default function AddTeam() {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/teams',
+        axios.post('/api/teams',
             {
                 name,
                 members: assignedTo
@@ -63,9 +63,9 @@ export default function AddTeam() {
                 setAlertMessage("Team not added!");
 
             });
-            setAlert((cur) => !cur);
+        setAlert((cur) => !cur);
 
-       
+
     }
     return (
         <React.Fragment>

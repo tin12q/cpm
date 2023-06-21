@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography,Alert } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Dialog, Input, Option, Select, Typography, Alert } from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 
@@ -33,7 +33,7 @@ export default function EditUser(props) {
         }
     }, [alert]);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setUsername(res.data.username);
                 setName(res.data.name);
@@ -44,7 +44,7 @@ export default function EditUser(props) {
             .catch(err => {
                 alert(err);
             });
-        axios.get(`http://localhost:1337/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTeam(res.data);
             })
@@ -59,7 +59,7 @@ export default function EditUser(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.put('http://localhost:1337/api/users', {
+        axios.put('/api/users', {
             name,
             dob: dob,
             role,
@@ -131,7 +131,7 @@ export default function EditUser(props) {
 
                 </Card>
             </Dialog>
-            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+            <Alert className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
                 <div className="flex items-center gap-2">
                     <Typography color="white">{alertMessage}</Typography>
                 </div>

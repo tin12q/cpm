@@ -16,7 +16,7 @@ const EditProfile = () => {
     const [alert, setAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/users/me`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/users/me`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
                 setName(res.data.name);
                 setEmail(res.data.email);
@@ -41,7 +41,7 @@ const EditProfile = () => {
     }
     const handleSubmit = async e => {
         e.preventDefault();
-        axios.put('http://localhost:1337/api/users', {
+        axios.put('/api/users', {
             name,
             dob: dob,
             email,

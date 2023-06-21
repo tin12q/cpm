@@ -18,13 +18,13 @@ function Project() {
     const id = useParams().id;
     useEffect(() => {
         const cookies = cookie.parse(document.cookie);
-        axios.get(`http://localhost:1337/api/projects/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/projects/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(response => {
                 setProjectData(response.data);
 
             })
             .catch(error => console.error(error));
-        axios.get(`http://localhost:1337/api/tasks/project/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/tasks/project/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
 
                 setTasks(res.data);
@@ -32,7 +32,7 @@ function Project() {
             .catch(err => {
                 alert(err);
             });
-        axios.get(`http://localhost:1337/api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
 
                 setCompletedTasks(res.data);
@@ -40,7 +40,7 @@ function Project() {
             .catch(err => {
                 alert(err);
             });
-        axios.get(`http://localhost:1337/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get(`/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
 
                 setLate(res.data);

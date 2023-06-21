@@ -17,7 +17,7 @@ export default function AddProject() {
     const handleOpen = () => setOpen((cur) => !cur);
     const handleAlert = () => { setAlert((cur) => !cur); }
     useEffect(() => {
-        axios.get('http://localhost:1337/api/teams', { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get('/api/teams', { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTeams(res.data);
             })
@@ -37,7 +37,7 @@ export default function AddProject() {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/projects',
+        axios.post('/api/projects',
             {
                 title,
                 description,

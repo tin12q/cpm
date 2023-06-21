@@ -25,7 +25,7 @@ export default function AddUser() {
         setAlert((cur) => !cur);
     }
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTeam(res.data);
             })
@@ -46,7 +46,7 @@ export default function AddUser() {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/users', {
+        axios.post('/api/users', {
             name,
             dob: dob,
             role,
@@ -120,7 +120,7 @@ export default function AddUser() {
 
                 </Card>
             </Dialog>
-            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
+            <Alert className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
                 <div className="flex items-center gap-2">
                     <Typography color="white">{alertMessage}</Typography>
                 </div>

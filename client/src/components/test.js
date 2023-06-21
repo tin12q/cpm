@@ -1,4 +1,4 @@
-const {useState} = require("react");
+const { useState } = require("react");
 const axios = require("axios");
 
 function CardTest(props) {
@@ -18,14 +18,14 @@ function CardTest(props) {
 
 function CardlistTest() {
     const [projects, setProjects] = useState([]);
-    axios.get("http://localhost:1337/api/projects").then((res) => {
+    axios.get("/api/projects").then((res) => {
         setProjects(res.data);
     });
 
     return (
         <div>
             {projects.map((project) => {
-                return <CardTest title={project.title} text={project.description}/>;
+                return <CardTest title={project.title} text={project.description} />;
             })}
             <CardTest
                 title="Card title"

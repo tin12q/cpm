@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import cookie from "cookie";
 
-const TABLE_HEAD = ["Name", "Job"];
+const TABLE_HEAD = ["Name", "Email"];
 
 export default function MemberComp(props) {
     const id = props.id;
@@ -17,7 +17,7 @@ export default function MemberComp(props) {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/users/${id}?page=${page}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/teams/users/${id}?page=${page}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setMembers(res.data);
             })

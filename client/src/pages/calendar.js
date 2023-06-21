@@ -9,7 +9,7 @@ export default function CalendarPage() {
     const cookies = cookie.parse(document.cookie);
     useEffect(() => {
 
-        axios.get(`http://localhost:1337/api/tasks/user`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(`/api/tasks/user`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setEvents(res.data.map((event) => {
                     return {

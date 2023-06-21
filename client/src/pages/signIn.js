@@ -26,7 +26,7 @@ export default function SignIn() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: (!process.env.API_URI) ? 'http://localhost:1337/api/auth/login' : process.env.API_URI + '/api/auth/login',
+            url: '/api/auth/login',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },

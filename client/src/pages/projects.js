@@ -30,7 +30,7 @@ const Projects = () => {
         }
     }, []);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/projects?page=${page}`, {
+        axios.get(`/api/projects?page=${page}`, {
             headers: { Authorization: `Bearer ${cookies.token}` }
         })
             .then(res => {
@@ -41,7 +41,7 @@ const Projects = () => {
             });
     }, [page]);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/projects/search?search=${search}`, {
+        axios.get(`/api/projects/search?search=${search}`, {
             headers: { Authorization: `Bearer ${cookies.token}` }
         })
             .then(res => {

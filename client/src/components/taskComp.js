@@ -40,7 +40,7 @@ export default function TaskComp(props) {
         setSearch(e.target.value);
     }
     useEffect(() => {
-        axios.get("http://localhost:1337/api/users",
+        axios.get("/api/users",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setUserMap(res.data.reduce((map, user) => {
@@ -53,14 +53,14 @@ export default function TaskComp(props) {
             });
     }, []);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/tasks/project/${idt}?page=${page}`,
+        axios.get(`/api/tasks/project/${idt}?page=${page}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);
             });
     }, [page]);
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/tasks/name/?name=${search}&project=${idt}`,
+        axios.get(`/api/tasks/name/?name=${search}&project=${idt}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);
