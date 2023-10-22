@@ -40,7 +40,7 @@ export default function TaskComp(props) {
         setSearch(e.target.value);
     }
     useEffect(() => {
-        axios.get("http://localhost:1337/api/users",
+        axios.get("http://localhost:1337/api/users/getAll",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setUserMap(res.data.reduce((map, user) => {

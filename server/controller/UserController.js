@@ -15,7 +15,7 @@ const getUser = async (req, res) => {
     }
 }
 const getUsers = async (req, res) => {
-    const { page = 1, limit = 1000 } = req.query;
+    const { page = 1, limit = 9 } = req.query;
     try {
         const users = await User.find().limit(limit).skip((page - 1) * limit);
         res.json(users);
@@ -23,6 +23,16 @@ const getUsers = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
 const findByName = async (req, res) => {
     const { page = 1, limit = 9 } = req.query;
     const { search } = req.query;
@@ -90,4 +100,4 @@ const updateUser = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-module.exports = { getUser, getUsers, addUser, deleteUser, updateUser, findByName };
+module.exports = { getUser, getUsers, getAllUsers, addUser, deleteUser, updateUser, findByName };
