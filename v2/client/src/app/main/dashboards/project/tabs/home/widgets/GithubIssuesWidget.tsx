@@ -108,7 +108,7 @@ function GithubIssuesWidget() {
 		<Paper className="flex flex-col flex-auto p-24 shadow rounded-2xl overflow-hidden">
 			<div className="flex flex-col sm:flex-row items-start justify-between">
 				<Typography className="text-lg font-medium tracking-tight leading-6 truncate">
-					Github Issues Summary
+					Tasks Performance Summary
 				</Typography>
 				<div className="mt-12 sm:mt-0 sm:ml-8">
 					<Tabs

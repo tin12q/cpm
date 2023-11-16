@@ -16,7 +16,7 @@ const ContactsAppConfig = {
 	},
 	routes: [
 		{
-			path: 'apps/contacts',
+			path: 'apps/users',
 			element: <ContactsApp />,
 			children: [
 				{

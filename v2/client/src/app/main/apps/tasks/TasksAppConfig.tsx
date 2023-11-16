@@ -15,7 +15,7 @@ const TasksAppConfig = {
 	},
 	routes: [
 		{
-			path: 'apps/tasks',
+			path: 'dashboards/tasks',
 			element: <TasksApp />,
 			children: [
 				{

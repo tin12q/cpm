@@ -25,7 +25,7 @@ function ContactsHeader() {
 					animate={{ x: 0, transition: { delay: 0.2 } }}
 				>
 					<Typography className="text-24 md:text-32 font-extrabold tracking-tight leading-none">
-						Contacts
+						Users
 					</Typography>
 				</motion.span>
 				<motion.span
@@ -56,7 +56,7 @@ function ContactsHeader() {
 					</FuseSvgIcon>
 
 					<Input
-						placeholder="Search contacts"
+						placeholder="Search users"
 						className="flex flex-1 px-16"
 						disableUnderline
 						fullWidth

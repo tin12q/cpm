@@ -34,7 +34,7 @@ function FormActionsMenu(props: FormActionsMenuProps) {
 
 	function handleRemoveTask() {
 		dispatch(removeTask(taskId)).then(() => {
-			navigate('/apps/tasks');
+			navigate('/dashboards/tasks');
 		});
 	}
 

@@ -38,7 +38,7 @@ function TaskListItem(props: TaskListItemProps) {
 						sx={{ bgcolor: 'background.paper' }}
 						button
 						component={NavLinkAdapter}
-						to={`/apps/tasks/${data.id}`}
+						to={`/dashboards/tasks/${data.id}`}
 						ref={provided.innerRef}
 						{...provided.draggableProps}
 					>

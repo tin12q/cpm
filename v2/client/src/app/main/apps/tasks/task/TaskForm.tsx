@@ -103,7 +103,7 @@ function TaskForm() {
 		dispatch(addTask(data)).then(({ payload }) => {
 			const { id } = payload as TaskType;
 
-			navigate(`/apps/tasks/${id}`);
+			navigate(`/dashboards/tasks/${id}`);
 		});
 	}
 
@@ -136,7 +136,7 @@ function TaskForm() {
 						{routeParams.id !== 'new' && <FormActionsMenu taskId={task.id} />}
 						<IconButton
 							component={NavLinkAdapter}
-							to="/apps/tasks"
+							to="/dashboards/tasks"
 							size="large"
 						>
 							<FuseSvgIcon>heroicons-outline:x</FuseSvgIcon>
