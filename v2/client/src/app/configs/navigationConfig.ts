@@ -16,7 +16,6 @@ const navigationConfig: FuseNavigationType = [
 	{
 		id: 'dashboards',
 		title: 'Dashboards',
-		subtitle: 'Unique dashboard designs',
 		type: 'group',
 		icon: 'heroicons-outline:home',
 		translate: 'DASHBOARDS',
