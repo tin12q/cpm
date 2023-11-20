@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { useRoutes } from 'react-router-dom';
 import AppContext from 'app/AppContext';
 import { selectFuseCurrentLayoutConfig } from 'app/store/fuse/settingsSlice';
-import FooterLayout3 from './components/FooterLayout3';
 import LeftSideLayout3 from './components/LeftSideLayout3';
 import NavbarWrapperLayout3 from './components/NavbarWrapperLayout3';
 import RightSideLayout3 from './components/RightSideLayout3';
@@ -86,9 +85,7 @@ function Layout3(props: Layout3Props) {
 						{children}
 					</div>
 
-					{config.footer.display && (
-						<FooterLayout3 className={config.footer.style === 'fixed' ? 'sticky bottom-0' : ''} />
-					)}
+					
 				</main>
 			</div>
 

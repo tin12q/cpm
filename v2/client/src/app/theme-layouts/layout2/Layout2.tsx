@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import { useRoutes } from 'react-router-dom';
 import { selectFuseCurrentLayoutConfig } from 'app/store/fuse/settingsSlice';
 import { Layout2ConfigDefaultsType } from 'app/theme-layouts/layout2/Layout2Config';
-import FooterLayout2 from './components/FooterLayout2';
 import LeftSideLayout2 from './components/LeftSideLayout2';
 import NavbarWrapperLayout2 from './components/NavbarWrapperLayout2';
 import RightSideLayout2 from './components/RightSideLayout2';
@@ -84,9 +83,7 @@ function Layout2(props: Layout2Props) {
 						{children}
 					</div>
 
-					{config.footer.display && (
-						<FooterLayout2 className={config.footer.style === 'fixed' ? 'sticky bottom-0' : ''} />
-					)}
+					
 				</main>
 			</div>
 

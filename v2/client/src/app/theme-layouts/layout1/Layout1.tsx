@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { useRoutes } from 'react-router-dom';
 import { selectFuseCurrentLayoutConfig } from 'app/store/fuse/settingsSlice';
 import { Layout1ConfigDefaultsType } from 'app/theme-layouts/layout1/Layout1Config';
-import FooterLayout1 from './components/FooterLayout1';
 import LeftSideLayout1 from './components/LeftSideLayout1';
 import NavbarWrapperLayout1 from './components/NavbarWrapperLayout1';
 import RightSideLayout1 from './components/RightSideLayout1';
@@ -73,9 +72,7 @@ function Layout1(props: Layout1Props) {
 						{children}
 					</div>
 
-					{config.footer.display && (
-						<FooterLayout1 className={config.footer.style === 'fixed' ? 'sticky bottom-0' : ''} />
-					)}
+					
 				</main>
 
 				{config.navbar.display && config.navbar.position === 'right' && <NavbarWrapperLayout1 />}

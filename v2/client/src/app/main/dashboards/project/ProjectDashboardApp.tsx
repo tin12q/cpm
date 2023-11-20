@@ -75,7 +75,7 @@ function ProjectDashboardApp() {
 						/>
 					</Tabs>
 					{tabValue === 0 && <HomeTab />}
-					{tabValue === 2 && <TeamTab />}
+					{tabValue === 1 && <TeamTab />}
 				</div>
 			}
 		/>

@@ -24,7 +24,7 @@ const navigationConfig: FuseNavigationType = [
 				id: 'dashboards.landingpage',
 				title: 'Landing Page',
 				type: 'item',
-				icon: 'heroicons-outline:clipboard-check',
+				icon: 'heroicons-outline:home',
 				url: '/dashboards/landingpage'
 			},
 			{
@@ -39,7 +39,7 @@ const navigationConfig: FuseNavigationType = [
 				id: 'dashboards.projects',
 				title: 'projects',
 				type: 'item',
-				icon: 'heroicons-outline:check-circle',
+				icon: 'heroicons-outline:clipboard-check',
 				url: '/dashboards/projects',
 				translate: 'Projects'
 			}
