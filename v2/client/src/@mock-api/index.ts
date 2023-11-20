@@ -3,14 +3,13 @@ import history from '@history';
 import mock from './mock';
 
 // Import API modules
-
 import './api/dashboards/project-api';
-
 import './api/ui/icons-api';
 import './api/countries-api';
 import './api/contacts-api';
 import './api/chat-api';
-import './api/tasks-api';
+import './api/academy-api'
+import './api/ecommerce-api';
 import './api/file-manager-api';
 import './api/notes-api';
 import './api/scrumboard-api';

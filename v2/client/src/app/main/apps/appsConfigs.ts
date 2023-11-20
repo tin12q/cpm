@@ -7,7 +7,6 @@ import MailboxAppConfig from './mailbox/MailboxAppConfig';
 import NotesAppConfig from './notes/NotesAppConfig';
 import ProfileAppConfig from './profile/profileAppConfig';
 import ScrumboardAppConfig from './scrumboard/ScrumboardAppConfig';
-import TasksAppConfig from './tasks/TasksAppConfig';
 
 /**
  * The list of application configurations.
@@ -21,7 +20,6 @@ const appsConfigs: FuseRouteConfigsType = [
 	NotesAppConfig,
 	ProfileAppConfig,
 	ScrumboardAppConfig,
-	TasksAppConfig
 ];
 
 export default appsConfigs;

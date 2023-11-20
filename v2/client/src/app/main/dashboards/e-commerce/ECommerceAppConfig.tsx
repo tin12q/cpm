@@ -6,8 +6,8 @@ import reducer from './store';
 const ECommerceApp = lazyWithReducer('eCommerceApp', () => import('./ECommerceApp'), reducer);
 const Product = lazy(() => import('./product/Product'));
 const Products = lazy(() => import('./products/Products'));
-const User = lazy(() => import('./user/User'));
-const Users = lazy(() => import('./users/Users'));
+const Order = lazy(() => import('./order/Order'));
+const Orders = lazy(() => import('./orders/Orders'));
 
 /**
  * The E-Commerce app configuration.
@@ -22,12 +22,24 @@ const ECommerceAppConfig = {
 			element: <ECommerceApp />,
 			children: [
 				{
-					path: 'users',
-					element: <Users />
+					path: '',
+					element: <Navigate to="orders" />
 				},
 				{
-					path: 'users/:userId',
-					element: <User />
+					path: 'products',
+					element: <Products />
+				},
+				{
+					path: 'products/:productId/*',
+					element: <Product />
+				},
+				{
+					path: 'orders',
+					element: <Orders />
+				},
+				{
+					path: 'orders/:orderId',
+					element: <Order />
 				}
 			]
 		}

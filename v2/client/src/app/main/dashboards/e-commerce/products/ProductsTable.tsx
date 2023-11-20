@@ -1,5 +1,4 @@
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
-import FuseUtils from '@fuse/utils';
 import _ from '@lodash';
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
@@ -8,35 +7,36 @@ import TableCell from '@mui/material/TableCell';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from 'app/store';
 import withRouter from '@fuse/core/withRouter';
 import FuseLoading from '@fuse/core/FuseLoading';
-import { useAppDispatch, useAppSelector } from 'app/store';
-import { WithRouterProps } from '@fuse/core/withRouter/withRouter';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { Many } from 'lodash';
+import { WithRouterProps } from '@fuse/core/withRouter/withRouter';
 import * as React from 'react';
-import OrdersStatus from '../order/OrdersStatus';
-import { getOrders, selectOrders, selectOrdersSearchText } from '../store/ordersSlice';
-import OrdersTableHead from './OrdersTableHead';
-import { OrderType, OrdersType } from '../types/OrderType';
+import { getProducts, selectProducts, selectProductsSearchText } from '../store/productsSlice';
+import ProductsTableHead from './ProductsTableHead';
+import { ProductType } from '../types/ProductType';
 
-type OrdersTableProps = WithRouterProps & {
+type ProductsTableProps = WithRouterProps & {
 	navigate: (path: string) => void;
 };
 
 /**
- * The orders table.
+ * The products table.
  */
-function OrdersTable(props: OrdersTableProps) {
+function ProductsTable(props: ProductsTableProps) {
 	const { navigate } = props;
 	const dispatch = useAppDispatch();
-	const orders = useAppSelector(selectOrders);
-	const searchText = useAppSelector(selectOrdersSearchText);
+	const products = useAppSelector(selectProducts);
+	const searchText = useAppSelector(selectProductsSearchText);
 
 	const [loading, setLoading] = useState(true);
 	const [selected, setSelected] = useState<string[]>([]);
-	const [data, setData] = useState<OrdersType>(orders);
+	const [data, setData] = useState(products);
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [tableOrder, setTableOrder] = useState<{
@@ -48,17 +48,17 @@ function OrdersTable(props: OrdersTableProps) {
 	});
 
 	useEffect(() => {
-		dispatch(getOrders()).then(() => setLoading(false));
+		dispatch(getProducts()).then(() => setLoading(false));
 	}, [dispatch]);
 
 	useEffect(() => {
 		if (searchText.length !== 0) {
-			setData(FuseUtils.filterArrayByString(orders, searchText));
+			setData(_.filter(products, (item) => item.name.toLowerCase().includes(searchText.toLowerCase())));
 			setPage(0);
 		} else {
-			setData(orders);
+			setData(products);
 		}
-	}, [orders, searchText]);
+	}, [products, searchText]);
 
 	function handleRequestSort(event: MouseEvent<HTMLSpanElement>, property: string) {
 		const newOrder: {
@@ -86,8 +86,8 @@ function OrdersTable(props: OrdersTableProps) {
 		setSelected([]);
 	}
 
-	function handleClick(item: OrderType) {
-		navigate(`/apps/e-commerce/orders/${item.id}`);
+	function handleClick(item: ProductType) {
+		navigate(`/dashboard/tasks/products/${item.id}/${item.handle}`);
 	}
 
 	function handleCheck(event: ChangeEvent<HTMLInputElement>, id: string) {
@@ -134,7 +134,7 @@ function OrdersTable(props: OrdersTableProps) {
 					color="text.secondary"
 					variant="h5"
 				>
-					There are no orders!
+					There are no products!
 				</Typography>
 			</motion.div>
 		);
@@ -148,8 +148,8 @@ function OrdersTable(props: OrdersTableProps) {
 					className="min-w-xl"
 					aria-labelledby="tableTitle"
 				>
-					<OrdersTableHead
-						selectedOrderIds={selected}
+					<ProductsTableHead
+						selectedProductIds={selected}
 						tableOrder={tableOrder}
 						onSelectAllClick={handleSelectAllClick}
 						onRequestSort={handleRequestSort}
@@ -161,19 +161,10 @@ function OrdersTable(props: OrdersTableProps) {
 						{_.orderBy(
 							data,
 							[
-								(o: OrderType) => {
+								(o) => {
 									switch (o.id) {
-										case 'id': {
-											return parseInt(o.id, 10);
-										}
-										case 'customer': {
-											return o.customer.firstName;
-										}
-										case 'payment': {
-											return o.payment.method;
-										}
-										case 'status': {
-											return o.status[0].name;
+										case 'categories': {
+											return o.categories[0];
 										}
 										default: {
 											return o.id;
@@ -209,11 +200,24 @@ function OrdersTable(props: OrdersTableProps) {
 										</TableCell>
 
 										<TableCell
-											className="p-4 md:p-16"
+											className="w-52 px-4 md:px-0"
 											component="th"
 											scope="row"
+											padding="none"
 										>
-											{n.id}
+											{n?.images?.length > 0 && n.featuredImageId ? (
+												<img
+													className="w-full block rounded"
+													src={_.find(n.images, { id: n.featuredImageId })?.url}
+													alt={n.name}
+												/>
+											) : (
+												<img
+													className="w-full block rounded"
+													src="assets/images/apps/ecommerce/product-image-placeholder.png"
+													alt={n.name}
+												/>
+											)}
 										</TableCell>
 
 										<TableCell
@@ -221,7 +225,7 @@ function OrdersTable(props: OrdersTableProps) {
 											component="th"
 											scope="row"
 										>
-											{n.reference}
+											{n.name}
 										</TableCell>
 
 										<TableCell
@@ -229,7 +233,7 @@ function OrdersTable(props: OrdersTableProps) {
 											component="th"
 											scope="row"
 										>
-											{`${n.customer.firstName} ${n.customer.lastName}`}
+											{n.categories.join(', ')}
 										</TableCell>
 
 										<TableCell
@@ -239,31 +243,47 @@ function OrdersTable(props: OrdersTableProps) {
 											align="right"
 										>
 											<span>$</span>
-											{n.total}
+											{n.priceTaxIncl}
 										</TableCell>
 
 										<TableCell
 											className="p-4 md:p-16"
 											component="th"
 											scope="row"
+											align="right"
 										>
-											{n.payment.method}
+											{n.quantity}
+											<i
+												className={clsx(
+													'inline-block w-8 h-8 rounded mx-8',
+													n.quantity <= 5 && 'bg-red',
+													n.quantity > 5 && n.quantity <= 25 && 'bg-orange',
+													n.quantity > 25 && 'bg-green'
+												)}
+											/>
 										</TableCell>
 
 										<TableCell
 											className="p-4 md:p-16"
 											component="th"
 											scope="row"
+											align="right"
 										>
-											<OrdersStatus name={n.status[0].name} />
-										</TableCell>
-
-										<TableCell
-											className="p-4 md:p-16"
-											component="th"
-											scope="row"
-										>
-											{n.date}
+											{n.active ? (
+												<FuseSvgIcon
+													className="text-green"
+													size={20}
+												>
+													heroicons-outline:check-circle
+												</FuseSvgIcon>
+											) : (
+												<FuseSvgIcon
+													className="text-red"
+													size={20}
+												>
+													heroicons-outline:minus-circle
+												</FuseSvgIcon>
+											)}
 										</TableCell>
 									</TableRow>
 								);
@@ -291,4 +311,4 @@ function OrdersTable(props: OrdersTableProps) {
 	);
 }
 
-export default withRouter(OrdersTable);
+export default withRouter(ProductsTable);

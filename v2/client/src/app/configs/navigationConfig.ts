@@ -3,7 +3,7 @@ import { FuseNavigationType } from '@fuse/core/FuseNavigation/types/FuseNavigati
 import ar from './navigation-i18n/ar';
 import en from './navigation-i18n/en';
 import tr from './navigation-i18n/tr';
-import { authRoles } from '../auth';
+// import { authRoles } from '../auth';
 
 i18next.addResourceBundle('en', 'navigation', en);
 i18next.addResourceBundle('tr', 'navigation', tr);
@@ -21,11 +21,11 @@ const navigationConfig: FuseNavigationType = [
 		translate: 'DASHBOARDS',
 		children: [
 			{
-				id: 'dashboards.project',
-				title: 'Project',
+				id: 'dashboards.landingpage',
+				title: 'Landing Page',
 				type: 'item',
 				icon: 'heroicons-outline:clipboard-check',
-				url: '/dashboards/project'
+				url: '/dashboards/landingpage'
 			},
 			{
 				id: 'dashboards.tasks',
@@ -35,7 +35,14 @@ const navigationConfig: FuseNavigationType = [
 				url: '/dashboards/tasks',
 				translate: 'TASKS'
 			},
-		
+			{
+				id: 'dashboards.projects',
+				title: 'projects',
+				type: 'item',
+				icon: 'heroicons-outline:check-circle',
+				url: '/dashboards/projects',
+				translate: 'Projects'
+			}
 		]
 	},
 	{
