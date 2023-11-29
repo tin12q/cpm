@@ -1,7 +1,7 @@
 - sign in
-- tasks (should be folder e-commerce)
-- landing page (should be folder project)
-- projects (should be folder academy)
+- tasks
+- landing page 
+- projects 
 - chat
 - users
 - calendar
@@ -9,3 +9,5 @@
 - scrumboard
 - profile
 - mail???
+
+- widgets won't accept if i change the file name (still don't know why)

@@ -1,7 +1,7 @@
 import _ from '@lodash';
 import mockApi from '../mock-api.json';
 import mock from '../mock';
-import CourseType from '../../app/main/dashboards/academy/types/CourseType';
+import CourseType from '../../app/main/dashboards/projects/types/CourseType';
 import { Params } from '../ExtendedMockAdapter';
 
 const demoCourseContent = mockApi.components.examples.academy_demo_course_content.value;

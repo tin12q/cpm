@@ -1,15 +1,15 @@
-import { FuseRouteConfigsType } from '@fuse/utils/FuseUtils';
-import ProjectDashboardAppConfig from './project/ProjectDashboardAppConfig';
-import ECommerceAppConfig from './e-commerce/ECommerceAppConfig'
-import AcademyAppConfig from './academy/AcademyAppConfig';
+import { FuseRouteConfigsType } from "@fuse/utils/FuseUtils";
+import LandingPageConfig from "./landingPage/LandingPageConfig";
+import TasksConfig from "./tasks/TasksConfig";
+import ProjectConfig from "./projects/ProjectConfig";
 
 /**
  * Dashboards
  */
 const dashboardsConfigs: FuseRouteConfigsType = [
-	ProjectDashboardAppConfig,
-	ECommerceAppConfig,
-	AcademyAppConfig
+  LandingPageConfig,
+  TasksConfig,
+  ProjectConfig,
 ];
 
 export default dashboardsConfigs;
