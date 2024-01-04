@@ -4,8 +4,10 @@ import 'chart.js/auto';
 import axios from 'axios';
 import cookie from 'cookie';
 import { CardBody, Typography, Card, CardHeader } from '@material-tailwind/react';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardAdmin = () => {
+    const navigate = useNavigate();
     const data1 = {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         datasets: [
@@ -60,6 +62,7 @@ const DashboardAdmin = () => {
     const [data, setData] = React.useState(null);
 
     useEffect(() => {
+        
         axios.get(`http://localhost:1337/api/tasks/team`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
 
@@ -91,7 +94,7 @@ const DashboardAdmin = () => {
                 });
             })
             .catch(err => {
-                alert(err);
+                navigate('/projects');
             });
 
     }, []);
