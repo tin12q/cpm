@@ -59,7 +59,7 @@ export default function EditUser(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.put('http://localhost:1337/api/users', {
+        axios.put(`http://localhost:1337/api/users/${id}`, {
             name,
             dob: dob,
             role,
@@ -72,6 +72,7 @@ export default function EditUser(props) {
                 setAlertMessage("User Updated Successfully");
             })
             .catch(err => {
+                
                 setAlertMessage("User Updation Failed");
             });
         handleAlert();
