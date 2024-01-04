@@ -87,7 +87,6 @@ const deleteUser = async (req, res) => {
     }
 }
 const updateUser = async (req, res) => {
-    console.log(req.body);
     try {
         
         const user = User.findById(req.params.id);
@@ -97,7 +96,19 @@ const updateUser = async (req, res) => {
         }
         const { name, dob, email, role, username, password, team } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
-        await User.updateOne({ _id: req.params.id }, { name, dob, email, role, password: hashedPassword, team });
+        await User.updateOne({ _id: req.params.id }, { name, dob, email, role });
+        if(team !== user.team && team !== null){
+            //delete from team
+            const team = await Team.findOne({ members: { $elemMatch: { $eq: new mongoose.Types.ObjectId(req.user.id) } } });
+            if (team) {
+                await Team.updateOne({ _id: team._id }, { $pull: { members: new mongoose.Types.ObjectId(req.params.id) } });
+            }
+            //add user id to team members
+            const teamId = new mongoose.Types.ObjectId(team);
+            await Team.updateOne({ _id: teamId }, { $push: { members: req.params.id } });
+        }
+
+        await Auth.updateOne({ user: new mongoose.Types.ObjectId(req.params.id) }, { username, password: hashedPassword, role });
         res.json({ message: 'User updated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
