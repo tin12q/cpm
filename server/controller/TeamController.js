@@ -21,7 +21,7 @@ const getTeamWithId = async (req, res) => {
     }
 }
 const userInTeam = async (req, res) => {
-    const { page = 1, limit = 12 } = req.query;
+    const { page = 1, limit = 1000 } = req.query;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
