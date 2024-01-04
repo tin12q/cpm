@@ -105,7 +105,7 @@ export default function AddUser() {
                                 }}>
                                 <Option value="admin">Admin</Option>
                                 <Option value="manager">Manager</Option>
-                                <Option value="member">Member</Option>
+                                <Option value="employee">Member</Option>
                             </Select>
                             <Select label='Team' onChange={(value) => setSelectedTeam(value)}>
                                 {team.map((team) => {

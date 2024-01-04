@@ -6,7 +6,10 @@ import './styles/app-base.css';
 import './styles/app-components.css';
 import './styles/app-utilities.css';
 import { createRoot } from 'react-dom/client';
+import { registerLicense } from '@syncfusion/ej2-base';
 import App from './app/App';
+
+registerLicense('ORg4AjUWIQA/Gnt2VVhhQlFaclhJW3xAYVF2R2FJfFR0dV9GZEwgOX1dQl9hSXtSdkVgXX5cc3NWTmk=');
 
 // import * as serviceWorker from './serviceWorker';
 // import reportWebVitals from './reportWebVitals';

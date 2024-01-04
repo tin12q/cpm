@@ -9,6 +9,7 @@ export default function SignIn() {
 
     const navigate = useNavigate();
     const cookies = cookie.parse(document.cookie);
+    const ip = window.location.hostname;
     useEffect(() => {
         if (cookies.token) {
             navigate("/");
@@ -26,7 +27,7 @@ export default function SignIn() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: (!process.env.API_URI) ? 'http://localhost:1337/api/auth/login' : process.env.API_URI + '/api/auth/login',
+            url: (!process.env.API_URI) ? `http://localhost:1337/api/auth/login` : process.env.API_URI + '/api/auth/login',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },

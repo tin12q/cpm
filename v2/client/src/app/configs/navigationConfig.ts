@@ -42,7 +42,8 @@ const navigationConfig: FuseNavigationType = [
 				icon: 'heroicons-outline:clipboard-check',
 				url: '/dashboards/projects',
 				translate: 'Projects'
-			}
+			},
+			
 		]
 	},
 	{

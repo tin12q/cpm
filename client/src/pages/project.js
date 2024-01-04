@@ -60,13 +60,13 @@ function Project() {
         <div className='mt-20 pl-20 pr-20 w-screen justify-items-center overflow-auto'>
 
             <Card className=' '>
-                <CardBody className='mt-5 pl-5 row justify-between'>
-                    <div className='w-6/12'>
+                <CardBody className='mt-5 pl-5 row justify-between w-'>
+                    <div className='w-fit max-w-[30%]'>
                         <Typography className='mb-5' variant="h1" color="blue-gray">{projectData.title}</Typography>
                         <Typography color="blue-gray">{projectData.description}</Typography>
 
                     </div>
-                    <div className='w-4/12 mt-5 '>
+                    <div className='w-min mt-5 '>
                         <div className='w-96 h-96'>
                             <PieChart completed={completedTasks.completed} late={late.lated} />
                         </div>
@@ -85,7 +85,7 @@ function Project() {
               <Progress color='red' value={late.lated} />
             </div> */}
                     </div>
-                    <div className='w-1/12 text-right mr-10'>
+                    <div className='w-max text-right mr-10'>
                         <Chip
                             className='w-max ml-10'
                             variant="ghost"
@@ -95,6 +95,7 @@ function Project() {
                         />
                         <Typography
                             variant="h5"
+                            className="break-words"
                             color="blue-gray" >{new Date(projectData.due_date).toISOString().split('T')[0]}</Typography>
 
                     </div>
