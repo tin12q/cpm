@@ -47,24 +47,24 @@
     networks:
       jg4wows: null
     restart: unless-stopped
-    frontend:
-      build:
-        context: ./frontend
-        dockerfile: Dockerfile
-      container_name: frontend
-      ports:
-        - "8004:80"
-      environment:
-        REACT_APP_API_URL: 'https://api-cpm.tin12q.org/'
-      depends_on:
-        backend:
-          condition: service_healthy
-      healthcheck:
-        test: [ "CMD", "curl", "-f", "http://localhost" ]
-        interval: 30s
-        timeout: 10s
-        retries: 5
-        start_period: 30s
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "8004:80"
+    environment:
+      REACT_APP_API_URL: 'https://api-cpm.tin12q.org/'
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 volumes:
   mongo-data:
     name: mongo-data
