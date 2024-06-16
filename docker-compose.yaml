@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     ports:
-      - "8004:3000"
+      - "8004:80"
     environment:
       REACT_APP_API_URL: ${REACT_APP_API_URL}
     healthcheck:
