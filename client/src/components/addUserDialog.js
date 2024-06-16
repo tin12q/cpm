@@ -25,7 +25,7 @@ export default function AddUser() {
         setAlert((cur) => !cur);
     }
     useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get(process.env.REACT_APP_API_URL ?? `http://localhost:1337/` + `api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTeam(res.data);
             })

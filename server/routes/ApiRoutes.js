@@ -7,7 +7,9 @@ const userRoutes = require("./user");
 const taskRoutes = require("./tasks");
 const fileRoutes = require("./file");
 
-
+router.get("/heath", (req, res) => {
+  res.send("OK");
+});
 router.use("/projects", projectRoutes);
 router.use("/users", userRoutes);
 router.use("/tasks", taskRoutes);

@@ -1,0 +1,74 @@
+﻿services:
+  mongo:
+    image: 'mongo:latest'
+    container_name: mongo-jg4wows-153656670049
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - 'mongo-data:/data/db'
+      - './init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro'
+    healthcheck:
+      test:
+        - CMD
+        - mongo
+        - '--eval'
+        - "db.adminCommand('ping')"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      jg4wows: null
+    restart: unless-stopped
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: backend-jg4wows-153656670462
+    ports:
+      - '8003:8003'
+    environment:
+      MONGODB_URI: 'mongodb://root:example@mongo:27017/cpm?authSource=admin'
+    depends_on:
+      - mongo
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://localhost:5000/health'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      jg4wows: null
+    restart: unless-stopped
+    frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      container_name: frontend
+      ports:
+        - "8004:80"
+      environment:
+        REACT_APP_API_URL: 'https://api-cpm.tin12q.org/'
+      depends_on:
+        backend:
+          condition: service_healthy
+      healthcheck:
+        test: [ "CMD", "curl", "-f", "http://localhost" ]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 30s
+volumes:
+  mongo-data:
+    name: mongo-data
+networks:
+  jg4wows:
+    name: jg4wows
+    external: true
