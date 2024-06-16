@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Project = require('../models/project.model');
 const Team = require('../models/team.model');
+const Task = require('../models/task.model');
 const jwt = require('jsonwebtoken');
 
 const addProject = async (req, res) => {
@@ -30,7 +31,7 @@ const getProjects = async (req, res) => {
             const teamIds = teams.map((team) => team._id);
             const projects = await Project.find({ team: { $in: teamIds } }).limit(limit).skip(limit * (page - 1));
             res.json(projects);
-        }
+        }updateP
 
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -78,6 +79,10 @@ const deleteProject = async (req, res) => {
             return res.status(404).json({ error: 'Project not found' });
         }
         res.json({ message: 'Project deleted successfully' });
+        //detete all tasks related to the project
+        await Task.deleteMany({ project: project._id });
+        
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -101,11 +106,34 @@ const findProject = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+const getAllProjects = async (req, res) => {
+    try {
+        const projects = await Project.find();
+        res.json(projects);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+const getProjectByName = async (req, res) => {
+    try {
+        const project = await Project.find({ title: req.params.title });
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        res.json(project);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 module.exports = {
     addProject,
     getProjects,
     getProjectById,
     updateProject,
     deleteProject,
-    findProject
+    findProject,
+    getAllProjects,
+    getProjectByName
 };

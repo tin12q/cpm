@@ -1,5 +1,6 @@
 const Team = require('../models/team.model');
 const mongoose = require('mongoose');
+const Project = require('../models/project.model');
 const getTeams = async (req, res) => {
     try {
         const teams = await Team.find();
@@ -63,4 +64,33 @@ const addTeam = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-module.exports = { getTeams, getTeamWithId, userInTeam, addTeam };
+const getTeamByName = async (req, res) => {
+    try {
+        const team = await Team.findOne({ name: req.params.name });
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
+        res.json(team);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+const getTeamByProjectId = async (req, res) => {
+    try {
+        console.log(req.params.id);
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        const team = await Team.findById(project.team);
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
+        res.json(team);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+}
+module.exports = { getTeams, getTeamWithId, userInTeam, addTeam, getTeamByName, getTeamByProjectId };

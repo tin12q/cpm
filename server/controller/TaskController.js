@@ -4,17 +4,21 @@ const Task = require('../models/task.model');
 const Project = require('../models/project.model');
 const createTask = async (req, res) => {
     try {
+        // Check if assigned_to is an array, if not, wrap it in an array
+        const assignedTo = Array.isArray(req.body.assigned_to) ? req.body.assigned_to : [req.body.assigned_to];
+        
         const task = new Task({
             title: req.body.title,
             description: req.body.description,
             due_date: req.body.due_date,
             status: req.body.status,
             project: new mongoose.Types.ObjectId(req.body.project),
-            assigned_to: req.body.assigned_to.map((id) => new mongoose.Types.ObjectId(id)),
+            assigned_to: assignedTo.map((id) => new mongoose.Types.ObjectId(id)),
         });
         await task.save();
         res.status(201).json(task);
     } catch (error) {
+        console.log(error);
         res.status(400).json({ error: error.message });
     }
 };
@@ -112,6 +116,7 @@ const findByName = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
 const getTaskById = async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
@@ -308,6 +313,24 @@ const completionByTeam = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+const getAllTasks = async (req, res) => {
+    try {
+        const tasks = await Task.find();
+        res.json(tasks);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getTasksByNameMobile = async (req, res) => {
+    try {
+        const tasks = await Task.find({ title: { $regex: req.query.name, $options: 'i' } });
+        res.json(tasks);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 module.exports = {
     createTask,
     getTasks,
@@ -320,5 +343,7 @@ module.exports = {
     latePercentage,
     doneCheck,
     completionByTeam,
-    findByName
+    findByName,
+    getAllTasks,
+    getTasksByNameMobile
 };

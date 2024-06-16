@@ -9,7 +9,6 @@ export default function SignIn() {
 
     const navigate = useNavigate();
     const cookies = cookie.parse(document.cookie);
-    const ip = window.location.hostname;
     useEffect(() => {
         if (cookies.token) {
             navigate("/");
@@ -46,7 +45,6 @@ export default function SignIn() {
             });
             navigate("/");
         }).catch((err) => {
-            alert(err);
             if (err.response.status === 401) {
                 alert("Incorrect username or password");
             }

@@ -16,6 +16,7 @@ function App() {
     return (<>
         {location.pathname !== "/signin" && <ComplexNavbar />}
         <Routes>
+            
             <Route path="/signin" element={<SignIn />} />
             <Route
                 path="/"

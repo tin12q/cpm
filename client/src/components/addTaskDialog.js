@@ -18,6 +18,7 @@ export default function AddTask(props) {
     const [selectedOption, setSelectedOption] = useState(null);
     const [alert, setAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
+    const [rerender, setRerender] = useState(false);
 
     const handleOpen = () => {
         setOpen((cur) => !cur);
@@ -67,6 +68,7 @@ export default function AddTask(props) {
             , { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
                 setAlertMessage("Task added successfully");
+                setRerender((cur) => !cur);
             })
             .catch(err => {
                 setAlertMessage("Something went wrong");

@@ -37,7 +37,7 @@ const Projects = () => {
                 setProjects(res.data);
             })
             .catch(err => {
-                alert(err);
+                // alert(err);
             });
     }, [page]);
     useEffect(() => {
@@ -47,7 +47,7 @@ const Projects = () => {
             .then(res => {
                 setProjects(res.data);
             }).catch(err => {
-                alert(err);
+                // alert(err);
             });
     }, [search]);
     if (!projects) {

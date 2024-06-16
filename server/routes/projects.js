@@ -7,11 +7,13 @@ const {
     getProjectById,
     getProjects,
     updateProject,
-    findProject
+    findProject,
+    getAllProjects
 } = require("../controller/ProjectController");
 
 
 router.get('/search', authenticate, requireRole({ collection: 0, task: 0 }), findProject);
+router.get('/getAll', authenticate, requireRole({ collection: 0, task: 0 }), getAllProjects);
 router.delete("/:id", authenticate, requireRole({ collection: 0, task: 3 }), deleteProject);
 router.get("/:id", authenticate, requireRole({ collection: 0, task: 0 }), getProjectById);
 router.put("/:id", authenticate, requireRole({ collection: 0, task: 2 }), updateProject);

@@ -13,10 +13,14 @@ const {
     doneCheck,
     getTaskByUserId,
     completionByTeam,
-    findByName
+    findByName,
+    getAllTasks,
+    getTasksByNameMobile
 } = require("../controller/TaskController");
 
 router.get('/name', authenticate, requireRole({ collection: 1, task: 0 }), findByName);
+router.get('/nameMobile', authenticate, requireRole({ collection: 1, task: 0 }), getTasksByNameMobile);
+router.get('/getAll', authenticate, requireRole({ collection: 1, task: 0 }), getAllTasks);
 router.get('/team', authenticate, requireRole({ collection: 2, task: 1 }), completionByTeam);
 router.get('/user', authenticate, requireRole({ collection: 1, task: 0 }), getTaskByUserId);
 router.post('/done/:id', authenticate, requireRole({ collection: 1, task: 0 }), doneCheck);
