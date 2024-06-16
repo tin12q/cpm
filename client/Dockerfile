@@ -16,13 +16,5 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Build the React app
-RUN npm run build
-
-# Use nginx to serve the build
-FROM nginx:alpine
-COPY --from=0 /app/build /usr/share/nginx/html
-
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+#Run the application
+CMD ["npm", "start"]
