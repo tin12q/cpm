@@ -46,7 +46,7 @@ export default function AddUser() {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/users', {
+        axios.post(process.env.REACT_APP_API_URL ?? 'http://localhost:1337/' + 'api/users', {
             name,
             dob: dob,
             role,

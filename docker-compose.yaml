@@ -1,6 +1,4 @@
-﻿version: '3.8'
-
-services:
+﻿services:
   mongo:
     image: 'mongo:latest'
     container_name: mongo
@@ -45,7 +43,7 @@ services:
     ports:
       - "8004:80"
     environment:
-      REACT_APP_API_URL: 'https://api-cpm.tin12q.org/'
+      REACT_APP_API_URL: ${REACT_APP_API_URL}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost" ]
       interval: 30s
