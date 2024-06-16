@@ -1,5 +1,5 @@
 ﻿# Use Node.js image
-FROM node:18
+FROM node:18 as build-stage
 
 # Set working directory
 WORKDIR /app
@@ -15,6 +15,11 @@ RUN npm install
 
 # Copy the rest of the application code
 COPY . .
+RUN npm run build
 
-#Run the application
-CMD ["npm", "start"]
+
+FROM nginx:1.21
+
+COPY --from=build-stage /app/build /usr/share/nginx/html
+
+CMD nginx -g 'daemon off;'
