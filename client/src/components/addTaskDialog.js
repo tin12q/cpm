@@ -35,7 +35,7 @@ export default function AddTask(props) {
         }
     }, [alert]);
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL ?? `http://localhost:1337/` + `api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
 
                 setMembers(res.data.map((member) => {
@@ -56,7 +56,7 @@ export default function AddTask(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post(process.env.REACT_APP_API_URL ?? 'http://localhost:1337/' + 'api/tasks',
+        axios.post((process.env.REACT_APP_API_URL ?? http://localhost:1337/) + 'api/tasks',
             {
                 title,
                 description,

@@ -63,7 +63,7 @@ const DashboardAdmin = () => {
 
     useEffect(() => {
         
-        axios.get(process.env.REACT_APP_API_URL ?? `http://localhost:1337/` + `api/tasks/team`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/team`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
 
                 setData({

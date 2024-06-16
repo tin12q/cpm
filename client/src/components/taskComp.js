@@ -53,14 +53,14 @@ export default function TaskComp(props) {
             });
     }, []);
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL ?? `http://localhost:1337/` + `api/tasks/project/${idt}?page=${page}`,
+        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/project/${idt}?page=${page}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);
             });
     }, [page]);
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL ?? `http://localhost:1337/` + `api/tasks/name/?name=${search}&project=${idt}`,
+        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/name/?name=${search}&project=${idt}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);

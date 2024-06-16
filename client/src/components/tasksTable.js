@@ -40,14 +40,14 @@ export default function TaskTable() {
             });
     }, []);
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL ?? `http://localhost:1337/` + `api/tasks?page=${page}&limit=10`,
+        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks?page=${page}&limit=10`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);
             });
     }, [page]);
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL ?? `http://localhost:1337/` + `api/tasks/name?name=${search}&limit=10`,
+        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/name?name=${search}&limit=10`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);
