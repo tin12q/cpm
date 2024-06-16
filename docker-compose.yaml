@@ -1,7 +1,7 @@
 ﻿services:
   mongo:
     image: 'mongo:latest'
-    container_name: mongo-jg4wows-153656670049
+    container_name: mongo
     ports:
       - '27017:27017'
     environment:
@@ -20,14 +20,12 @@
       timeout: 10s
       retries: 5
       start_period: 30s
-    networks:
-      jg4wows: null
     restart: unless-stopped
   backend:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: backend-jg4wows-153656670462
+    container_name: backend
     ports:
       - '8003:8003'
     environment:
@@ -44,8 +42,6 @@
       timeout: 10s
       retries: 5
       start_period: 30s
-    networks:
-      jg4wows: null
     restart: unless-stopped
   frontend:
     build:
@@ -68,7 +64,3 @@
 volumes:
   mongo-data:
     name: mongo-data
-networks:
-  jg4wows:
-    name: jg4wows
-    external: true
