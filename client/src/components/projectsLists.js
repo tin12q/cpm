@@ -5,7 +5,7 @@ import React from "react";
 
 const ProjectList = () => {
     const cookies = cookie.parse(document.cookie);
-    axios.get("http://localhost:1337/api/projects", { headers: { Authorization: "Bearer " + cookies.token } }).then((res) => {
+    axios.get("https://cpm.tin12q.org/api/projects", { headers: { Authorization: "Bearer " + cookies.token } }).then((res) => {
         res.data.map((project) => {
             return (React.createElement(ProjectCard, {
                 title: project.title,

@@ -25,7 +25,7 @@ export default function AddUser() {
         setAlert((cur) => !cur);
     }
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTeam(res.data);
             })
@@ -46,7 +46,7 @@ export default function AddUser() {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.post((process.env.REACT_APP_API_URL ?? 'http://localhost:1337/') + 'api/users', {
+        axios.post((process.env.REACT_APP_API_URL ?? 'https://cpm.tin12q.org/') + 'api/users', {
             name,
             dob: dob,
             role,

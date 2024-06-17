@@ -23,7 +23,7 @@ export default function EmployeeTable() {
         if (page > 1) setPage(page - 1);
     }
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/users?page=${page}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/users?page=${page}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setEmployees(res.data);
             })
@@ -32,7 +32,7 @@ export default function EmployeeTable() {
             });
     }, [page]);
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/users/search?search=${search}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/users/search?search=${search}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setEmployees(res.data);
             })

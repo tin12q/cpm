@@ -17,7 +17,7 @@ const Task = () => {
     const id = useParams().id;
     useEffect(() => {
         const cookies = cookie.parse(document.cookie);
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
                 setTask(res.data);
                 setTitle(res.data.title);
@@ -35,7 +35,7 @@ const Task = () => {
         try {
             const cookies = cookie.parse(document.cookie);
             const res = await axios.put(
-                (process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/${id}`,
+                (process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/${id}`,
                 {
                     title,
                     description,

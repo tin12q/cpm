@@ -9,7 +9,7 @@ export default function CalendarPage() {
     const cookies = cookie.parse(document.cookie);
     useEffect(() => {
 
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/user`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/user`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setEvents(res.data.map((event) => {
                     return {

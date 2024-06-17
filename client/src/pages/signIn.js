@@ -26,7 +26,7 @@ export default function SignIn() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: (!process.env.REACT_APP_API_URL) ? (process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/auth/login` : 'https://api-cpm.tin12q.org' + '/api/auth/login',
+            url: (!process.env.REACT_APP_API_URL) ? (process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/auth/login` : 'https://api-cpm.tin12q.org' + '/api/auth/login',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },

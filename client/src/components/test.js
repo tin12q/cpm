@@ -18,7 +18,7 @@ function CardTest(props) {
 
 function CardlistTest() {
     const [projects, setProjects] = useState([]);
-    axios.get("http://localhost:1337/api/projects").then((res) => {
+    axios.get("https://cpm.tin12q.org/api/projects").then((res) => {
         setProjects(res.data);
     });
 

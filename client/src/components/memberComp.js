@@ -17,7 +17,7 @@ export default function MemberComp(props) {
     }
 
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/teams/users/${id}?page=${page}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/teams/users/${id}?page=${page}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setMembers(res.data);
             })

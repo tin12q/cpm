@@ -9,14 +9,14 @@ export default function PCWM({ title, dueDate, status, id }) {
     const [complete, setComplete] = useState(0);
     const [late, setLate] = useState(0);
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
                 setComplete(res.data.completed);
             })
             .catch(err => {
                 alert(err);
             });
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then(res => {
 
                 setLate(res.data.lated);

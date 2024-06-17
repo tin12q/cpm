@@ -9,7 +9,7 @@ export default function TaskDone(props) {
     const [isDone, setDone] = useState(false);
     const [title, setTitle] = useState("");
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTitle(res.data.title);
             })
@@ -24,7 +24,7 @@ export default function TaskDone(props) {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
         try {
-            axios.post((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/done/${id}`,
+            axios.post((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/done/${id}`,
                 {
                     isDone
                 }

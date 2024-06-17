@@ -33,7 +33,7 @@ export default function EditUser(props) {
         }
     }, [alert]);
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setUsername(res.data.username);
                 setName(res.data.name);
@@ -44,7 +44,7 @@ export default function EditUser(props) {
             .catch(err => {
                 alert(err);
             });
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/teams/`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
             .then(res => {
                 setTeam(res.data);
             })
@@ -59,7 +59,7 @@ export default function EditUser(props) {
     const handleSubmit = async e => {
         e.preventDefault();
         const cookies = cookie.parse(document.cookie);
-        axios.put((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/users/${id}`, {
+        axios.put((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/users/${id}`, {
             name,
             dob: dob,
             role,

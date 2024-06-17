@@ -40,7 +40,7 @@ export default function TaskComp(props) {
         setSearch(e.target.value);
     }
     useEffect(() => {
-        axios.get("http://localhost:1337/api/users/getAll",
+        axios.get("https://cpm.tin12q.org/api/users/getAll",
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setUserMap(res.data.reduce((map, user) => {
@@ -53,14 +53,14 @@ export default function TaskComp(props) {
             });
     }, []);
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/project/${idt}?page=${page}`,
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/project/${idt}?page=${page}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);
             });
     }, [page]);
     useEffect(() => {
-        axios.get((process.env.REACT_APP_API_URL ?? `http://localhost:1337/`) + `api/tasks/name/?name=${search}&project=${idt}`,
+        axios.get((process.env.REACT_APP_API_URL ?? `https://cpm.tin12q.org/`) + `api/tasks/name/?name=${search}&project=${idt}`,
             { headers: { Authorization: `Bearer ${cookies.token}` } })
             .then((res) => {
                 setTasks(res.data);
