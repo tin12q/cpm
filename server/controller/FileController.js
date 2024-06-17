@@ -23,8 +23,11 @@ const uploadFile = (req, res) => {
             console.log(err);
             return res.status(400).json({ error: err.message });
         }
+
         const { buffer } = req.file;
-        minioClient.putObject('api-mobile', originalname = 'test', buffer, (error, etag) => {
+        const filename = req.body.filename;
+
+        minioClient.putObject('api-mobile', filename, buffer, (error, etag) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: error.message });
@@ -32,7 +35,7 @@ const uploadFile = (req, res) => {
             res.json({ message: 'File uploaded successfully', etag });
         });
     });
-}
+};
 
 const getFileByName = (req, res) => {
     const bucketName = 'api-mobile';
@@ -44,6 +47,7 @@ const getFileByName = (req, res) => {
             return res.status(500).json({ error: error.message });
         }
         stream.pipe(res);
+        
     });
 }
 module.exports = {uploadFile, getFileByName};
