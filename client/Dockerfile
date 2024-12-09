@@ -21,5 +21,6 @@ RUN npm run build
 FROM nginx:1.21
 
 COPY --from=build-stage /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 
 CMD nginx -g 'daemon off;'
