@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongo:
-    image: "${REGISTRY_URL}/mongo:4.4"
+    image: "${REGISTRY_URL}/mongo:latest"
     container_name: mongo
     ports:
       - '27017:27017'
