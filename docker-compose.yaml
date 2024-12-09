@@ -1,8 +1,8 @@
-﻿version: '3.8'
+version: '3.8'
 
 services:
   mongo:
-    image: 'mongo:latest'
+    image: "${REGISTRY_URL}/mongo:4.4"
     container_name: mongo
     ports:
       - '27017:27017'
@@ -23,25 +23,29 @@ services:
       retries: 5
       start_period: 30s
     restart: unless-stopped
+
   backend:
     build:
       context: ./server
       dockerfile: Dockerfile
+    image: "${REGISTRY_URL}/backend:latest"
     container_name: backend
     ports:
       - '8003:3000'
     environment:
       JWT_SECRET: ${JWT_SECRET}
-      MINIO_ACCESS_KEY:  ${MINIO_ACCESS_KEY}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MONGODB_URI: 'mongodb://root:example@mongo:27017/cpm?authSource=admin'
     depends_on:
       - mongo
     restart: unless-stopped
+
   frontend:
     build:
       context: ./client
       dockerfile: Dockerfile
+    image: "${REGISTRY_URL}/frontend:latest"
     container_name: frontend
     ports:
       - "8004:80"
@@ -53,6 +57,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+
 volumes:
   mongo-data:
     external: true
