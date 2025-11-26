@@ -6,12 +6,14 @@ const teamRoutes = require("./team");
 const userRoutes = require("./user");
 const taskRoutes = require("./tasks");
 const fileRoutes = require("./file");
+const assignmentRoutes = require("./assignments");
 
 router.use("/projects", projectRoutes);
 router.use("/users", userRoutes);
 router.use("/tasks", taskRoutes);
 router.use("/auth", Auth);
-router.use('/teams', teamRoutes);
-router.use('/file', fileRoutes);
+router.use("/teams", teamRoutes);
+router.use("/file", fileRoutes);
+router.use("/assignments", assignmentRoutes);
 module.exports = router;
 // dm/api/projects/tasks/updtea
