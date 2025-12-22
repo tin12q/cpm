@@ -12,18 +12,26 @@ const BodyParser = require("body-parser");
 const Multer = require("multer");
 
 const corsOptions = {
+	origin: [
+		"http://localhost:3000",
+		"http://localhost:3001",
+		"https://cpm.tin12q.org",
+		"https://admin-cpm.tin12q.org",
+	],
+	credentials: true,
 	exposedHeaders: "Authorization",
 };
 
-var minioClient = new Minio.Client({
-	endPoint: "minio.tin12q.org",
-	accessKey: process.env.MINIO_ACCESS_KEY,
-	secretKey: process.env.MINIO_SECRET_KEY,
-	api: "s3v4",
-	path: "auto",
-	port: 443,
-	useSSL: true,
-});
+// MinIO disabled temporarily to avoid connection timeout
+// var minioClient = new Minio.Client({
+// 	endPoint: "minio.tin12q.org",
+// 	accessKey: process.env.MINIO_ACCESS_KEY,
+// 	secretKey: process.env.MINIO_SECRET_KEY,
+// 	api: "s3v4",
+// 	path: "auto",
+// 	port: 443,
+// 	useSSL: true,
+// });
 connectDB();
 
 app.use(morgan("combined"));

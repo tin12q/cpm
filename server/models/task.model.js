@@ -14,11 +14,18 @@ const taskSchema = new mongoose.Schema({
 	],
 
 	// New fields for task assignment
-	total_hours: { type: Number, default: 0 }, // Tổng số giờ cần làm
-	priority: { type: Number, default: 3, min: 1, max: 5 }, // Mức độ ưu tiên (1-5)
-	skills_required: [{ type: String }], // Kỹ năng cần có
+	difficulty: { type: Number, default: 2, min: 1, max: 4 }, // Độ khó: 1=Basic, 2=Easy, 3=Medium, 4=Hard
+	priority: { type: Number, default: 3, min: 1, max: 5 }, // Mức độ ưu tiên: 1=Very Low, 2=Low, 3=Medium, 4=High, 5=Critical
 	can_parallelize: { type: Boolean, default: true }, // Task có thể giao nhiều người
-	number_of_people_needed: { type: Number, default: 1, min: 1 }, // Số người cần để hoàn thành task
+});
+
+// Validation: Task must have at least 1 user assigned
+taskSchema.pre("save", function (next) {
+	if (!this.assigned_to || this.assigned_to.length === 0) {
+		next(new Error("Task must have at least one user assigned"));
+	} else {
+		next();
+	}
 });
 
 const Task = mongoose.model("tasks", taskSchema);
