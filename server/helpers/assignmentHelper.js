@@ -45,15 +45,29 @@ const skillSynonyms = {
 	testing: ["test", "qa", "quality assurance"],
 };
 
+function normalizeSkillNames(skills) {
+	if (!Array.isArray(skills)) return [];
+	return skills
+		.map((skill) => {
+			if (typeof skill === "string") return skill;
+			if (skill && typeof skill === "object") {
+				return skill.name || "";
+			}
+			return "";
+		})
+		.filter(Boolean);
+}
+
 /**
  * Mở rộng skills với synonyms
  * @param {Array<string>} skills - Danh sách skills
  * @returns {Array<string>} - Skills đã expand với synonyms
  */
 function expandSkillsWithSynonyms(skills) {
-	const expanded = new Set(skills.map((s) => s.toLowerCase().trim()));
+	const normalizedSkills = normalizeSkillNames(skills);
+	const expanded = new Set(normalizedSkills.map((s) => s.toLowerCase().trim()));
 
-	skills.forEach((skill) => {
+	normalizedSkills.forEach((skill) => {
 		const normalized = skill.toLowerCase().trim();
 		// Check if this skill has synonyms
 		for (const [key, synonyms] of Object.entries(skillSynonyms)) {
@@ -75,18 +89,21 @@ function expandSkillsWithSynonyms(skills) {
  * @returns {number} - Score từ 0 đến 1 (1 = match hoàn toàn)
  */
 function calculateSkillMatch(taskSkills, userSkills) {
-	if (!taskSkills || taskSkills.length === 0) {
+	const taskSkillNames = normalizeSkillNames(taskSkills);
+	const userSkillNames = normalizeSkillNames(userSkills);
+
+	if (!taskSkillNames || taskSkillNames.length === 0) {
 		return 1; // Không yêu cầu skill => ai cũng match
 	}
 
-	if (!userSkills || userSkills.length === 0) {
+	if (!userSkillNames || userSkillNames.length === 0) {
 		return 0; // User không có skill nào
 	}
 
 	// Expand skills with synonyms để match tốt hơn
 	// VD: "React" trong task sẽ match với "ReactJS" trong user skills
-	const expandedTaskSkills = expandSkillsWithSynonyms(taskSkills);
-	const expandedUserSkills = expandSkillsWithSynonyms(userSkills);
+	const expandedTaskSkills = expandSkillsWithSynonyms(taskSkillNames);
+	const expandedUserSkills = expandSkillsWithSynonyms(userSkillNames);
 
 	// Tạo vector cho task skills và user skills
 	const allSkills = [

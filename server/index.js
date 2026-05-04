@@ -13,6 +13,7 @@ const Multer = require("multer");
 
 const corsOptions = {
 	origin: [
+		"http://localhost:8004",
 		"http://localhost:3000",
 		"http://localhost:3001",
 		"https://cpm.tin12q.org",

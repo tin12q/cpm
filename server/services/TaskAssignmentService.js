@@ -1,62 +1,369 @@
 /**
  * Task Assignment Service
- * Sử dụng Min-Cost Max-Flow để phân công task tối ưu
+ * Two-stage assignment: MCMF for availability + Embedding for best match
  */
 
 const Task = require("../models/task.model");
 const User = require("../models/user.model");
+const Project = require("../models/project.model");
+const Team = require("../models/team.model");
 const {
 	calculateAllCosts,
 	prepareGraphData,
 } = require("../helpers/assignmentHelper");
 const { runMinCostMaxFlow } = require("../helpers/minCostMaxFlow");
+const {
+	calculateAdvancedHybridSkillMatch,
+	initializeEmbeddingSystem,
+} = require("../helpers/embeddingHelper");
 
 class TaskAssignmentService {
-	/**
-	 * Phân công tasks tự động cho users
-	 * @param {Array<string>} taskIds - Danh sách task IDs cần phân công
-	 * @param {Array<string>} userIds - Danh sách user IDs có thể được phân công (optional)
-	 * @param {Object} config - Configuration cho weights
-	 * @returns {Promise<Object>} - Kết quả phân công
-	 */
-	static async assignTasks(taskIds, userIds = null, config = {}) {
-		try {
-			// Lấy danh sách tasks
-			const tasks = await Task.find({
-				_id: { $in: taskIds },
-			});
+	static normalizeSkillList(skills) {
+		if (!Array.isArray(skills)) return [];
+		return skills
+			.map((skill) => {
+				if (typeof skill === "string") return skill.trim();
+				if (skill && typeof skill === "object") return String(skill.name || skill.label || skill.value || "").trim();
+				return "";
+			})
+			.filter(Boolean);
+	}
 
+	static normalizeTaskPayload(taskLike = {}) {
+		return {
+			...taskLike,
+			required_skills: this.normalizeSkillList(taskLike.required_skills || taskLike.skills_required),
+			skills_required: this.normalizeSkillList(taskLike.required_skills || taskLike.skills_required),
+			title: taskLike.title || "Untitled task",
+			description: taskLike.description || "",
+			priority: Number(taskLike.priority || 3),
+			difficulty: Number(taskLike.difficulty || 2),
+			due_date: Number(taskLike.due_date || Date.now() + 86400000),
+			can_parallelize: taskLike.can_parallelize !== false,
+		};
+	}
+
+	static async getCandidateUsers(userIds = null, projectId = null) {
+		if (Array.isArray(userIds) && userIds.length > 0) {
+			return User.find({ _id: { $in: userIds } });
+		}
+
+		if (projectId) {
+			const project = await Project.findById(projectId).select("team teams");
+			if (project) {
+				const teamIds = Array.isArray(project.teams) && project.teams.length > 0
+					? project.teams
+					: project.team
+						? [project.team]
+						: [];
+				if (teamIds.length > 0) {
+					const teams = await Team.find({ _id: { $in: teamIds } }).select("members");
+					const memberIds = [...new Set(
+						teams.flatMap((team) => (team.members || []).map((memberId) => memberId.toString()))
+					)];
+					if (memberIds.length > 0) {
+						return User.find({
+							_id: { $in: memberIds },
+							role: { $ne: "admin" },
+						});
+					}
+				}
+			}
+		}
+
+		return User.find({ role: { $ne: "admin" } });
+	}
+
+	/**
+	 * Two-stage assignment:
+	 * Stage 1: Use MCMF to find available employees (based on workload/capacity)
+	 * Stage 2: Use embedding + TF-IDF to pick best match from candidates
+	 * 
+	 * @param {Array<string>} taskIds - Task IDs to assign
+	 * @param {Array<string>} userIds - Candidate user IDs (optional)
+	 * @param {Object} config - Configuration
+	 * @returns {Promise<Object>} - Assignment result
+	 */
+	static async assignTasksHybrid(taskIds, userIds = null, config = {}) {
+		try {
+			// Get tasks
+			const tasks = await Task.find({ _id: { $in: taskIds } });
 			if (tasks.length === 0) {
 				throw new Error("No tasks found");
 			}
 
-			// Lấy danh sách users
+			// Get users
 			let users;
 			if (userIds && userIds.length > 0) {
-				users = await User.find({
-					_id: { $in: userIds },
-				});
+				users = await User.find({ _id: { $in: userIds } });
 			} else {
-				// Lấy tất cả users không phải admin
-				users = await User.find({
-					role: { $ne: "admin" },
-				});
+				users = await User.find({ role: { $ne: "admin" } });
 			}
 
 			if (users.length === 0) {
 				throw new Error("No users available for assignment");
 			}
 
-			// Tính cost matrix
+			// Initialize embedding system with user skills for TF-IDF
+			await initializeEmbeddingSystem(users);
+
+			// Stage 1 (graph-based): run MCMF once for the full task batch
+			const graphAvailability = await this.findAvailableCandidatesByGraph(
+				tasks,
+				users,
+				config
+			);
+
+			const assignments = [];
+
+			for (const task of tasks) {
+				// Stage 1: Use graph-based MCMF shortlist for each task
+				const candidates =
+					graphAvailability?.taskCandidates?.[task._id.toString()]?.length > 0
+						? graphAvailability.taskCandidates[task._id.toString()]
+						: await this.findAvailableCandidates(task, users, config);
+
+				if (candidates.length === 0) {
+					console.warn(`No available candidates for task: ${task.title}`);
+					continue;
+				}
+
+				// Stage 2: Use embedding to find best match from candidates
+				const bestMatches = await this.findBestMatchByEmbedding(task, candidates, config);
+
+				assignments.push({
+					task: {
+						id: task._id,
+						title: task.title,
+						priority: task.priority,
+						difficulty: task.difficulty,
+						due_date: task.due_date,
+						can_parallelize: task.can_parallelize,
+					},
+					assigned_users: bestMatches.map((u) => ({
+						id: u.user._id,
+						name: u.user.name,
+						email: u.user.email,
+						productivity_score: u.user.productivity_score,
+						skill_score: u.skillScore,
+						mcmf_score: u.mcmfScore,
+						combined_score: u.combinedScore,
+					})),
+					number_of_people: bestMatches.length,
+				});
+			}
+
+			return {
+				success: true,
+				method: "hybrid_mcmf_embedding_graph",
+				stage1: {
+					type: "graph_mcmf_shortlist",
+					max_flow: graphAvailability?.maxFlow || 0,
+					min_cost: graphAvailability?.minCost || 0,
+				},
+				assignments,
+				summary: this.generateSummary(assignments),
+			};
+		} catch (error) {
+			console.error("Error in assignTasksHybrid:", error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Stage 1 (graph-based): Build MCMF graph across all tasks/users once,
+	 * then derive shortlist candidates per task from graph assignment + low-cost buffer.
+	 */
+	static async findAvailableCandidatesByGraph(tasks, users, config = {}) {
+		const userMap = new Map(users.map((user) => [String(user._id), user]));
+		const costMatrix = calculateAllCosts(tasks, users, config);
+		const graphData = prepareGraphData(tasks, users, costMatrix);
+		const graphResult = runMinCostMaxFlow(graphData);
+
+		const candidateMultiplier = Math.max(
+			1,
+			Number(config.graphCandidateMultiplier || 2)
+		);
+		const taskCandidates = {};
+
+		for (const task of tasks) {
+			const taskId = String(task._id);
+			const graphUserIds = graphResult.assignments[taskId] || [];
+			const graphCandidates = graphUserIds
+				.map((userId) => {
+					const user = userMap.get(String(userId));
+					if (!user) return null;
+					return {
+						user,
+						mcmfCost: costMatrix?.[taskId]?.[String(userId)] ?? 1,
+					};
+				})
+				.filter(Boolean);
+
+			// Add low-cost alternatives so stage 2 embedding can still rank among choices.
+			const targetShortlistSize = task.can_parallelize
+				? Math.max(
+						graphCandidates.length,
+						(config.maxParallelAssignees || 3) * candidateMultiplier
+				  )
+				: Math.max(graphCandidates.length, candidateMultiplier);
+
+			const sortedByCost = users
+				.map((user) => ({
+					user,
+					mcmfCost: costMatrix?.[taskId]?.[String(user._id)] ?? 1,
+				}))
+				.sort((a, b) => a.mcmfCost - b.mcmfCost);
+
+			const merged = [];
+			const seen = new Set();
+
+			for (const candidate of graphCandidates) {
+				const key = String(candidate.user._id);
+				if (seen.has(key)) continue;
+				seen.add(key);
+				merged.push(candidate);
+			}
+
+			for (const candidate of sortedByCost) {
+				if (merged.length >= targetShortlistSize) break;
+				const key = String(candidate.user._id);
+				if (seen.has(key)) continue;
+				seen.add(key);
+				merged.push(candidate);
+			}
+
+			taskCandidates[taskId] = merged;
+		}
+
+		return {
+			taskCandidates,
+			maxFlow: graphResult.maxFlow,
+			minCost: graphResult.minCost,
+		};
+	}
+
+	/**
+	 * Stage 1: Find available candidates using MCMF cost calculation
+	 * Returns users sorted by availability (lower cost = more available)
+	 */
+	static async findAvailableCandidates(task, users, config = {}) {
+		const { calculateAssignmentCost } = require("../helpers/assignmentHelper");
+
+		// Calculate MCMF cost for each user
+		const candidatesWithCost = users.map((user) => {
+			const cost = calculateAssignmentCost(task, user, config);
+			return {
+				user,
+				mcmfCost: cost,
+			};
+		});
+
+		// Sort by cost (lower = better/more available)
+		candidatesWithCost.sort((a, b) => a.mcmfCost - b.mcmfCost);
+
+		// Filter out users with too high workload (cost > threshold)
+		const maxCostThreshold = config.maxCostThreshold || 0.8;
+		const filtered = candidatesWithCost.filter((c) => c.mcmfCost <= maxCostThreshold);
+
+		// If all filtered out, take top 50% anyway
+		if (filtered.length === 0 && candidatesWithCost.length > 0) {
+			const takeCount = Math.max(1, Math.ceil(candidatesWithCost.length / 2));
+			return candidatesWithCost.slice(0, takeCount);
+		}
+
+		return filtered;
+	}
+
+	/**
+	 * Stage 2: Find best match from candidates using embedding + TF-IDF
+	 * Uses dot product similarity between task requirements and user skills
+	 */
+	static async findBestMatchByEmbedding(task, candidates, config = {}) {
+		const taskSkills = task.required_skills || task.skills_required || [];
+		const taskTitle = task.title || "";
+		const taskDescription = task.description || "";
+
+		// Calculate skill match score for each candidate
+		const scoredCandidates = await Promise.all(
+			candidates.map(async (candidate) => {
+				const userSkills = candidate.user.skills || [];
+
+				// Use advanced hybrid matching (exact + embedding + TF-IDF)
+				const matchResult = await calculateAdvancedHybridSkillMatch(
+					taskSkills,
+					userSkills,
+					{
+						taskTitle,
+						taskDescription,
+					}
+				);
+
+				const skillScore = typeof matchResult === "object" ? matchResult.score : matchResult;
+
+				// Normalize MCMF cost to 0-1 score (lower cost = higher score)
+				const mcmfScore = 1 - Math.min(candidate.mcmfCost, 1);
+
+				// Combined score: weighted average
+				const W_skill = config.W_skill || 0.6;
+				const W_mcmf = config.W_mcmf || 0.4;
+				const combinedScore = W_skill * skillScore + W_mcmf * mcmfScore;
+
+				return {
+					user: candidate.user,
+					skillScore,
+					mcmfScore,
+					combinedScore,
+					breakdown: matchResult.breakdown || null,
+				};
+			})
+		);
+
+		// Sort by combined score (higher = better)
+		scoredCandidates.sort((a, b) => b.combinedScore - a.combinedScore);
+
+		// Determine how many to assign
+		const maxAssignees = task.can_parallelize ? (config.maxParallelAssignees || 3) : 1;
+		const minScoreThreshold = config.minScoreThreshold || 0.1;
+
+		// Take top candidates that meet threshold
+		const selected = scoredCandidates
+			.filter((c) => c.combinedScore >= minScoreThreshold)
+			.slice(0, maxAssignees);
+
+		// If none meet threshold, take at least one
+		if (selected.length === 0 && scoredCandidates.length > 0) {
+			selected.push(scoredCandidates[0]);
+		}
+
+		return selected;
+	}
+
+	/**
+	 * Original MCMF-only assignment (kept for backwards compatibility)
+	 */
+	static async assignTasks(taskIds, userIds = null, config = {}) {
+		try {
+			const tasks = await Task.find({ _id: { $in: taskIds } });
+			if (tasks.length === 0) {
+				throw new Error("No tasks found");
+			}
+
+			let users;
+			if (userIds && userIds.length > 0) {
+				users = await User.find({ _id: { $in: userIds } });
+			} else {
+				users = await User.find({ role: { $ne: "admin" } });
+			}
+
+			if (users.length === 0) {
+				throw new Error("No users available for assignment");
+			}
+
 			const costMatrix = calculateAllCosts(tasks, users, config);
-
-			// Chuẩn bị graph data
 			const graphData = prepareGraphData(tasks, users, costMatrix);
-
-			// Chạy Min-Cost Max-Flow
 			const result = runMinCostMaxFlow(graphData);
 
-			// Format kết quả
 			const formattedAssignments = await this.formatAssignments(
 				result.assignments,
 				tasks,
@@ -76,12 +383,66 @@ class TaskAssignmentService {
 		}
 	}
 
+	static async previewDraftAssignment(taskInput, userIds = null, config = {}) {
+		try {
+			const task = this.normalizeTaskPayload(taskInput);
+			const draftTask = {
+				...task,
+				_id: task._id || "draft-task",
+			};
+			const users = await this.getCandidateUsers(userIds, task.project || null);
+
+			if (!users || users.length === 0) {
+				throw new Error("No users available for assignment");
+			}
+
+			await initializeEmbeddingSystem(users);
+			const graphAvailability = await this.findAvailableCandidatesByGraph(
+				[draftTask],
+				users,
+				config
+			);
+			const candidates =
+				graphAvailability?.taskCandidates?.[String(draftTask._id)] ||
+				(await this.findAvailableCandidates(task, users, config));
+			const bestMatches = await this.findBestMatchByEmbedding(task, candidates, config);
+			const assignment = {
+				task: {
+					id: null,
+					title: task.title,
+					priority: task.priority,
+					difficulty: task.difficulty,
+					due_date: task.due_date,
+					can_parallelize: task.can_parallelize,
+					required_skills: task.required_skills,
+				},
+				assigned_users: bestMatches.map((u) => ({
+					id: u.user._id,
+					name: u.user.name,
+					email: u.user.email,
+					productivity_score: u.user.productivity_score,
+					skill_score: u.skillScore,
+					mcmf_score: u.mcmfScore,
+					combined_score: u.combinedScore,
+				})),
+				number_of_people: bestMatches.length,
+			};
+
+			return {
+				success: true,
+				preview: true,
+				method: "hybrid_mcmf_embedding_graph",
+				assignments: [assignment],
+				summary: this.generateSummary([assignment]),
+			};
+		} catch (error) {
+			console.error("Error in previewDraftAssignment:", error);
+			throw error;
+		}
+	}
+
 	/**
-	 * Format assignments cho output
-	 * @param {Object} assignments - Raw assignments từ MCMF
-	 * @param {Array} tasks - Danh sách tasks
-	 * @param {Array} users - Danh sách users
-	 * @returns {Promise<Array>} - Formatted assignments
+	 * Format assignments for output
 	 */
 	static async formatAssignments(assignments, tasks, users) {
 		const formatted = [];
@@ -115,9 +476,7 @@ class TaskAssignmentService {
 	}
 
 	/**
-	 * Tạo summary cho kết quả phân công
-	 * @param {Array} assignments - Formatted assignments
-	 * @returns {Object} - Summary
+	 * Generate summary
 	 */
 	static generateSummary(assignments) {
 		const totalTasks = assignments.length;
@@ -146,9 +505,7 @@ class TaskAssignmentService {
 	}
 
 	/**
-	 * Apply assignments vào database
-	 * @param {Array} assignments - Formatted assignments
-	 * @returns {Promise<Object>} - Result
+	 * Apply assignments to database
 	 */
 	static async applyAssignments(assignments) {
 		try {
@@ -157,17 +514,13 @@ class TaskAssignmentService {
 			for (const assignment of assignments) {
 				const userIds = assignment.assigned_users.map((u) => u.id);
 
-				// Update task
 				const updateTask = Task.findByIdAndUpdate(
 					assignment.task.id,
-					{
-						assigned_to: userIds,
-					},
+					{ assigned_to: userIds },
 					{ new: true }
 				);
 				updates.push(updateTask);
 
-				// Update current_task_count cho users
 				for (const user of assignment.assigned_users) {
 					const updateUser = User.findByIdAndUpdate(user.id, {
 						$inc: { current_task_count: 1 },
@@ -190,24 +543,20 @@ class TaskAssignmentService {
 	}
 
 	/**
-	 * Phân công và apply vào database trong 1 bước
-	 * @param {Array<string>} taskIds - Task IDs
-	 * @param {Array<string>} userIds - User IDs (optional)
-	 * @param {Object} config - Configuration
-	 * @returns {Promise<Object>} - Result
+	 * Hybrid assign and apply (default method now)
 	 */
 	static async assignAndApply(taskIds, userIds = null, config = {}) {
 		try {
-			// Phân công tasks
-			const assignmentResult = await this.assignTasks(taskIds, userIds, config);
+			// Use hybrid method (MCMF + Embedding)
+			const assignmentResult = await this.assignTasksHybrid(taskIds, userIds, config);
 
-			// Apply vào database
 			await this.applyAssignments(assignmentResult.assignments);
 
 			return {
 				success: true,
 				...assignmentResult,
 				applied: true,
+				method: "hybrid_mcmf_embedding",
 			};
 		} catch (error) {
 			console.error("Error in assignAndApply:", error);
@@ -216,20 +565,15 @@ class TaskAssignmentService {
 	}
 
 	/**
-	 * Override assignment - PM có thể thay đổi phân công
-	 * @param {string} taskId - Task ID
-	 * @param {Array<string>} userIds - User IDs mới
-	 * @returns {Promise<Object>} - Result
+	 * Override assignment
 	 */
 	static async overrideAssignment(taskId, userIds) {
 		try {
-			// Lấy task cũ
 			const oldTask = await Task.findById(taskId);
 			if (!oldTask) {
 				throw new Error("Task not found");
 			}
 
-			// Giảm current_task_count cho users cũ
 			if (oldTask.assigned_to && oldTask.assigned_to.length > 0) {
 				await User.updateMany(
 					{ _id: { $in: oldTask.assigned_to } },
@@ -237,14 +581,12 @@ class TaskAssignmentService {
 				);
 			}
 
-			// Update task với users mới
 			const updatedTask = await Task.findByIdAndUpdate(
 				taskId,
 				{ assigned_to: userIds },
 				{ new: true }
 			).populate("assigned_to");
 
-			// Tăng current_task_count cho users mới
 			if (userIds && userIds.length > 0) {
 				await User.updateMany(
 					{ _id: { $in: userIds } },
@@ -264,14 +606,10 @@ class TaskAssignmentService {
 	}
 
 	/**
-	 * Tái phân công tasks khi priority thay đổi
-	 * @param {string} projectId - Project ID
-	 * @param {Object} config - Configuration
-	 * @returns {Promise<Object>} - Result
+	 * Reassign by project
 	 */
 	static async reassignByProject(projectId, config = {}) {
 		try {
-			// Lấy tất cả tasks chưa hoàn thành của project
 			const tasks = await Task.find({
 				project: projectId,
 				status: { $ne: "completed" },
@@ -286,8 +624,6 @@ class TaskAssignmentService {
 			}
 
 			const taskIds = tasks.map((t) => t._id.toString());
-
-			// Phân công lại
 			return await this.assignAndApply(taskIds, null, config);
 		} catch (error) {
 			console.error("Error in reassignByProject:", error);

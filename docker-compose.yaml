@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongo:
-    image: "${REGISTRY_URL}/mongo:latest"
+    image: "mongo:latest"
     container_name: mongo
     ports:
       - '27017:27017'
@@ -12,6 +12,8 @@ services:
     volumes:
       - 'mongo-data:/data/db'
       - './init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro'
+      - './init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro'
+      - './exampleDB:/docker-entrypoint-initdb.d/exampleDB:ro'
     healthcheck:
       test:
         - CMD
@@ -28,14 +30,16 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: "${REGISTRY_URL}/backend:latest"
+    image: "backend:latest"
     container_name: backend
     ports:
-      - '8003:3000'
+      - '1337:1337'
     environment:
-      JWT_SECRET: ${JWT_SECRET}
+      PORT: 1337
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      PHOBERT_SERVICE_URL: http://embedding:5001
       MONGODB_URI: 'mongodb://root:example@mongo:27017/cpm?authSource=admin'
     depends_on:
       - mongo
@@ -45,12 +49,12 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: "${REGISTRY_URL}/frontend:latest"
+    image: "frontend:latest"
     container_name: frontend
     ports:
       - "8004:80"
     environment:
-      REACT_APP_API_URL: ${REACT_APP_API_URL}
+      VITE_API_URL: ${VITE_API_URL:-http://backend:1337/api}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
       interval: 30s
@@ -58,7 +62,26 @@ services:
       retries: 5
       start_period: 30s
 
+  embedding:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.embedding
+    image: "embedding:latest"
+    container_name: embedding
+    environment:
+      PHOBERT_PORT: 5001
+    ports:
+      - "5001:5001"
+    volumes:
+      - phobert-cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
 volumes:
   mongo-data:
-    external: true
-    name: mongo-data
+  phobert-cache:

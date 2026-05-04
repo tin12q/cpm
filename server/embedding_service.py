@@ -3,6 +3,7 @@ PhoBERT Embedding Service
 Local Vietnamese embedding service using PhoBERT model from HuggingFace
 """
 
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import AutoModel, AutoTokenizer
@@ -216,10 +217,11 @@ def clear_cache():
 
 if __name__ == '__main__':
     logger.info("Starting PhoBERT Embedding Service...")
+    port = int(os.environ.get("PHOBERT_PORT", 5001))
     
     if initialize_model():
-        logger.info("Server ready on http://localhost:5000")
-        app.run(host='0.0.0.0', port=5000, debug=False)
+        logger.info("Server ready on http://localhost:%s", port)
+        app.run(host='0.0.0.0', port=port, debug=False)
     else:
         logger.error("Failed to initialize model. Exiting.")
         exit(1)

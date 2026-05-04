@@ -13,7 +13,8 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const CONFIG = {
 	// PhoBERT service URL (local)
-	phobertServiceUrl: "http://localhost:5000",
+	phobertServiceUrl:
+		process.env.PHOBERT_SERVICE_URL || "http://localhost:5001",
 
 	// Gemini API (fallback)
 	geminiApiKey: process.env.GEMINI_API_KEY,
@@ -32,6 +33,36 @@ const CONFIG = {
 	usePhoBERT: true,
 	useTFIDF: true,
 };
+
+function normalizeSkillEntry(skill) {
+	if (typeof skill === "string") return skill.trim();
+	if (skill && typeof skill === "object") {
+		const name = (skill.name || "").trim();
+		const description = (skill.description || "").trim();
+		const combined = [name, description].filter(Boolean).join(" - ");
+		return combined || name;
+	}
+	return "";
+}
+
+function normalizeSkillList(skills) {
+	if (!Array.isArray(skills)) return [];
+	return skills
+		.map(normalizeSkillEntry)
+		.map((s) => s.trim())
+		.filter(Boolean);
+}
+
+function normalizeSkillNames(skills) {
+	if (!Array.isArray(skills)) return [];
+	return skills
+		.map((skill) => {
+			if (typeof skill === "string") return skill.trim();
+			if (skill && typeof skill === "object") return (skill.name || "").trim();
+			return "";
+		})
+		.filter(Boolean);
+}
 
 // ============================================================================
 // TF-IDF IMPLEMENTATION
@@ -54,7 +85,10 @@ class TFIDFCalculator {
 
 		// Count document frequency for each term
 		allSkillSets.forEach((skills) => {
-			const uniqueSkills = new Set(skills.map((s) => s.toLowerCase().trim()));
+			const normalizedSkills = normalizeSkillList(skills);
+			const uniqueSkills = new Set(
+				normalizedSkills.map((s) => s.toLowerCase().trim())
+			);
 			uniqueSkills.forEach((skill) => {
 				this.vocabulary.set(skill, (this.vocabulary.get(skill) || 0) + 1);
 			});
@@ -91,12 +125,15 @@ class TFIDFCalculator {
 	 * Calculate TF-IDF vector for a skill set
 	 */
 	calculateTFIDFVector(skillSet) {
-		const vector = new Map();
 
-		skillSet.forEach((skill) => {
+		const vector = new Map();
+		const normalizedSkillSet = normalizeSkillList(skillSet);
+
+		normalizedSkillSet.forEach((skill) => {
 			const normalizedSkill = skill.toLowerCase().trim();
-			const tf = this.calculateTF(skill, skillSet);
+			const tf = this.calculateTF(skill, normalizedSkillSet);
 			const idf = this.calculateIDF(skill);
+
 			vector.set(normalizedSkill, tf * idf);
 		});
 
@@ -107,11 +144,14 @@ class TFIDFCalculator {
 	 * Calculate TF-IDF similarity score (dot product)
 	 */
 	calculateSimilarity(taskSkills, userSkills) {
-		if (!taskSkills || taskSkills.length === 0) return 0;
-		if (!userSkills || userSkills.length === 0) return 0;
+		const normalizedTaskSkills = normalizeSkillList(taskSkills);
+		const normalizedUserSkills = normalizeSkillList(userSkills);
 
-		const taskVector = this.calculateTFIDFVector(taskSkills);
-		const userVector = this.calculateTFIDFVector(userSkills);
+		if (!normalizedTaskSkills || normalizedTaskSkills.length === 0) return 0;
+		if (!normalizedUserSkills || normalizedUserSkills.length === 0) return 0;
+
+		const taskVector = this.calculateTFIDFVector(normalizedTaskSkills);
+		const userVector = this.calculateTFIDFVector(normalizedUserSkills);
 
 		// Calculate dot product
 		let dotProduct = 0;
@@ -194,11 +234,14 @@ async function getPhoBERTEmbedding(text) {
  * Calculate PhoBERT similarity using dot product (vectors are normalized)
  */
 async function calculatePhoBERTSimilarity(taskSkills, userSkills) {
-	if (!taskSkills || taskSkills.length === 0) return 0;
-	if (!userSkills || userSkills.length === 0) return 0;
+	const taskTokens = normalizeSkillList(taskSkills);
+	const userTokens = normalizeSkillList(userSkills);
 
-	const taskText = taskSkills.join(", ");
-	const userText = userSkills.join(", ");
+	if (!taskTokens || taskTokens.length === 0) return 0;
+	if (!userTokens || userTokens.length === 0) return 0;
+
+	const taskText = taskTokens.join(", ");
+	const userText = userTokens.join(", ");
 
 	try {
 		const response = await fetch(`${CONFIG.phobertServiceUrl}/similarity`, {
@@ -280,11 +323,14 @@ function normalizeVector(vec) {
  * Calculate Gemini similarity
  */
 async function calculateGeminiSimilarity(taskSkills, userSkills) {
-	if (!taskSkills || taskSkills.length === 0) return 0;
-	if (!userSkills || userSkills.length === 0) return 0;
+	const taskTokens = normalizeSkillList(taskSkills);
+	const userTokens = normalizeSkillList(userSkills);
 
-	const taskText = taskSkills.join(", ");
-	const userText = userSkills.join(", ");
+	if (!taskTokens || taskTokens.length === 0) return 0;
+	if (!userTokens || userTokens.length === 0) return 0;
+
+	const taskText = taskTokens.join(", ");
+	const userText = userTokens.join(", ");
 
 	const [taskEmb, userEmb] = await Promise.all([
 		getGeminiEmbedding(taskText),
@@ -307,11 +353,14 @@ async function calculateGeminiSimilarity(taskSkills, userSkills) {
  * This is the baseline method
  */
 function calculateExactSkillMatch(taskSkills, userSkills) {
-	if (!taskSkills || taskSkills.length === 0) return 1;
-	if (!userSkills || userSkills.length === 0) return 0;
+	const taskSkillNames = normalizeSkillNames(taskSkills);
+	const userSkillNames = normalizeSkillNames(userSkills);
 
-	const taskSet = new Set(taskSkills.map((s) => s.toLowerCase().trim()));
-	const userSet = new Set(userSkills.map((s) => s.toLowerCase().trim()));
+	if (!taskSkillNames || taskSkillNames.length === 0) return 1;
+	if (!userSkillNames || userSkillNames.length === 0) return 0;
+
+	const taskSet = new Set(taskSkillNames.map((s) => s.toLowerCase().trim()));
+	const userSet = new Set(userSkillNames.map((s) => s.toLowerCase().trim()));
 
 	// Calculate intersection
 	const intersection = new Set([...taskSet].filter((x) => userSet.has(x)));
@@ -334,8 +383,19 @@ async function calculateAdvancedHybridSkillMatch(
 	userSkills,
 	options = {}
 ) {
-	if (!taskSkills || taskSkills.length === 0) return 1;
-	if (!userSkills || userSkills.length === 0) return 0;
+	const normalizedTaskSkills = normalizeSkillList(taskSkills);
+	const normalizedUserSkills = normalizeSkillList(userSkills);
+	const taskTextParts = [
+		options.taskTitle,
+		...normalizedTaskSkills,
+		options.taskDescription,
+	]
+		.filter(Boolean)
+		.map((t) => t.trim());
+	const userTextParts = normalizedUserSkills;
+
+	if (!normalizedTaskSkills || normalizedTaskSkills.length === 0) return 1;
+	if (!normalizedUserSkills || normalizedUserSkills.length === 0) return 0;
 
 	const weights = options.weights || CONFIG.weights;
 	const scores = {
@@ -345,20 +405,23 @@ async function calculateAdvancedHybridSkillMatch(
 	};
 
 	// 1. Exact Match (Always calculate)
-	scores.exact = calculateExactSkillMatch(taskSkills, userSkills);
+	scores.exact = calculateExactSkillMatch(
+		normalizedTaskSkills,
+		normalizedUserSkills
+	);
 
 	// 2. Embedding Score (PhoBERT or Gemini fallback)
 	try {
 		if (CONFIG.usePhoBERT && phobertAvailable) {
 			scores.embedding = await calculatePhoBERTSimilarity(
-				taskSkills,
-				userSkills
+				taskTextParts,
+				userTextParts
 			);
 		} else if (CONFIG.geminiApiKey) {
 			console.log("PhoBERT unavailable, using Gemini fallback");
 			scores.embedding = await calculateGeminiSimilarity(
-				taskSkills,
-				userSkills
+				taskTextParts,
+				userTextParts
 			);
 		} else {
 			// No embedding available, increase exact match weight
@@ -374,7 +437,10 @@ async function calculateAdvancedHybridSkillMatch(
 
 	// 3. TF-IDF Score
 	if (CONFIG.useTFIDF && tfidfCalculator.documentCount > 0) {
-		scores.tfidf = tfidfCalculator.calculateSimilarity(taskSkills, userSkills);
+		scores.tfidf = tfidfCalculator.calculateSimilarity(
+			normalizedTaskSkills,
+			normalizedUserSkills
+		);
 	} else {
 		// No TF-IDF available, redistribute weight
 		weights.exactMatch += weights.tfidfScore;
@@ -574,9 +640,10 @@ const skillSynonyms = {
 };
 
 function expandSkillsWithSynonyms(skills) {
-	const expanded = new Set(skills.map((s) => s.toLowerCase()));
+	const skillNames = normalizeSkillNames(skills);
+	const expanded = new Set(skillNames.map((s) => s.toLowerCase()));
 
-	skills.forEach((skill) => {
+	skillNames.forEach((skill) => {
 		const normalized = skill.toLowerCase();
 		// Check if this skill has synonyms
 		for (const [key, synonyms] of Object.entries(skillSynonyms)) {

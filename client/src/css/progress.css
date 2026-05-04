@@ -1,47 +1,24 @@
-.progress-progress {
-    width: 216px;
-    height: 142px;
-    display: flex;
-    position: relative;
-    box-shadow: 5px 5px 10px 0px #d4d4d4;
-    align-items: flex-start;
-    flex-shrink: 1;
-    border-radius: var(--dl-radius-radius-radius8);
-    background-color: #ffffff;
-  }
-  .progress-text {
-    top: -49px;
-    left: -58px;
-    color: rgb(236, 229, 199);
-    width: 100px;
-    height: 100px;
-    z-index: 100;
-    position: absolute;
-    font-size: 32px;
-    box-shadow: 5px 5px 10px 0px #d4d4d4;
-    font-style: Regular;
-    text-align: center;
-    font-family: Roboto;
-    font-weight: 400;
-    line-height: normal;
-    padding-top: var(--dl-space-space-twounits);
-    font-stretch: normal;
-    padding-left: var(--dl-space-space-unit);
-    border-radius: var(--dl-radius-radius-round);
-    padding-right: var(--dl-space-space-unit);
-    padding-bottom: var(--dl-space-space-twounits);
-    text-decoration:  none;
-    background-color: var(--dl-color-success-300);
-  }
-  .progress-text1 {
-    font-size: 50px;
-    align-self: center;
-    margin-left: var(--dl-space-space-unit);
-    margin-right: var(--dl-space-space-unit);
-  }
-  .progress-root-class-name {
-    top: 0px;
-    left: 0px;
-    position: absolute;
-  }
-  
+.progress-shell {
+  width: 100%;
+}
+
+.progress-card {
+  border: 2px dashed rgba(148, 163, 184, 0.7);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(254, 243, 199, 0.9));
+  box-shadow: 8px 8px 0 rgba(31, 41, 55, 0.12);
+}
+
+.progress-track {
+  height: 0.9rem;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+  border: 1px dashed rgba(148, 163, 184, 0.5);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #86efac);
+}

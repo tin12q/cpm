@@ -1,28 +1,30 @@
 .Navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: rgba(255, 250, 240, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px dashed rgba(148, 163, 184, 0.5);
+  box-shadow: 0 8px 0 rgba(31, 41, 55, 0.08);
+}
 
-  }
-.Header{
-  position:  fixed;
+.Navbar.dark {
+  --bg-color: rgba(255, 250, 240, 0.92);
+  --text-color: #1f2937;
+}
+
+.Header {
+  position: fixed;
   top: 11vh;
   left: 0;
   right: 0;
   z-index: 999;
-}.Navbar {
-  --bg-color: #fff;
-  --text-color: #333;
 }
 
-.Navbar.dark {
-  --bg-color: #333;
-  --text-color: #fff;
-}
-
-.Navbar {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+.Navbar .text-blue-gray-900,
+.Navbar .text-blue-gray-700,
+.Navbar .text-blue-gray-600 {
+  color: #1f2937 !important;
 }

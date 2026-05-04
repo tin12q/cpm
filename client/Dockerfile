@@ -8,8 +8,8 @@ WORKDIR /app
 COPY package*.json ./
 
 
-ARG REACT_APP_API_URL
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 # Install dependencies
 RUN npm install
 
@@ -20,7 +20,7 @@ RUN npm run build
 
 FROM nginx:1.21
 
-COPY --from=build-stage /app/build /usr/share/nginx/html
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 CMD nginx -g 'daemon off;'

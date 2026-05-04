@@ -1,2 +1,1 @@
-﻿db.createCollection('cpm');
-db.cpm.insert({ name: 'sample data' });
+﻿// Initialization handled by init-mongo.sh (mongoimport). Keeping file to satisfy init hook.

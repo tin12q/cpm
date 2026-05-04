@@ -7,6 +7,9 @@ const userRoutes = require("./user");
 const taskRoutes = require("./tasks");
 const fileRoutes = require("./file");
 const assignmentRoutes = require("./assignments");
+const skillRoutes = require("./skills");
+const stageTemplateRoutes = require("./stageTemplates");
+const contactRoutes = require("./contacts");
 
 router.use("/projects", projectRoutes);
 router.use("/users", userRoutes);
@@ -15,5 +18,8 @@ router.use("/auth", Auth);
 router.use("/teams", teamRoutes);
 router.use("/file", fileRoutes);
 router.use("/assignments", assignmentRoutes);
+router.use("/skills", skillRoutes);
+router.use("/stage-templates", stageTemplateRoutes);
+router.use("/contacts", contactRoutes);
+
 module.exports = router;
-// dm/api/projects/tasks/updtea

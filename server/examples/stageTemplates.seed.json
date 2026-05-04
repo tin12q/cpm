@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Default Delivery",
+    "description": "General software delivery flow",
+    "stages": [
+      { "key": "backlog", "name": "Backlog", "color": "amber", "order": 0 },
+      { "key": "in-progress", "name": "In Progress", "color": "blue", "order": 1 },
+      { "key": "review", "name": "Review", "color": "violet", "order": 2 },
+      { "key": "done", "name": "Done", "color": "green", "order": 3 }
+    ]
+  },
+  {
+    "name": "Content Pipeline",
+    "description": "Draft to publish content stages",
+    "stages": [
+      { "key": "idea", "name": "Idea", "color": "amber", "order": 0 },
+      { "key": "draft", "name": "Draft", "color": "blue", "order": 1 },
+      { "key": "editing", "name": "Editing", "color": "violet", "order": 2 },
+      { "key": "published", "name": "Published", "color": "green", "order": 3 }
+    ]
+  }
+]

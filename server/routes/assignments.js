@@ -5,6 +5,7 @@
 
 const express = require("express");
 const router = express.Router();
+const { authenticate, requireRole } = require("../helpers/roleValidator");
 const {
 	previewAssignment,
 	applyAssignment,
@@ -14,18 +15,18 @@ const {
 } = require("../controller/AssignmentController");
 
 // GET: Lấy default config
-router.get("/default-config", getDefaultConfig);
+router.get("/default-config", authenticate, requireRole({ collection: 1, task: 0 }), getDefaultConfig);
 
 // POST: Preview assignment (không apply vào DB)
-router.post("/preview", previewAssignment);
+router.post("/preview", authenticate, requireRole({ collection: 1, task: 1 }), previewAssignment);
 
 // POST: Apply assignment vào DB
-router.post("/apply", applyAssignment);
+router.post("/apply", authenticate, requireRole({ collection: 1, task: 2 }), applyAssignment);
 
 // PUT: Override assignment thủ công
-router.put("/:taskId/override", overrideAssignment);
+router.put("/:taskId/override", authenticate, requireRole({ collection: 1, task: 2 }), overrideAssignment);
 
 // POST: Reassign tất cả tasks của project
-router.post("/reassign-project/:projectId", reassignProject);
+router.post("/reassign-project/:projectId", authenticate, requireRole({ collection: 1, task: 2 }), reassignProject);
 
 module.exports = router;

@@ -22,11 +22,22 @@ const TaskAssignmentService = require("../services/TaskAssignmentService");
  */
 const previewAssignment = async (req, res) => {
 	try {
-		const { task_ids, user_ids, config } = req.body;
+		const { task_ids, user_ids, config, task, task_input, draft_task } = req.body;
+
+		const draftTask = task || task_input || draft_task || null;
+
+		if (draftTask) {
+			const result = await TaskAssignmentService.previewDraftAssignment(
+				draftTask,
+				user_ids,
+				config
+			);
+			return res.json(result);
+		}
 
 		if (!task_ids || !Array.isArray(task_ids) || task_ids.length === 0) {
 			return res.status(400).json({
-				error: "task_ids is required and must be a non-empty array",
+				error: "Provide either a draft task payload or task_ids as a non-empty array",
 			});
 		}
 
