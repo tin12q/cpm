@@ -1,16 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qlcv/main.dart';
 import 'package:qlcv/model/db_helper.dart';
 import 'package:qlcv/model/projects_page.dart';
-import 'package:qlcv/route/project_tasks.dart';
-import '../home_page.dart';
-import '../route/home.dart';
+
 import '../utils/status_helper.dart';
 import 'color_picker.dart';
 import 'task.dart';
-import 'db_helper.dart';
 
 class TaskPage extends StatefulWidget {
   final Task task;
@@ -20,27 +15,45 @@ class TaskPage extends StatefulWidget {
     required this.task,
   }) : super(key: key);
 
-  State<TaskPage> createState() => _TaskPageState(task: task);
+  @override
+  State<TaskPage> createState() => _TaskPageState();
 }
 
 class _TaskPageState extends State<TaskPage> {
   late Task task;
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
+  late String _selectedStatus;
   List<String> selectedEmployeeIds = [];
+
+  bool get _canEdit =>
+      DBHelper.mainUser.role == 'admin' || DBHelper.mainUser.role == 'manager';
 
   @override
   void initState() {
     super.initState();
-    // Use Set to ensure unique employee IDs
+    task = widget.task;
     selectedEmployeeIds = task.emp.toSet().toList();
+    _titleController = TextEditingController(text: task.title);
+    _descriptionController = TextEditingController(text: task.description);
+    _selectedStatus = StatusHelper.normalizeStatus(task.status);
+    if (!StatusHelper.taskStatuses.contains(_selectedStatus)) {
+      _selectedStatus = 'in_progress';
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   Future<void> updateTask(Task task, String title, String description,
       DateTime endDate, String status, List<String> employeeIds,
       {int? difficulty, int? priority, bool? canParallelize}) async {
-    DateFormat outputFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-    task.title = title;
-    task.description = description;
+    task.title = title.trim();
+    task.description = description.trim();
     task.endDate = endDate;
     task.status = status;
     task.emp = employeeIds;
@@ -54,520 +67,837 @@ class _TaskPageState extends State<TaskPage> {
     await DBHelper.taskUpdate();
   }
 
-  _TaskPageState({required this.task});
+  Future<void> _confirmUpdate() async {
+    final shouldUpdate = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Update task'),
+        content: const Text('Save the latest changes to this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldUpdate != true) return;
+
+    await updateTask(
+      task,
+      _titleController.text,
+      _descriptionController.text,
+      task.endDate,
+      _selectedStatus,
+      selectedEmployeeIds,
+      difficulty: task.difficulty,
+      priority: task.priority,
+      canParallelize: task.canParallelize,
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Task updated successfully'),
+        backgroundColor: ColorPicker.buttonSuccess,
+      ),
+    );
+  }
+
+  Future<void> _openProject() async {
+    final matches = DBHelper.projects.where((p) => p.id == task.project);
+    final project = matches.isNotEmpty ? matches.first : null;
+    if (project == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Project not found'),
+          backgroundColor: ColorPicker.buttonDanger,
+        ),
+      );
+      return;
+    }
+
+    DBHelper.currentProjectId = project.id;
+    await DBHelper.getEmpByProjectId(project.id);
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProjectPage(project: project)),
+    );
+  }
+
+  Future<void> _pickDueDate() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate:
+          task.endDate.isAfter(DateTime.now()) ? task.endDate : DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(3000),
+    );
+    if (selectedDate == null) return;
+    setState(() {
+      task.endDate = selectedDate;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Create TextEditingController for each field
-
-    final titleController = TextEditingController(text: task.title);
-    final descriptionController = TextEditingController(text: task.description);
-    String selectedStatus = StatusHelper.normalizeStatus(task.status);
-    if (!StatusHelper.taskStatuses.contains(selectedStatus)) {
-      selectedStatus = 'in_progress';
-    }
-
     return Scaffold(
       backgroundColor: ColorPicker.backgroundLight,
       appBar: AppBar(
-        title: const Text('Task Details'),
-        backgroundColor: ColorPicker.accent,
+        title: const Text('Task detail'),
+        backgroundColor: ColorPicker.cardBackground,
+        foregroundColor: ColorPicker.fontDark,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                alignment: WrapAlignment.spaceBetween,
+              _HeroPanel(
+                title: task.title,
+                description: task.description,
+                status: _selectedStatus,
+                dueDate: task.endDate,
+                assigneeCount: selectedEmployeeIds.length,
+                canParallelize: task.canParallelize,
+                canEdit: _canEdit,
+                onSave: _confirmUpdate,
+                onOpenProject: _openProject,
+              ),
+              const SizedBox(height: 14),
+              if (!_canEdit) const _ReadOnlyNotice(text: 'Read-only access'),
+              if (!_canEdit) const SizedBox(height: 14),
+              _DetailSection(
+                title: 'Overview',
+                icon: Icons.subject_outlined,
                 children: [
-                  // Only admin and manager can update tasks
-                  (DBHelper.mainUser.role == 'admin' ||
-                          DBHelper.mainUser.role == 'manager')
-                      ? ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorPicker.accent,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          icon: const Icon(Icons.save_outlined, size: 18),
-                          label: const Text('Update Task'),
-                          onPressed: () {
-                            String content =
-                                'Are you sure you want to update this task?';
-
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Confirm Update'),
-                                  content: Text(content),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('No'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text('Confirm'),
-                                      onPressed: () async {
-                                        await updateTask(
-                                            task,
-                                            titleController.text,
-                                            descriptionController.text,
-                                            task.endDate,
-                                            selectedStatus,
-                                            selectedEmployeeIds,
-                                            difficulty: task.difficulty,
-                                            priority: task.priority,
-                                            canParallelize:
-                                                task.canParallelize);
-                                        if (context.mounted) {
-                                          Navigator.of(context)
-                                              .pop(); // Close dialog
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Task updated successfully'),
-                                              backgroundColor: Colors.green,
-                                              duration: Duration(seconds: 2),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        )
-                      : SizedBox.shrink(),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorPicker.cardBackground,
-                      foregroundColor: ColorPicker.accent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
+                  _StyledTextField(
+                    controller: _titleController,
+                    label: 'Task title',
+                    icon: Icons.drive_file_rename_outline,
+                    readOnly: !_canEdit,
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: ColorPicker.fontDark,
                     ),
-                    icon: const Icon(Icons.folder_open, size: 18),
-                    label: const Text('View Project'),
-                    onPressed: () async {
-                      // Find the project for this task
-                      final matches = DBHelper.projects
-                          .where((p) => p.id == task.project);
-                      final project =
-                          matches.isNotEmpty ? matches.first : null;
-                      if (project != null) {
-                        DBHelper.currentProjectId = project.id;
-                        await DBHelper.getEmpByProjectId(project.id);
-                        if (context.mounted) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProjectPage(project: project),
-                            ),
-                          );
-                        }
-                      } else {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Project not found'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
+                  ),
+                  const SizedBox(height: 12),
+                  _StyledTextField(
+                    controller: _descriptionController,
+                    label: 'Description',
+                    icon: Icons.notes_outlined,
+                    readOnly: !_canEdit,
+                    minLines: 3,
+                    maxLines: 5,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _DetailSection(
+                title: 'Schedule and status',
+                icon: Icons.event_available_outlined,
+                children: [
+                  _DateTile(
+                    label: 'Due date',
+                    value: DateFormat('d/M/yyyy').format(task.endDate),
+                    enabled: _canEdit,
+                    onTap: _pickDueDate,
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedStatus,
+                    decoration: _fieldDecoration(
+                      label: 'Task status',
+                      icon: StatusHelper.getStatusIcon(_selectedStatus),
+                      locked: !_canEdit,
+                    ),
+                    items: StatusHelper.taskStatuses
+                        .map(
+                          (status) => DropdownMenuItem<String>(
+                            value: status,
+                            child: Text(StatusHelper.getStatusLabel(status)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: _canEdit
+                        ? (value) {
+                            if (value == null) return;
+                            setState(() {
+                              _selectedStatus = value;
+                              task.status = value;
+                            });
+                          }
+                        : null,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _DetailSection(
+                title: 'Assignment settings',
+                icon: Icons.tune_outlined,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final stackFields = constraints.maxWidth < 520;
+                      final difficultyField = _NumberDropdown(
+                        label: 'Difficulty',
+                        icon: Icons.fitness_center_outlined,
+                        value: task.difficulty,
+                        enabled: _canEdit,
+                        items: const {
+                          1: 'Basic',
+                          2: 'Easy',
+                          3: 'Medium',
+                          4: 'Hard',
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            task.difficulty = value ?? 2;
+                          });
+                        },
+                      );
+                      final priorityField = _NumberDropdown(
+                        label: 'Priority',
+                        icon: Icons.flag_outlined,
+                        value: task.priority,
+                        enabled: _canEdit,
+                        items: const {
+                          1: 'Very low',
+                          2: 'Low',
+                          3: 'Medium',
+                          4: 'High',
+                          5: 'Critical',
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            task.priority = value ?? 3;
+                          });
+                        },
+                      );
+
+                      if (stackFields) {
+                        return Column(
+                          children: [
+                            difficultyField,
+                            const SizedBox(height: 12),
+                            priorityField,
+                          ],
+                        );
                       }
+
+                      return Row(
+                        children: [
+                          Expanded(child: difficultyField),
+                          const SizedBox(width: 12),
+                          Expanded(child: priorityField),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _SwitchTile(
+                    value: task.canParallelize,
+                    enabled: _canEdit,
+                    onChanged: (value) {
+                      setState(() {
+                        task.canParallelize = value;
+                      });
                     },
                   ),
                 ],
               ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: titleController,
-                readOnly: DBHelper.mainUser.role == 'employee',
-                style: const TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Task title',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: DBHelper.mainUser.role == 'employee'
-                      ? Icon(Icons.lock, size: 16, color: Colors.grey)
-                      : null,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              TextField(
-                controller: descriptionController,
-                readOnly: DBHelper.mainUser.role == 'employee',
-                style: const TextStyle(fontSize: 16.0),
-                decoration: InputDecoration(
-                  labelText: 'Task description',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: DBHelper.mainUser.role == 'employee'
-                      ? Icon(Icons.lock, size: 16, color: Colors.grey)
-                      : null,
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              // TextField(
-              //   readOnly: true,
-              //   controller: TextEditingController(text: DateFormat('d/M/yyyy').format(task.startDate)),
-              //   onTap: () async {
-              //     final selectedDate = await showDatePicker(
-              //       context: context,
-              //       initialDate: task.startDate,
-              //       firstDate: DateTime(2000),
-              //       lastDate: DateTime.now(),
-              //     );
-              //     if (selectedDate != null) {
-              //       setState(() {
-              //         task.startDate = selectedDate;
-              //       });
-              //     }
-              //   },
-              //   style: const TextStyle(fontSize: 16.0),
-              // ),
-              const SizedBox(height: 16.0),
-              TextField(
-                readOnly: true,
-                controller: TextEditingController(
-                    text: DateFormat('d/M/yyyy').format(task.endDate)),
-                onTap: () async {
-                  final selectedDate = await showDatePicker(
-                    context: context,
-                    initialDate: task.endDate.isAfter(DateTime.now())
-                        ? task.endDate
-                        : DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(3000), // set this to a future date
-                  );
-                  if (selectedDate != null) {
-                    setState(() {
-                      task.endDate = selectedDate;
-                    });
-                  }
-                },
-                style: const TextStyle(fontSize: 16.0),
-                decoration: const InputDecoration(
-                  labelText: 'End date',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              DropdownButtonFormField<String>(
-                value: selectedStatus,
-                decoration: InputDecoration(
-                  labelText: 'Task status',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: DBHelper.mainUser.role == 'employee'
-                      ? Icon(Icons.lock, size: 16, color: Colors.grey)
-                      : null,
-                ),
-                items: StatusHelper.taskStatuses
-                    .map((status) => DropdownMenuItem<String>(
-                          value: status,
-                          child: Text(StatusHelper.getStatusLabel(status)),
-                        ))
-                    .toList(),
-                onChanged: (DBHelper.mainUser.role == 'admin' ||
-                        DBHelper.mainUser.role == 'manager')
-                    ? (value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedStatus = value;
-                            task.status = value;
-                          });
-                        }
-                      }
-                    : null,
-              ),
-              const SizedBox(height: 16.0),
-              // MCMF Fields Section
-              const Text(
-                'Task Assignment Parameters',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12.0),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final stackFields = constraints.maxWidth < 520;
-                  final difficultyField = DropdownButtonFormField<int>(
-                    value: task.difficulty,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Difficulty',
-                      border: OutlineInputBorder(),
+              const SizedBox(height: 14),
+              _DetailSection(
+                title: 'Assigned employees',
+                icon: Icons.people_alt_outlined,
+                children: [
+                  if (_canEdit)
+                    _EmployeeSelector(
+                      selectedEmployeeIds: selectedEmployeeIds,
+                      onAdd: (employeeId) {
+                        setState(() {
+                          selectedEmployeeIds.add(employeeId);
+                        });
+                      },
+                      onRemove: (employeeId) {
+                        setState(() {
+                          selectedEmployeeIds.remove(employeeId);
+                        });
+                      },
                     ),
-                    items: const [
-                      DropdownMenuItem(value: 1, child: Text('Basic')),
-                      DropdownMenuItem(value: 2, child: Text('Easy')),
-                      DropdownMenuItem(value: 3, child: Text('Medium')),
-                      DropdownMenuItem(value: 4, child: Text('Hard')),
-                    ],
-                    onChanged: (DBHelper.mainUser.role == 'admin' ||
-                            DBHelper.mainUser.role == 'manager')
-                        ? (value) {
-                            setState(() {
-                              task.difficulty = value ?? 2;
-                            });
-                          }
-                        : null,
-                  );
-                  final priorityField = DropdownButtonFormField<int>(
-                    value: task.priority,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Priority',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 1, child: Text('Very Low')),
-                      DropdownMenuItem(value: 2, child: Text('Low')),
-                      DropdownMenuItem(value: 3, child: Text('Medium')),
-                      DropdownMenuItem(value: 4, child: Text('High')),
-                      DropdownMenuItem(value: 5, child: Text('Critical')),
-                    ],
-                    onChanged: (DBHelper.mainUser.role == 'admin' ||
-                            DBHelper.mainUser.role == 'manager')
-                        ? (value) {
-                            setState(() {
-                              task.priority = value ?? 3;
-                            });
-                          }
-                        : null,
-                  );
-
-                  if (stackFields) {
-                    return Column(
-                      children: [
-                        difficultyField,
-                        const SizedBox(height: 12.0),
-                        priorityField,
-                      ],
-                    );
-                  }
-
-                  return Row(
-                    children: [
-                      Expanded(child: difficultyField),
-                      const SizedBox(width: 12.0),
-                      Expanded(child: priorityField),
-                    ],
-                  );
-                },
+                  if (!_canEdit)
+                    _EmployeeChips(employeeIds: selectedEmployeeIds),
+                ],
               ),
-              const SizedBox(height: 12.0),
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Can Parallelize',
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                    ),
-                    Switch(
-                      value: task.canParallelize,
-                      onChanged: (DBHelper.mainUser.role == 'admin' ||
-                              DBHelper.mainUser.role == 'manager')
-                          ? (value) {
-                              setState(() {
-                                task.canParallelize = value;
-                              });
-                            }
-                          : null,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              const Text(
-                'Assigned Employees',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8.0),
-              (DBHelper.mainUser.role == 'admin' ||
-                      DBHelper.mainUser.role == 'manager')
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Dropdown for employee selection
-                        DropdownButtonFormField<String>(
-                          key: ValueKey(selectedEmployeeIds.join(',')),
-                          isExpanded: true,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
-                            hintText: 'Select employees',
-                          ),
-                          items: () {
-                            // Create a map to track unique employee IDs
-                            final Map<String, dynamic> uniqueEmps = {};
-                            for (var emp in DBHelper.empProject) {
-                              if (!selectedEmployeeIds.contains(emp.id)) {
-                                uniqueEmps[emp.id] = emp;
-                              }
-                            }
-                            return uniqueEmps.values
-                                .map((emp) => DropdownMenuItem<String>(
-                                      value: emp.id,
-                                      child: Text(
-                                        '${emp.name} (${emp.role})',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ))
-                                .toList();
-                          }(),
-                          onChanged: (value) {
-                            if (value != null &&
-                                !selectedEmployeeIds.contains(value)) {
-                              setState(() {
-                                selectedEmployeeIds.add(value);
-                              });
-                            }
-                          },
-                          value: null,
-                        ),
-                        const SizedBox(height: 12.0),
-                        // Display selected employees as chips
-                        if (selectedEmployeeIds.isNotEmpty)
-                          Wrap(
-                            spacing: 8.0,
-                            runSpacing: 8.0,
-                            children: selectedEmployeeIds.map((empId) {
-                              // Find employee, fallback to empMap if not in empProject
-                              final matches = DBHelper.empProject
-                                  .where((e) => e.id == empId);
-                              var emp =
-                                  matches.isNotEmpty ? matches.first : null;
-                              if (emp == null &&
-                                  DBHelper.empMap.containsKey(empId)) {
-                                emp = DBHelper.empMap[empId];
-                              }
-                              if (emp == null) {
-                                // Skip this chip if employee not found
-                                return const SizedBox.shrink();
-                              }
-                              return Chip(
-                                label: Text('${emp.name} (${emp.role})'),
-                                deleteIcon: Icon(Icons.close, size: 18),
-                                onDeleted: () {
-                                  setState(() {
-                                    selectedEmployeeIds.remove(empId);
-                                  });
-                                },
-                                backgroundColor:
-                                    ColorPicker.primary.withOpacity(0.2),
-                                deleteIconColor: ColorPicker.primary,
-                              );
-                            }).toList(),
-                          ),
-                        if (selectedEmployeeIds.isEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.orange.shade50,
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(color: Colors.orange),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.warning,
-                                    color: Colors.orange, size: 20),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Please select at least one employee',
-                                    style: TextStyle(
-                                      color: Colors.orange.shade900,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (DBHelper.empProject.isEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(color: Colors.grey),
-                            ),
-                            child: const Text(
-                              'No employees in this project team',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                      ],
-                    )
-                  : Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Task Employees',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Icon(Icons.lock, size: 16, color: Colors.grey),
-                            ],
-                          ),
-                          const SizedBox(height: 12.0),
-                          Wrap(
-                            spacing: 8.0,
-                            runSpacing: 8.0,
-                            children: task.empWidget.map((widget) {
-                              return Chip(
-                                label: widget,
-                                backgroundColor: Colors.grey.shade200,
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _HeroPanel extends StatelessWidget {
+  final String title;
+  final String description;
+  final String status;
+  final DateTime dueDate;
+  final int assigneeCount;
+  final bool canParallelize;
+  final bool canEdit;
+  final VoidCallback onSave;
+  final VoidCallback onOpenProject;
+
+  const _HeroPanel({
+    required this.title,
+    required this.description,
+    required this.status,
+    required this.dueDate,
+    required this.assigneeCount,
+    required this.canParallelize,
+    required this.canEdit,
+    required this.onSave,
+    required this.onOpenProject,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColor = StatusHelper.getStatusColor(status);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ColorPicker.cardBackground,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: ColorPicker.fontDark,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              _StatusPill(status: status, color: statusColor),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: ColorPicker.fontMedium,
+              fontSize: 14,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              _MetaChip(
+                icon: Icons.calendar_today_outlined,
+                label: DateFormat('d/M/yyyy').format(dueDate),
+              ),
+              _MetaChip(
+                icon: Icons.people_alt_outlined,
+                label: '$assigneeCount assigned',
+              ),
+              _MetaChip(
+                icon: canParallelize
+                    ? Icons.call_split_outlined
+                    : Icons.linear_scale_outlined,
+                label: canParallelize ? 'Parallel' : 'Single owner',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              FilledButton.icon(
+                onPressed: onOpenProject,
+                icon: const Icon(Icons.folder_open_outlined, size: 18),
+                label: const Text('Project'),
+              ),
+              if (canEdit)
+                OutlinedButton.icon(
+                  onPressed: onSave,
+                  icon: const Icon(Icons.save_outlined, size: 18),
+                  label: const Text('Save'),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailSection extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final List<Widget> children;
+
+  const _DetailSection({
+    required this.title,
+    required this.icon,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ColorPicker.cardBackground,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 19, color: ColorPicker.accent),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: ColorPicker.fontDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _StyledTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final bool readOnly;
+  final int? minLines;
+  final int? maxLines;
+  final TextStyle? textStyle;
+
+  const _StyledTextField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.readOnly,
+    this.minLines,
+    this.maxLines,
+    this.textStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      readOnly: readOnly,
+      minLines: minLines,
+      maxLines: maxLines ?? 1,
+      style: textStyle ??
+          const TextStyle(
+            color: ColorPicker.fontDark,
+            fontSize: 15,
+            height: 1.35,
+          ),
+      decoration: _fieldDecoration(
+        label: label,
+        icon: icon,
+        locked: readOnly,
+      ),
+    );
+  }
+}
+
+class _NumberDropdown extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final int value;
+  final bool enabled;
+  final Map<int, String> items;
+  final ValueChanged<int?> onChanged;
+
+  const _NumberDropdown({
+    required this.label,
+    required this.icon,
+    required this.value,
+    required this.enabled,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<int>(
+      initialValue: items.containsKey(value) ? value : items.keys.first,
+      isExpanded: true,
+      decoration: _fieldDecoration(label: label, icon: icon, locked: !enabled),
+      items: items.entries
+          .map(
+            (entry) => DropdownMenuItem<int>(
+              value: entry.key,
+              child: Text(entry.value),
+            ),
+          )
+          .toList(),
+      onChanged: enabled ? onChanged : null,
+    );
+  }
+}
+
+InputDecoration _fieldDecoration({
+  required String label,
+  required IconData icon,
+  bool locked = false,
+}) {
+  return InputDecoration(
+    labelText: label,
+    prefixIcon: Icon(icon, size: 20),
+    suffixIcon: locked ? const Icon(Icons.lock_outline, size: 18) : null,
+    filled: true,
+    fillColor: ColorPicker.backgroundLight,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: ColorPicker.cardBorder),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: ColorPicker.cardBorder),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: ColorPicker.accent, width: 1.5),
+    ),
+  );
+}
+
+class _DateTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _DateTile({
+    required this.label,
+    required this.value,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: enabled ? onTap : null,
+      borderRadius: BorderRadius.circular(8),
+      child: InputDecorator(
+        decoration: _fieldDecoration(
+          label: label,
+          icon: Icons.calendar_today_outlined,
+          locked: !enabled,
+        ),
+        child: Text(
+          value,
+          style: const TextStyle(color: ColorPicker.fontDark, fontSize: 15),
+        ),
+      ),
+    );
+  }
+}
+
+class _SwitchTile extends StatelessWidget {
+  final bool value;
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  const _SwitchTile({
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: ColorPicker.backgroundLight,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.call_split_outlined, color: ColorPicker.fontMedium),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Text(
+              'Can parallelize',
+              style: TextStyle(
+                color: ColorPicker.fontDark,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: enabled ? onChanged : null,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmployeeSelector extends StatelessWidget {
+  final List<String> selectedEmployeeIds;
+  final ValueChanged<String> onAdd;
+  final ValueChanged<String> onRemove;
+
+  const _EmployeeSelector({
+    required this.selectedEmployeeIds,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<String>(
+          key: ValueKey(selectedEmployeeIds.join(',')),
+          isExpanded: true,
+          decoration: _fieldDecoration(
+            label: 'Add employee',
+            icon: Icons.person_add_alt_1_outlined,
+          ),
+          items: () {
+            final Map<String, dynamic> uniqueEmps = {};
+            for (var emp in DBHelper.empProject) {
+              if (!selectedEmployeeIds.contains(emp.id)) {
+                uniqueEmps[emp.id] = emp;
+              }
+            }
+            return uniqueEmps.values
+                .map(
+                  (emp) => DropdownMenuItem<String>(
+                    value: emp.id,
+                    child: Text(
+                      '${emp.name} (${emp.role})',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+                .toList();
+          }(),
+          onChanged: (value) {
+            if (value == null || selectedEmployeeIds.contains(value)) return;
+            onAdd(value);
+          },
+          initialValue: null,
+        ),
+        const SizedBox(height: 12),
+        _EmployeeChips(
+          employeeIds: selectedEmployeeIds,
+          onDeleted: onRemove,
+        ),
+        if (selectedEmployeeIds.isEmpty)
+          const _InlineWarning(text: 'Please select at least one employee'),
+        if (DBHelper.empProject.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Text(
+              'No employees in this project team',
+              style: TextStyle(color: ColorPicker.fontMedium),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _EmployeeChips extends StatelessWidget {
+  final List<String> employeeIds;
+  final ValueChanged<String>? onDeleted;
+
+  const _EmployeeChips({
+    required this.employeeIds,
+    this.onDeleted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (employeeIds.isEmpty) {
+      return const Text(
+        'No employees assigned',
+        style: TextStyle(color: ColorPicker.fontMedium),
+      );
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: employeeIds.map((empId) {
+        final matches = DBHelper.empProject.where((e) => e.id == empId);
+        var emp = matches.isNotEmpty ? matches.first : null;
+        if (emp == null && DBHelper.empMap.containsKey(empId)) {
+          emp = DBHelper.empMap[empId];
+        }
+        if (emp == null) return const SizedBox.shrink();
+        return Chip(
+          avatar: const Icon(Icons.person_outline, size: 17),
+          label: Text('${emp.name} (${emp.role})'),
+          deleteIcon:
+              onDeleted == null ? null : const Icon(Icons.close, size: 18),
+          onDeleted: onDeleted == null ? null : () => onDeleted!(empId),
+          backgroundColor: ColorPicker.backgroundLight,
+          side: const BorderSide(color: ColorPicker.cardBorder),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _ReadOnlyNotice extends StatelessWidget {
+  final String text;
+
+  const _ReadOnlyNotice({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return _MetaChip(icon: Icons.lock_outline, label: text);
+  }
+}
+
+class _InlineWarning extends StatelessWidget {
+  final String text;
+
+  const _InlineWarning({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Row(
+        children: [
+          Icon(Icons.warning_amber_outlined, color: Colors.orange.shade700),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(text, style: TextStyle(color: Colors.orange.shade900)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatusPill extends StatelessWidget {
+  final String status;
+  final Color color;
+
+  const _StatusPill({
+    required this.status,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(StatusHelper.getStatusIcon(status), size: 15, color: color),
+          const SizedBox(width: 5),
+          Text(
+            StatusHelper.getStatusLabel(status),
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _MetaChip({
+    required this.icon,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: ColorPicker.backgroundLight,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: ColorPicker.fontMedium),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              color: ColorPicker.fontMedium,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

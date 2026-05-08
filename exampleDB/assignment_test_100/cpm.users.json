@@ -1,0 +1,1058 @@
+[
+  {
+    "_id": {
+      "$oid": "68a100000000000000000001"
+    },
+    "name": "Jane Smith",
+    "dob": {
+      "$numberLong": "978343200000"
+    },
+    "email": "janesmith@example.com",
+    "role": "admin",
+    "skills": [
+      {
+        "name": "Project Management",
+        "description": "Đã sử dụng Project Management trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Data Modeling",
+        "description": "Đã sử dụng Data Modeling trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã sử dụng Documentation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.92,
+    "on_time_rate": 95,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010101"
+    },
+    "name": "Mai Trần",
+    "dob": {
+      "$numberLong": "979552800000"
+    },
+    "email": "maitran@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã sử dụng React trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "UI/UX",
+        "description": "Đã sử dụng UI/UX trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Figma",
+        "description": "Đã sử dụng Figma trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 76,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010102"
+    },
+    "name": "An Nguyễn",
+    "dob": {
+      "$numberLong": "1013767200000"
+    },
+    "email": "annguyen@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã sử dụng React trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "JavaScript",
+        "description": "Đã sử dụng JavaScript trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Tailwind CSS",
+        "description": "Đã sử dụng Tailwind CSS trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "UI/UX",
+        "description": "Đã sử dụng UI/UX trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 79,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010103"
+    },
+    "name": "Bảo Phạm",
+    "dob": {
+      "$numberLong": "1047722400000"
+    },
+    "email": "baopham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã sử dụng React trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Figma",
+        "description": "Đã sử dụng Figma trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Accessibility",
+        "description": "Đã sử dụng Accessibility trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 82,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010104"
+    },
+    "name": "Chi Lê",
+    "dob": {
+      "$numberLong": "1082023200000"
+    },
+    "email": "chile@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "JavaScript",
+        "description": "Đã sử dụng JavaScript trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Chart.js",
+        "description": "Đã sử dụng Chart.js trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "UI/UX",
+        "description": "Đã sử dụng UI/UX trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã sử dụng API Integration trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.77,
+    "on_time_rate": 85,
+    "current_task_count": 3
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010105"
+    },
+    "name": "Đức Hoàng",
+    "dob": {
+      "$numberLong": "1116151200000"
+    },
+    "email": "duchoang@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã sử dụng React trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "State Management",
+        "description": "Đã sử dụng State Management trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Tailwind CSS",
+        "description": "Đã sử dụng Tailwind CSS trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Responsive Design",
+        "description": "Đã sử dụng Responsive Design trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.82,
+    "on_time_rate": 88,
+    "current_task_count": 4
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010106"
+    },
+    "name": "Hạnh Võ",
+    "dob": {
+      "$numberLong": "992599200000"
+    },
+    "email": "hanhvo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Figma",
+        "description": "Đã sử dụng Figma trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "UI/UX",
+        "description": "Đã sử dụng UI/UX trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã sử dụng Documentation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.87,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010107"
+    },
+    "name": "Khoa Bùi",
+    "dob": {
+      "$numberLong": "1026727200000"
+    },
+    "email": "khoabui@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã sử dụng React trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Calendar UI",
+        "description": "Đã sử dụng Calendar UI trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "JavaScript",
+        "description": "Đã sử dụng JavaScript trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Bug Fixing",
+        "description": "Đã sử dụng Bug Fixing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.92,
+    "on_time_rate": 94,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010108"
+    },
+    "name": "Linh Đỗ",
+    "dob": {
+      "$numberLong": "1060941600000"
+    },
+    "email": "linhdo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Tailwind CSS",
+        "description": "Đã sử dụng Tailwind CSS trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Forms",
+        "description": "Đã sử dụng Forms trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã sử dụng API Integration trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Accessibility",
+        "description": "Đã sử dụng Accessibility trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.62,
+    "on_time_rate": 77,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010201"
+    },
+    "name": "Quang Nguyễn",
+    "dob": {
+      "$numberLong": "979552800000"
+    },
+    "email": "quangnguyen@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "Node.js",
+        "description": "Đã sử dụng Node.js trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "MongoDB",
+        "description": "Đã sử dụng MongoDB trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "REST API",
+        "description": "Đã sử dụng REST API trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Authentication",
+        "description": "Đã sử dụng Authentication trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 76,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010202"
+    },
+    "name": "Nam Trần",
+    "dob": {
+      "$numberLong": "1013767200000"
+    },
+    "email": "namtran@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Node.js",
+        "description": "Đã sử dụng Node.js trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Express",
+        "description": "Đã sử dụng Express trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "REST API",
+        "description": "Đã sử dụng REST API trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "MongoDB",
+        "description": "Đã sử dụng MongoDB trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 79,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010203"
+    },
+    "name": "Oanh Phạm",
+    "dob": {
+      "$numberLong": "1047722400000"
+    },
+    "email": "oanhpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Authentication",
+        "description": "Đã sử dụng Authentication trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "JWT",
+        "description": "Đã sử dụng JWT trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Node.js",
+        "description": "Đã sử dụng Node.js trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Security",
+        "description": "Đã sử dụng Security trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 82,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010204"
+    },
+    "name": "Phúc Lê",
+    "dob": {
+      "$numberLong": "1082023200000"
+    },
+    "email": "phucle@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "MongoDB",
+        "description": "Đã sử dụng MongoDB trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Data Modeling",
+        "description": "Đã sử dụng Data Modeling trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Aggregation",
+        "description": "Đã sử dụng Aggregation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Reporting",
+        "description": "Đã sử dụng Reporting trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.77,
+    "on_time_rate": 85,
+    "current_task_count": 3
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010205"
+    },
+    "name": "Thảo Vũ",
+    "dob": {
+      "$numberLong": "1116151200000"
+    },
+    "email": "thaovu@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Express",
+        "description": "Đã sử dụng Express trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Validation",
+        "description": "Đã sử dụng Validation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Error Handling",
+        "description": "Đã sử dụng Error Handling trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Postman",
+        "description": "Đã sử dụng Postman trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.82,
+    "on_time_rate": 88,
+    "current_task_count": 4
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010206"
+    },
+    "name": "Việt Đặng",
+    "dob": {
+      "$numberLong": "992599200000"
+    },
+    "email": "vietdang@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Node.js",
+        "description": "Đã sử dụng Node.js trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "File Upload",
+        "description": "Đã sử dụng File Upload trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "MinIO",
+        "description": "Đã sử dụng MinIO trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Docker",
+        "description": "Đã sử dụng Docker trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.87,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010207"
+    },
+    "name": "Yến Hồ",
+    "dob": {
+      "$numberLong": "1026727200000"
+    },
+    "email": "yenho@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "REST API",
+        "description": "Đã sử dụng REST API trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã sử dụng Documentation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Bug Fixing",
+        "description": "Đã sử dụng Bug Fixing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.92,
+    "on_time_rate": 94,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010208"
+    },
+    "name": "Sơn Bùi",
+    "dob": {
+      "$numberLong": "1060941600000"
+    },
+    "email": "sonbui@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "MongoDB",
+        "description": "Đã sử dụng MongoDB trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Performance",
+        "description": "Đã sử dụng Performance trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Indexing",
+        "description": "Đã sử dụng Indexing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Analytics",
+        "description": "Đã sử dụng Analytics trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.62,
+    "on_time_rate": 77,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010301"
+    },
+    "name": "Trang Lê",
+    "dob": {
+      "$numberLong": "979552800000"
+    },
+    "email": "trangle@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã sử dụng Flutter trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Dart",
+        "description": "Đã sử dụng Dart trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Mobile UI",
+        "description": "Đã sử dụng Mobile UI trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã sử dụng API Integration trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 76,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010302"
+    },
+    "name": "Anh Võ",
+    "dob": {
+      "$numberLong": "1013767200000"
+    },
+    "email": "anhvo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã sử dụng Flutter trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Dart",
+        "description": "Đã sử dụng Dart trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Mobile UI",
+        "description": "Đã sử dụng Mobile UI trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "State Management",
+        "description": "Đã sử dụng State Management trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 79,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010303"
+    },
+    "name": "Bình Ngô",
+    "dob": {
+      "$numberLong": "1047722400000"
+    },
+    "email": "binhngo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã sử dụng Flutter trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã sử dụng API Integration trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Authentication",
+        "description": "Đã sử dụng Authentication trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Forms",
+        "description": "Đã sử dụng Forms trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 82,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010304"
+    },
+    "name": "Cường Lý",
+    "dob": {
+      "$numberLong": "1082023200000"
+    },
+    "email": "cuongly@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Dart",
+        "description": "Đã sử dụng Dart trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Charts",
+        "description": "Đã sử dụng Charts trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Calendar UI",
+        "description": "Đã sử dụng Calendar UI trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.77,
+    "on_time_rate": 85,
+    "current_task_count": 3
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010305"
+    },
+    "name": "Diệp Trần",
+    "dob": {
+      "$numberLong": "1116151200000"
+    },
+    "email": "dieptran@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã sử dụng Flutter trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Offline Cache",
+        "description": "Đã sử dụng Offline Cache trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "State Management",
+        "description": "Đã sử dụng State Management trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Bug Fixing",
+        "description": "Đã sử dụng Bug Fixing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.82,
+    "on_time_rate": 88,
+    "current_task_count": 4
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010306"
+    },
+    "name": "Giang Phạm",
+    "dob": {
+      "$numberLong": "992599200000"
+    },
+    "email": "giangpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Mobile UI",
+        "description": "Đã sử dụng Mobile UI trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Accessibility",
+        "description": "Đã sử dụng Accessibility trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Responsive Design",
+        "description": "Đã sử dụng Responsive Design trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Figma",
+        "description": "Đã sử dụng Figma trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.87,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010307"
+    },
+    "name": "Hải Nguyễn",
+    "dob": {
+      "$numberLong": "1026727200000"
+    },
+    "email": "hainguyen@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã sử dụng Flutter trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "File Upload",
+        "description": "Đã sử dụng File Upload trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Image Picker",
+        "description": "Đã sử dụng Image Picker trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã sử dụng API Integration trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.92,
+    "on_time_rate": 94,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010308"
+    },
+    "name": "Lan Phạm",
+    "dob": {
+      "$numberLong": "1060941600000"
+    },
+    "email": "lanpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Dart",
+        "description": "Đã sử dụng Dart trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Regression",
+        "description": "Đã sử dụng Regression trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã sử dụng Documentation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.62,
+    "on_time_rate": 77,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010401"
+    },
+    "name": "Minh Đặng",
+    "dob": {
+      "$numberLong": "979552800000"
+    },
+    "email": "minhdang@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "Python",
+        "description": "Đã sử dụng Python trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Embedding",
+        "description": "Đã sử dụng Embedding trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Min-Cost Max-Flow",
+        "description": "Đã sử dụng Min-Cost Max-Flow trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 76,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010402"
+    },
+    "name": "Nhi Lê",
+    "dob": {
+      "$numberLong": "1013767200000"
+    },
+    "email": "nhile@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Python",
+        "description": "Đã sử dụng Python trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "NLP",
+        "description": "Đã sử dụng NLP trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Embedding",
+        "description": "Đã sử dụng Embedding trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "TF-IDF",
+        "description": "Đã sử dụng TF-IDF trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 79,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010403"
+    },
+    "name": "Phong Trần",
+    "dob": {
+      "$numberLong": "1047722400000"
+    },
+    "email": "phongtran@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Min-Cost Max-Flow",
+        "description": "Đã sử dụng Min-Cost Max-Flow trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Algorithms",
+        "description": "Đã sử dụng Algorithms trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Data Modeling",
+        "description": "Đã sử dụng Data Modeling trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Node.js",
+        "description": "Đã sử dụng Node.js trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 82,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010404"
+    },
+    "name": "Quyên Hồ",
+    "dob": {
+      "$numberLong": "1082023200000"
+    },
+    "email": "quyenho@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Postman",
+        "description": "Đã sử dụng Postman trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Regression",
+        "description": "Đã sử dụng Regression trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Bug Report",
+        "description": "Đã sử dụng Bug Report trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.77,
+    "on_time_rate": 85,
+    "current_task_count": 3
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010405"
+    },
+    "name": "Tuấn Bùi",
+    "dob": {
+      "$numberLong": "1116151200000"
+    },
+    "email": "tuanbui@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Docker",
+        "description": "Đã sử dụng Docker trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Deployment",
+        "description": "Đã sử dụng Deployment trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Monitoring",
+        "description": "Đã sử dụng Monitoring trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Linux",
+        "description": "Đã sử dụng Linux trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.82,
+    "on_time_rate": 88,
+    "current_task_count": 4
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010406"
+    },
+    "name": "Uyên Võ",
+    "dob": {
+      "$numberLong": "992599200000"
+    },
+    "email": "uyenvo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Data Cleaning",
+        "description": "Đã sử dụng Data Cleaning trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Analytics",
+        "description": "Đã sử dụng Analytics trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Reporting",
+        "description": "Đã sử dụng Reporting trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "MongoDB",
+        "description": "Đã sử dụng MongoDB trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.87,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010407"
+    },
+    "name": "Vy Nguyễn",
+    "dob": {
+      "$numberLong": "1026727200000"
+    },
+    "email": "vynguyen@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Python",
+        "description": "Đã sử dụng Python trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Gemini API",
+        "description": "Đã sử dụng Gemini API trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Embedding",
+        "description": "Đã sử dụng Embedding trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã sử dụng Documentation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.92,
+    "on_time_rate": 94,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010408"
+    },
+    "name": "Long Phạm",
+    "dob": {
+      "$numberLong": "1060941600000"
+    },
+    "email": "longpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "CI/CD",
+        "description": "Đã sử dụng CI/CD trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Docker",
+        "description": "Đã sử dụng Docker trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã sử dụng Testing trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      },
+      {
+        "name": "Automation",
+        "description": "Đã sử dụng Automation trong các bài tập lớn và đồ án nhóm quy mô nhỏ."
+      }
+    ],
+    "productivity_score": 0.62,
+    "on_time_rate": 77,
+    "current_task_count": 2
+  }
+]

@@ -131,6 +131,7 @@ class ProjectCard extends StatelessWidget {
                         color: ColorPicker.buttonSecondary,
                         tooltip: 'Project tasks',
                         onPressed: () async {
+                          DBHelper.currentProjectId = project.id;
                           await DBHelper.taskUpdateWithProjectId(project.id);
                           await DBHelper.getEmpByProjectId(project.id);
                           if (context.mounted) {
@@ -271,7 +272,8 @@ class projectPopupCard extends StatelessWidget {
     for (final rawTeamId in project.teams) {
       final teamId = rawTeamId.toString();
       final matches = DBHelper.deps.where((team) => team.id == teamId);
-      teamNames.add(matches.isNotEmpty ? matches.first.name.toString() : teamId);
+      teamNames
+          .add(matches.isNotEmpty ? matches.first.name.toString() : teamId);
     }
 
     return Dialog(

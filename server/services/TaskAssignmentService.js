@@ -43,6 +43,19 @@ class TaskAssignmentService {
 		};
 	}
 
+	static getMaxBatchTasksPerUser(tasks, users, config = {}) {
+		const configuredLimit = Number(config.maxBatchTasksPerUser);
+		if (Number.isFinite(configuredLimit) && configuredLimit > 0) {
+			return Math.max(1, Math.floor(configuredLimit));
+		}
+
+		const taskCount = Array.isArray(tasks) ? tasks.length : 0;
+		const userCount = Array.isArray(users) ? users.length : 0;
+		if (taskCount === 0 || userCount === 0) return 1;
+
+		return Math.max(2, Math.ceil(taskCount / userCount) + 1);
+	}
+
 	static async getCandidateUsers(userIds = null, projectId = null) {
 		if (Array.isArray(userIds) && userIds.length > 0) {
 			return User.find({ _id: { $in: userIds } });
@@ -92,13 +105,19 @@ class TaskAssignmentService {
 				throw new Error("No tasks found");
 			}
 
-			// Get users
-			let users;
-			if (userIds && userIds.length > 0) {
-				users = await User.find({ _id: { $in: userIds } });
-			} else {
-				users = await User.find({ role: { $ne: "admin" } });
-			}
+			const projectIds = [
+				...new Set(
+					tasks
+						.map((task) => task.project)
+						.filter(Boolean)
+						.map((projectId) => projectId.toString())
+				),
+			];
+
+			const users = await this.getCandidateUsers(
+				userIds,
+				projectIds.length === 1 ? projectIds[0] : null
+			);
 
 			if (users.length === 0) {
 				throw new Error("No users available for assignment");
@@ -115,6 +134,12 @@ class TaskAssignmentService {
 			);
 
 			const assignments = [];
+			const batchAssignmentCounts = new Map();
+			const maxBatchTasksPerUser = this.getMaxBatchTasksPerUser(
+				tasks,
+				users,
+				config
+			);
 
 			for (const task of tasks) {
 				// Stage 1: Use graph-based MCMF shortlist for each task
@@ -129,7 +154,20 @@ class TaskAssignmentService {
 				}
 
 				// Stage 2: Use embedding to find best match from candidates
-				const bestMatches = await this.findBestMatchByEmbedding(task, candidates, config);
+				const bestMatches = await this.findBestMatchByEmbedding(
+					task,
+					candidates,
+					config,
+					{ batchAssignmentCounts, maxBatchTasksPerUser }
+				);
+
+				for (const match of bestMatches) {
+					const userId = match.user._id.toString();
+					batchAssignmentCounts.set(
+						userId,
+						(batchAssignmentCounts.get(userId) || 0) + 1
+					);
+				}
 
 				assignments.push({
 					task: {
@@ -148,6 +186,8 @@ class TaskAssignmentService {
 						skill_score: u.skillScore,
 						mcmf_score: u.mcmfScore,
 						combined_score: u.combinedScore,
+						adjusted_score: u.adjustedScore,
+						batch_load: u.batchLoad,
 					})),
 					number_of_people: bestMatches.length,
 				});
@@ -160,6 +200,7 @@ class TaskAssignmentService {
 					type: "graph_mcmf_shortlist",
 					max_flow: graphAvailability?.maxFlow || 0,
 					min_cost: graphAvailability?.minCost || 0,
+					max_batch_tasks_per_user: maxBatchTasksPerUser,
 				},
 				assignments,
 				summary: this.generateSummary(assignments),
@@ -204,7 +245,7 @@ class TaskAssignmentService {
 			const targetShortlistSize = task.can_parallelize
 				? Math.max(
 						graphCandidates.length,
-						(config.maxParallelAssignees || 3) * candidateMultiplier
+						(config.maxParallelAssignees || 2) * candidateMultiplier
 				  )
 				: Math.max(graphCandidates.length, candidateMultiplier);
 
@@ -279,10 +320,17 @@ class TaskAssignmentService {
 	 * Stage 2: Find best match from candidates using embedding + TF-IDF
 	 * Uses dot product similarity between task requirements and user skills
 	 */
-	static async findBestMatchByEmbedding(task, candidates, config = {}) {
+	static async findBestMatchByEmbedding(task, candidates, config = {}, batchContext = {}) {
 		const taskSkills = task.required_skills || task.skills_required || [];
 		const taskTitle = task.title || "";
 		const taskDescription = task.description || "";
+		const batchAssignmentCounts = batchContext.batchAssignmentCounts || new Map();
+		const maxBatchTasksPerUser = Number(
+			batchContext.maxBatchTasksPerUser || config.maxBatchTasksPerUser
+		);
+		const hasBatchLimit =
+			Number.isFinite(maxBatchTasksPerUser) && maxBatchTasksPerUser > 0;
+		const W_batch_workload = Number(config.W_batch_workload ?? 0.35);
 
 		// Calculate skill match score for each candidate
 		const scoredCandidates = await Promise.all(
@@ -305,35 +353,53 @@ class TaskAssignmentService {
 				const mcmfScore = 1 - Math.min(candidate.mcmfCost, 1);
 
 				// Combined score: weighted average
-				const W_skill = config.W_skill || 0.6;
-				const W_mcmf = config.W_mcmf || 0.4;
+				const W_skill = config.W_skill ?? 0.6;
+				const W_mcmf = config.W_mcmf ?? 0.4;
 				const combinedScore = W_skill * skillScore + W_mcmf * mcmfScore;
+				const userId = candidate.user._id.toString();
+				const batchLoad = batchAssignmentCounts.get(userId) || 0;
+				const batchLoadPenalty = hasBatchLimit
+					? Math.min(1, batchLoad / maxBatchTasksPerUser)
+					: 0;
+				const adjustedScore =
+					combinedScore - W_batch_workload * batchLoadPenalty;
 
 				return {
 					user: candidate.user,
 					skillScore,
 					mcmfScore,
 					combinedScore,
+					adjustedScore,
+					batchLoad,
+					batchLoadPenalty,
 					breakdown: matchResult.breakdown || null,
 				};
 			})
 		);
 
-		// Sort by combined score (higher = better)
-		scoredCandidates.sort((a, b) => b.combinedScore - a.combinedScore);
+		// Sort by adjusted score (higher = better) so repeated picks in the same
+		// preview/apply batch are penalized before persisting anything.
+		scoredCandidates.sort((a, b) => b.adjustedScore - a.adjustedScore);
 
 		// Determine how many to assign
-		const maxAssignees = task.can_parallelize ? (config.maxParallelAssignees || 3) : 1;
+		const maxAssignees = task.can_parallelize ? (config.maxParallelAssignees || 2) : 1;
 		const minScoreThreshold = config.minScoreThreshold || 0.1;
+		const selectionPool = scoredCandidates.filter((candidate) => {
+			if (!hasBatchLimit) return true;
+			const userId = candidate.user._id.toString();
+			return (batchAssignmentCounts.get(userId) || 0) < maxBatchTasksPerUser;
+		});
+		const candidatesToSelect =
+			selectionPool.length > 0 ? selectionPool : scoredCandidates;
 
 		// Take top candidates that meet threshold
-		const selected = scoredCandidates
-			.filter((c) => c.combinedScore >= minScoreThreshold)
+		const selected = candidatesToSelect
+			.filter((c) => c.adjustedScore >= minScoreThreshold)
 			.slice(0, maxAssignees);
 
 		// If none meet threshold, take at least one
-		if (selected.length === 0 && scoredCandidates.length > 0) {
-			selected.push(scoredCandidates[0]);
+		if (selected.length === 0 && candidatesToSelect.length > 0) {
+			selected.push(candidatesToSelect[0]);
 		}
 
 		return selected;
@@ -424,6 +490,8 @@ class TaskAssignmentService {
 					skill_score: u.skillScore,
 					mcmf_score: u.mcmfScore,
 					combined_score: u.combinedScore,
+					adjusted_score: u.adjustedScore,
+					batch_load: u.batchLoad,
 				})),
 				number_of_people: bestMatches.length,
 			};

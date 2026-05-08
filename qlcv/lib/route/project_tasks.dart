@@ -30,7 +30,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
 
     if (_searchController.text.isNotEmpty) {
       filtered = filtered
-          .where((task) => task.title
+          .where((Task task) => task.title
               .toLowerCase()
               .contains(_searchController.text.toLowerCase()))
           .toList();
@@ -38,7 +38,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
 
     if (_selectedStatus != null) {
       filtered = filtered
-          .where((task) =>
+          .where((Task task) =>
               StatusHelper.normalizeStatus(task.status) == _selectedStatus)
           .toList();
     }
@@ -100,6 +100,15 @@ class _ProjectTasksState extends State<ProjectTasks> {
               ),
               child: Row(
                 children: [
+                  Tooltip(
+                    message: 'Back',
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back),
+                      color: ColorPicker.fontDark,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,8 +211,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
                                   Icon(
                                     StatusHelper.getStatusIcon(status),
                                     size: 16,
-                                    color:
-                                        isSelected ? Colors.white : color,
+                                    color: isSelected ? Colors.white : color,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(StatusHelper.getStatusLabel(status)),

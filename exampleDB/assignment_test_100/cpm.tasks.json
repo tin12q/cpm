@@ -1,0 +1,2902 @@
+[
+  {
+    "_id": {
+      "$oid": "68a100000000000000003001"
+    },
+    "title": "Xây dựng bảng kanban 01",
+    "description": "Tạo bảng công việc theo các giai đoạn để nhóm theo dõi trạng thái task hằng ngày. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về React, UI/UX, Node.js.",
+    "due_date": {
+      "$numberLong": "1778234400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003002"
+    },
+    "title": "Viết API xem trước phân công 02",
+    "description": "Trả về kết quả gợi ý mà chưa cập nhật người phụ trách vào database. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Express, REST API, Regression.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Regression"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Regression"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003003"
+    },
+    "title": "Mô hình hóa hồ sơ kỹ năng sinh viên 03",
+    "description": "Lưu kỹ năng kèm mô tả để AI có dữ liệu ngữ nghĩa khi so khớp. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Data Cleaning, Reporting, Embedding.",
+    "due_date": {
+      "$numberLong": "1778407200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003004"
+    },
+    "title": "Xây dựng bảng kanban 04",
+    "description": "Tạo bảng công việc theo các giai đoạn để nhóm theo dõi trạng thái task hằng ngày. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Tailwind CSS, React, State Management.",
+    "due_date": {
+      "$numberLong": "1778493600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003005"
+    },
+    "title": "Sửa healthcheck docker compose 05",
+    "description": "Đồng bộ healthcheck frontend và backend với port thực tế trong container. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Linux, CI/CD, Reporting.",
+    "due_date": {
+      "$numberLong": "1778580000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003006"
+    },
+    "title": "Tạo bộ regression trên Postman 06",
+    "description": "Kiểm tra auth, projects, tasks, teams, skills và assignments endpoints. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Testing, Postman, React.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "React"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "React"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003007"
+    },
+    "title": "Hiển thị thẻ gợi ý trên mobile 07",
+    "description": "Hiển thị tên task, thành viên được chọn, điểm kỹ năng và ghi chú về tải công việc. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Dart, State Management, Express.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Express"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Express"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003008"
+    },
+    "title": "Chuẩn hóa dữ liệu kỹ năng của task 08",
+    "description": "Nhận required_skills và skills_required nhưng lưu về cùng một cấu trúc thống nhất. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về MongoDB, Authentication, Data Cleaning.",
+    "due_date": {
+      "$numberLong": "1778839200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003009"
+    },
+    "title": "Tạo bộ regression trên Postman 09",
+    "description": "Kiểm tra auth, projects, tasks, teams, skills và assignments endpoints. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Bug Report, Testing, Tailwind CSS.",
+    "due_date": {
+      "$numberLong": "1778925600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": false,
+    "required_skills": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003010"
+    },
+    "title": "Tạo bộ regression trên Postman 10",
+    "description": "Kiểm tra auth, projects, tasks, teams, skills và assignments endpoints. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Documentation, Regression, Linux.",
+    "due_date": {
+      "$numberLong": "1779012000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003011"
+    },
+    "title": "Thêm bộ lọc danh sách task 11",
+    "description": "Lọc task theo dự án, giai đoạn, trạng thái, deadline và người phụ trách. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Node.js, MongoDB, Testing.",
+    "due_date": {
+      "$numberLong": "1779098400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003012"
+    },
+    "title": "Kiểm thử luồng phân công trên mobile 12",
+    "description": "Chạy flow manager trên emulator và xác nhận task đã có người phụ trách. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Regression, Bug Report, Dart.",
+    "due_date": {
+      "$numberLong": "1779184800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003013"
+    },
+    "title": "Cập nhật từ điển TF-IDF 13",
+    "description": "Xây lại từ điển kỹ năng từ danh sách thành viên trước khi chấm điểm ứng viên. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Embedding, Min-Cost Max-Flow, MongoDB.",
+    "due_date": {
+      "$numberLong": "1779271200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 5,
+    "can_parallelize": false,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003014"
+    },
+    "title": "Thêm luồng tạo task trên mobile 14",
+    "description": "Cho phép tạo task chưa gán người để backend tự động phân công. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về State Management, Flutter, Bug Report.",
+    "due_date": {
+      "$numberLong": "1779357600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ],
+    "skills_required": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003015"
+    },
+    "title": "Phân tích phân bổ tải công việc 15",
+    "description": "So sánh current_task_count trước và sau khi apply kết quả phân công. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Reporting, MongoDB, Documentation.",
+    "due_date": {
+      "$numberLong": "1779444000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003016"
+    },
+    "title": "Cải thiện màn hình gợi ý phân công 16",
+    "description": "Hiển thị người được đề xuất kèm điểm kỹ năng, tải công việc và lý do gợi ý. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về React, UI/UX, Node.js.",
+    "due_date": {
+      "$numberLong": "1779530400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003017"
+    },
+    "title": "Kiểm tra phân quyền manager 17",
+    "description": "Đảm bảo manager chỉ quản lý dự án thuộc nhóm của mình. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Express, REST API, Regression.",
+    "due_date": {
+      "$numberLong": "1779616800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Regression"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Regression"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003018"
+    },
+    "title": "Lập báo cáo kết quả phân công 18",
+    "description": "Tổng hợp cụm kỹ năng nào được gán với nhóm task nào. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Data Cleaning, Reporting, Embedding.",
+    "due_date": {
+      "$numberLong": "1779703200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003019"
+    },
+    "title": "Cải thiện màn hình gợi ý phân công 19",
+    "description": "Hiển thị người được đề xuất kèm điểm kỹ năng, tải công việc và lý do gợi ý. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Tailwind CSS, React, State Management.",
+    "due_date": {
+      "$numberLong": "1779789600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003020"
+    },
+    "title": "Viết runbook QA local 20",
+    "description": "Hướng dẫn start server, import data, đăng nhập và test các flow chính. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Linux, CI/CD, Reporting.",
+    "due_date": {
+      "$numberLong": "1779876000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003021"
+    },
+    "title": "Ghi lại tài khoản test 21",
+    "description": "Lập danh sách manager, employee, team và cụm kỹ năng kỳ vọng. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Testing, Postman, React.",
+    "due_date": {
+      "$numberLong": "1779962400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "React"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "React"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003022"
+    },
+    "title": "Thêm trạng thái lỗi và loading 22",
+    "description": "Hiển thị rõ lỗi, dữ liệu rỗng, đang tải và thành công khi thao tác phân công. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Dart, State Management, Express.",
+    "due_date": {
+      "$numberLong": "1780048800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Express"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Express"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003023"
+    },
+    "title": "Trả về thông tin giải thích phân công 23",
+    "description": "Bổ sung điểm từng thành phần để dễ debug kết quả gợi ý. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về MongoDB, Authentication, Data Cleaning.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003024"
+    },
+    "title": "Ghi lại tài khoản test 24",
+    "description": "Lập danh sách manager, employee, team và cụm kỹ năng kỳ vọng. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Bug Report, Testing, Tailwind CSS.",
+    "due_date": {
+      "$numberLong": "1780221600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003025"
+    },
+    "title": "Ghi lại tài khoản test 25",
+    "description": "Lập danh sách manager, employee, team và cụm kỹ năng kỳ vọng. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Documentation, Regression, Linux.",
+    "due_date": {
+      "$numberLong": "1780308000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003026"
+    },
+    "title": "Viết API xem trước phân công 26",
+    "description": "Trả về kết quả gợi ý mà chưa cập nhật người phụ trách vào database. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Node.js, MongoDB, Testing.",
+    "due_date": {
+      "$numberLong": "1780394400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003027"
+    },
+    "title": "Viết checklist smoke test phân công 27",
+    "description": "Kiểm tra preview, apply, phân công lại và override thủ công với dữ liệu mẫu. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Regression, Bug Report, Dart.",
+    "due_date": {
+      "$numberLong": "1780480800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003028"
+    },
+    "title": "Tính lại ma trận chi phí MCMF 28",
+    "description": "Cân bằng deadline, priority, độ khó, tải hiện tại và năng suất của từng thành viên. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Embedding, Min-Cost Max-Flow, MongoDB.",
+    "due_date": {
+      "$numberLong": "1780567200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003029"
+    },
+    "title": "Làm màn hình phân công trong dự án 29",
+    "description": "Cho phép manager chọn task và thành viên trước khi xem gợi ý phân công. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về State Management, Flutter, Bug Report.",
+    "due_date": {
+      "$numberLong": "1780653600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": false,
+    "required_skills": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ],
+    "skills_required": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003030"
+    },
+    "title": "Mô hình hóa hồ sơ kỹ năng sinh viên 30",
+    "description": "Lưu kỹ năng kèm mô tả để AI có dữ liệu ngữ nghĩa khi so khớp. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Reporting, MongoDB, Documentation.",
+    "due_date": {
+      "$numberLong": "1780740000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003031"
+    },
+    "title": "Thiết kế thẻ thống kê dashboard 31",
+    "description": "Hiển thị số task trễ hạn, tiến độ dự án và tải công việc của từng nhóm. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về React, UI/UX, Node.js.",
+    "due_date": {
+      "$numberLong": "1780826400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003032"
+    },
+    "title": "Chuẩn hóa dữ liệu kỹ năng của task 32",
+    "description": "Nhận required_skills và skills_required nhưng lưu về cùng một cấu trúc thống nhất. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Express, REST API, Regression.",
+    "due_date": {
+      "$numberLong": "1780912800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Regression"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Regression"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003033"
+    },
+    "title": "Tạo danh sách task gắn với đồ án 33",
+    "description": "Viết title và description gắn với các công việc thật trong nhóm sinh viên. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Data Cleaning, Reporting, Embedding.",
+    "due_date": {
+      "$numberLong": "1780999200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 5,
+    "can_parallelize": false,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003034"
+    },
+    "title": "Thiết kế thẻ thống kê dashboard 34",
+    "description": "Hiển thị số task trễ hạn, tiến độ dự án và tải công việc của từng nhóm. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Tailwind CSS, React, State Management.",
+    "due_date": {
+      "$numberLong": "1781085600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003035"
+    },
+    "title": "Viết hướng dẫn import seed 35",
+    "description": "Ghi lại lệnh mongoimport để nạp lại dữ liệu test phân công nhiều lần. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Linux, CI/CD, Reporting.",
+    "due_date": {
+      "$numberLong": "1781172000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003036"
+    },
+    "title": "Kiểm thử luồng phân công trên mobile 36",
+    "description": "Chạy flow manager trên emulator và xác nhận task đã có người phụ trách. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Testing, Postman, React.",
+    "due_date": {
+      "$numberLong": "1778234400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "React"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "React"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003037"
+    },
+    "title": "Thêm luồng tạo task trên mobile 37",
+    "description": "Cho phép tạo task chưa gán người để backend tự động phân công. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Dart, State Management, Express.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Express"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Express"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003038"
+    },
+    "title": "Thêm bộ lọc danh sách task 38",
+    "description": "Lọc task theo dự án, giai đoạn, trạng thái, deadline và người phụ trách. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về MongoDB, Authentication, Data Cleaning.",
+    "due_date": {
+      "$numberLong": "1778407200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003039"
+    },
+    "title": "Kiểm thử luồng phân công trên mobile 39",
+    "description": "Chạy flow manager trên emulator và xác nhận task đã có người phụ trách. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Bug Report, Testing, Tailwind CSS.",
+    "due_date": {
+      "$numberLong": "1778493600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003040"
+    },
+    "title": "Kiểm thử luồng phân công trên mobile 40",
+    "description": "Chạy flow manager trên emulator và xác nhận task đã có người phụ trách. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Documentation, Regression, Linux.",
+    "due_date": {
+      "$numberLong": "1778580000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003041"
+    },
+    "title": "Kiểm tra phân quyền manager 41",
+    "description": "Đảm bảo manager chỉ quản lý dự án thuộc nhóm của mình. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Node.js, MongoDB, Testing.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003042"
+    },
+    "title": "Đối chiếu kết quả preview và apply 42",
+    "description": "Đảm bảo cùng input thì preview và apply cho kết quả phân công tương thích. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Regression, Bug Report, Dart.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003043"
+    },
+    "title": "Giải thích kết quả gợi ý 43",
+    "description": "Trả về điểm exact, embedding, TF-IDF, MCMF và điểm tổng hợp cho từng người. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Embedding, Min-Cost Max-Flow, MongoDB.",
+    "due_date": {
+      "$numberLong": "1778839200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003044"
+    },
+    "title": "Cải thiện cơ chế làm mới dữ liệu 44",
+    "description": "Giảm việc polling quá nhiều nhưng vẫn cập nhật danh sách dự án và task kịp thời. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về State Management, Flutter, Bug Report.",
+    "due_date": {
+      "$numberLong": "1778925600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ],
+    "skills_required": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003045"
+    },
+    "title": "Lập báo cáo kết quả phân công 45",
+    "description": "Tổng hợp cụm kỹ năng nào được gán với nhóm task nào. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Reporting, MongoDB, Documentation.",
+    "due_date": {
+      "$numberLong": "1779012000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003046"
+    },
+    "title": "Làm menu điều hướng responsive 46",
+    "description": "Đảm bảo menu dùng tốt trên laptop, tablet và điện thoại. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về React, UI/UX, Node.js.",
+    "due_date": {
+      "$numberLong": "1779098400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003047"
+    },
+    "title": "Trả về thông tin giải thích phân công 47",
+    "description": "Bổ sung điểm từng thành phần để dễ debug kết quả gợi ý. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Express, REST API, Regression.",
+    "due_date": {
+      "$numberLong": "1779184800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Regression"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Regression"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003048"
+    },
+    "title": "Làm sạch dữ liệu kỹ năng cũ 48",
+    "description": "Phát hiện skill dạng string và chuyển sang object có name và description. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Data Cleaning, Reporting, Embedding.",
+    "due_date": {
+      "$numberLong": "1779271200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003049"
+    },
+    "title": "Làm menu điều hướng responsive 49",
+    "description": "Đảm bảo menu dùng tốt trên laptop, tablet và điện thoại. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Tailwind CSS, React, State Management.",
+    "due_date": {
+      "$numberLong": "1779357600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": false,
+    "required_skills": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003050"
+    },
+    "title": "Ghi chú biến môi trường deploy 50",
+    "description": "Liệt kê env cần cho MongoDB, JWT, embedding service và API base URL. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Linux, CI/CD, Reporting.",
+    "due_date": {
+      "$numberLong": "1779444000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003051"
+    },
+    "title": "Viết checklist smoke test phân công 51",
+    "description": "Kiểm tra preview, apply, phân công lại và override thủ công với dữ liệu mẫu. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Testing, Postman, React.",
+    "due_date": {
+      "$numberLong": "1779530400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "React"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "React"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003052"
+    },
+    "title": "Làm màn hình phân công trong dự án 52",
+    "description": "Cho phép manager chọn task và thành viên trước khi xem gợi ý phân công. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Dart, State Management, Express.",
+    "due_date": {
+      "$numberLong": "1779616800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Express"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Express"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003053"
+    },
+    "title": "Viết API xem trước phân công 53",
+    "description": "Trả về kết quả gợi ý mà chưa cập nhật người phụ trách vào database. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về MongoDB, Authentication, Data Cleaning.",
+    "due_date": {
+      "$numberLong": "1779703200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 5,
+    "can_parallelize": false,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003054"
+    },
+    "title": "Viết checklist smoke test phân công 54",
+    "description": "Kiểm tra preview, apply, phân công lại và override thủ công với dữ liệu mẫu. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Bug Report, Testing, Tailwind CSS.",
+    "due_date": {
+      "$numberLong": "1779789600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003055"
+    },
+    "title": "Viết checklist smoke test phân công 55",
+    "description": "Kiểm tra preview, apply, phân công lại và override thủ công với dữ liệu mẫu. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Documentation, Regression, Linux.",
+    "due_date": {
+      "$numberLong": "1779876000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003056"
+    },
+    "title": "Chuẩn hóa dữ liệu kỹ năng của task 56",
+    "description": "Nhận required_skills và skills_required nhưng lưu về cùng một cấu trúc thống nhất. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Node.js, MongoDB, Testing.",
+    "due_date": {
+      "$numberLong": "1779962400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003057"
+    },
+    "title": "Tạo bộ regression trên Postman 57",
+    "description": "Kiểm tra auth, projects, tasks, teams, skills và assignments endpoints. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Regression, Bug Report, Dart.",
+    "due_date": {
+      "$numberLong": "1780048800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003058"
+    },
+    "title": "Tính độ tương đồng kỹ năng bằng embedding 58",
+    "description": "So sánh yêu cầu công việc với mô tả kỹ năng của sinh viên bằng điểm ngữ nghĩa. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Embedding, Min-Cost Max-Flow, MongoDB.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003059"
+    },
+    "title": "Hiển thị thẻ gợi ý trên mobile 59",
+    "description": "Hiển thị tên task, thành viên được chọn, điểm kỹ năng và ghi chú về tải công việc. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về State Management, Flutter, Bug Report.",
+    "due_date": {
+      "$numberLong": "1780221600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ],
+    "skills_required": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003060"
+    },
+    "title": "Tạo danh sách task gắn với đồ án 60",
+    "description": "Viết title và description gắn với các công việc thật trong nhóm sinh viên. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Reporting, MongoDB, Documentation.",
+    "due_date": {
+      "$numberLong": "1780308000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003061"
+    },
+    "title": "Tạo form chi tiết công việc 61",
+    "description": "Bổ sung form nhập tiêu đề, mô tả, deadline, mức ưu tiên, độ khó và kỹ năng cần thiết. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về React, UI/UX, Node.js.",
+    "due_date": {
+      "$numberLong": "1780394400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003062"
+    },
+    "title": "Thêm bộ lọc danh sách task 62",
+    "description": "Lọc task theo dự án, giai đoạn, trạng thái, deadline và người phụ trách. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Express, REST API, Regression.",
+    "due_date": {
+      "$numberLong": "1780480800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Regression"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Regression"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003063"
+    },
+    "title": "Phân tích phân bổ tải công việc 63",
+    "description": "So sánh current_task_count trước và sau khi apply kết quả phân công. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Data Cleaning, Reporting, Embedding.",
+    "due_date": {
+      "$numberLong": "1780567200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003064"
+    },
+    "title": "Tạo form chi tiết công việc 64",
+    "description": "Bổ sung form nhập tiêu đề, mô tả, deadline, mức ưu tiên, độ khó và kỹ năng cần thiết. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Tailwind CSS, React, State Management.",
+    "due_date": {
+      "$numberLong": "1780653600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003065"
+    },
+    "title": "Kiểm tra nhanh embedding service 65",
+    "description": "Kiểm tra health, similarity và fallback trước khi test phân công. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Linux, CI/CD, Reporting.",
+    "due_date": {
+      "$numberLong": "1780740000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003066"
+    },
+    "title": "Đối chiếu kết quả preview và apply 66",
+    "description": "Đảm bảo cùng input thì preview và apply cho kết quả phân công tương thích. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Testing, Postman, React.",
+    "due_date": {
+      "$numberLong": "1780826400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "React"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "React"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003067"
+    },
+    "title": "Cải thiện cơ chế làm mới dữ liệu 67",
+    "description": "Giảm việc polling quá nhiều nhưng vẫn cập nhật danh sách dự án và task kịp thời. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Dart, State Management, Express.",
+    "due_date": {
+      "$numberLong": "1780912800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Express"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Express"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003068"
+    },
+    "title": "Kiểm tra phân quyền manager 68",
+    "description": "Đảm bảo manager chỉ quản lý dự án thuộc nhóm của mình. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về MongoDB, Authentication, Data Cleaning.",
+    "due_date": {
+      "$numberLong": "1780999200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003069"
+    },
+    "title": "Đối chiếu kết quả preview và apply 69",
+    "description": "Đảm bảo cùng input thì preview và apply cho kết quả phân công tương thích. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Bug Report, Testing, Tailwind CSS.",
+    "due_date": {
+      "$numberLong": "1781085600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": false,
+    "required_skills": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003070"
+    },
+    "title": "Đối chiếu kết quả preview và apply 70",
+    "description": "Đảm bảo cùng input thì preview và apply cho kết quả phân công tương thích. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Documentation, Regression, Linux.",
+    "due_date": {
+      "$numberLong": "1781172000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003071"
+    },
+    "title": "Trả về thông tin giải thích phân công 71",
+    "description": "Bổ sung điểm từng thành phần để dễ debug kết quả gợi ý. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Node.js, MongoDB, Testing.",
+    "due_date": {
+      "$numberLong": "1778234400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003072"
+    },
+    "title": "Ghi lại tài khoản test 72",
+    "description": "Lập danh sách manager, employee, team và cụm kỹ năng kỳ vọng. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Regression, Bug Report, Dart.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003073"
+    },
+    "title": "Thiết kế chế độ fallback scoring 73",
+    "description": "Đảm bảo vẫn phân công được khi PhoBERT hoặc Gemini không sẵn sàng. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Embedding, Min-Cost Max-Flow, MongoDB.",
+    "due_date": {
+      "$numberLong": "1778407200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 5,
+    "can_parallelize": false,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003074"
+    },
+    "title": "Thêm trạng thái lỗi và loading 74",
+    "description": "Hiển thị rõ lỗi, dữ liệu rỗng, đang tải và thành công khi thao tác phân công. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về State Management, Flutter, Bug Report.",
+    "due_date": {
+      "$numberLong": "1778493600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ],
+    "skills_required": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003075"
+    },
+    "title": "Làm sạch dữ liệu kỹ năng cũ 75",
+    "description": "Phát hiện skill dạng string và chuyển sang object có name và description. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Reporting, MongoDB, Documentation.",
+    "due_date": {
+      "$numberLong": "1778580000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003076"
+    },
+    "title": "Xây dựng bảng kanban 76",
+    "description": "Tạo bảng công việc theo các giai đoạn để nhóm theo dõi trạng thái task hằng ngày. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về React, UI/UX, Node.js.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003077"
+    },
+    "title": "Viết API xem trước phân công 77",
+    "description": "Trả về kết quả gợi ý mà chưa cập nhật người phụ trách vào database. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Express, REST API, Regression.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Regression"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Regression"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003078"
+    },
+    "title": "Mô hình hóa hồ sơ kỹ năng sinh viên 78",
+    "description": "Lưu kỹ năng kèm mô tả để AI có dữ liệu ngữ nghĩa khi so khớp. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Data Cleaning, Reporting, Embedding.",
+    "due_date": {
+      "$numberLong": "1778839200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003079"
+    },
+    "title": "Xây dựng bảng kanban 79",
+    "description": "Tạo bảng công việc theo các giai đoạn để nhóm theo dõi trạng thái task hằng ngày. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Tailwind CSS, React, State Management.",
+    "due_date": {
+      "$numberLong": "1778925600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003080"
+    },
+    "title": "Sửa healthcheck docker compose 80",
+    "description": "Đồng bộ healthcheck frontend và backend với port thực tế trong container. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Linux, CI/CD, Reporting.",
+    "due_date": {
+      "$numberLong": "1779012000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003081"
+    },
+    "title": "Tạo bộ regression trên Postman 81",
+    "description": "Kiểm tra auth, projects, tasks, teams, skills và assignments endpoints. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Testing, Postman, React.",
+    "due_date": {
+      "$numberLong": "1779098400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "React"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "React"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003082"
+    },
+    "title": "Hiển thị thẻ gợi ý trên mobile 82",
+    "description": "Hiển thị tên task, thành viên được chọn, điểm kỹ năng và ghi chú về tải công việc. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Dart, State Management, Express.",
+    "due_date": {
+      "$numberLong": "1779184800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Express"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Express"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003083"
+    },
+    "title": "Chuẩn hóa dữ liệu kỹ năng của task 83",
+    "description": "Nhận required_skills và skills_required nhưng lưu về cùng một cấu trúc thống nhất. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về MongoDB, Authentication, Data Cleaning.",
+    "due_date": {
+      "$numberLong": "1779271200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003084"
+    },
+    "title": "Tạo bộ regression trên Postman 84",
+    "description": "Kiểm tra auth, projects, tasks, teams, skills và assignments endpoints. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Bug Report, Testing, Tailwind CSS.",
+    "due_date": {
+      "$numberLong": "1779357600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003085"
+    },
+    "title": "Tạo bộ regression trên Postman 85",
+    "description": "Kiểm tra auth, projects, tasks, teams, skills và assignments endpoints. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Documentation, Regression, Linux.",
+    "due_date": {
+      "$numberLong": "1779444000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003086"
+    },
+    "title": "Thêm bộ lọc danh sách task 86",
+    "description": "Lọc task theo dự án, giai đoạn, trạng thái, deadline và người phụ trách. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Node.js, MongoDB, Testing.",
+    "due_date": {
+      "$numberLong": "1779530400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Testing"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003087"
+    },
+    "title": "Kiểm thử luồng phân công trên mobile 87",
+    "description": "Chạy flow manager trên emulator và xác nhận task đã có người phụ trách. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Regression, Bug Report, Dart.",
+    "due_date": {
+      "$numberLong": "1779616800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Dart"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003088"
+    },
+    "title": "Cập nhật từ điển TF-IDF 88",
+    "description": "Xây lại từ điển kỹ năng từ danh sách thành viên trước khi chấm điểm ứng viên. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Embedding, Min-Cost Max-Flow, MongoDB.",
+    "due_date": {
+      "$numberLong": "1779703200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003089"
+    },
+    "title": "Thêm luồng tạo task trên mobile 89",
+    "description": "Cho phép tạo task chưa gán người để backend tự động phân công. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về State Management, Flutter, Bug Report.",
+    "due_date": {
+      "$numberLong": "1779789600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": false,
+    "required_skills": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ],
+    "skills_required": [
+      "State Management",
+      "Flutter",
+      "Bug Report"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003090"
+    },
+    "title": "Phân tích phân bổ tải công việc 90",
+    "description": "So sánh current_task_count trước và sau khi apply kết quả phân công. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Reporting, MongoDB, Documentation.",
+    "due_date": {
+      "$numberLong": "1779876000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Reporting",
+      "MongoDB",
+      "Documentation"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003091"
+    },
+    "title": "Cải thiện màn hình gợi ý phân công 91",
+    "description": "Hiển thị người được đề xuất kèm điểm kỹ năng, tải công việc và lý do gợi ý. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về React, UI/UX, Node.js.",
+    "due_date": {
+      "$numberLong": "1779962400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003092"
+    },
+    "title": "Kiểm tra phân quyền manager 92",
+    "description": "Đảm bảo manager chỉ quản lý dự án thuộc nhóm của mình. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Express, REST API, Regression.",
+    "due_date": {
+      "$numberLong": "1780048800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Regression"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Regression"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003093"
+    },
+    "title": "Lập báo cáo kết quả phân công 93",
+    "description": "Tổng hợp cụm kỹ năng nào được gán với nhóm task nào. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về Data Cleaning, Reporting, Embedding.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 5,
+    "can_parallelize": false,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Embedding"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003094"
+    },
+    "title": "Cải thiện màn hình gợi ý phân công 94",
+    "description": "Hiển thị người được đề xuất kèm điểm kỹ năng, tải công việc và lý do gợi ý. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Tailwind CSS, React, State Management.",
+    "due_date": {
+      "$numberLong": "1780221600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "React",
+      "State Management"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003095"
+    },
+    "title": "Viết runbook QA local 95",
+    "description": "Hướng dẫn start server, import data, đăng nhập và test các flow chính. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Linux, CI/CD, Reporting.",
+    "due_date": {
+      "$numberLong": "1780308000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Linux",
+      "CI/CD",
+      "Reporting"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003096"
+    },
+    "title": "Ghi lại tài khoản test 96",
+    "description": "Lập danh sách manager, employee, team và cụm kỹ năng kỳ vọng. Công việc thuộc dự án \"Hệ thống quản lý đồ án môn học\" và cần thành viên có kinh nghiệm về Testing, Postman, React.",
+    "due_date": {
+      "$numberLong": "1780394400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "React"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "React"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003097"
+    },
+    "title": "Thêm trạng thái lỗi và loading 97",
+    "description": "Hiển thị rõ lỗi, dữ liệu rỗng, đang tải và thành công khi thao tác phân công. Công việc thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\" và cần thành viên có kinh nghiệm về Dart, State Management, Express.",
+    "due_date": {
+      "$numberLong": "1780480800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Express"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Express"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003098"
+    },
+    "title": "Trả về thông tin giải thích phân công 98",
+    "description": "Bổ sung điểm từng thành phần để dễ debug kết quả gợi ý. Công việc thuộc dự án \"Module gợi ý phân công thông minh\" và cần thành viên có kinh nghiệm về MongoDB, Authentication, Data Cleaning.",
+    "due_date": {
+      "$numberLong": "1780567200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Data Cleaning"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003099"
+    },
+    "title": "Ghi lại tài khoản test 99",
+    "description": "Lập danh sách manager, employee, team và cụm kỹ năng kỳ vọng. Công việc thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\" và cần thành viên có kinh nghiệm về Bug Report, Testing, Tailwind CSS.",
+    "due_date": {
+      "$numberLong": "1780653600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Testing",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003100"
+    },
+    "title": "Ghi lại tài khoản test 100",
+    "description": "Lập danh sách manager, employee, team và cụm kỹ năng kỳ vọng. Công việc thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\" và cần thành viên có kinh nghiệm về Documentation, Regression, Linux.",
+    "due_date": {
+      "$numberLong": "1780740000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Regression",
+      "Linux"
+    ]
+  }
+]

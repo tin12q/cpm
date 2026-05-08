@@ -3,7 +3,7 @@ class Employee {
   String _role = '';
   String _id = '';
   String _ava = '';
-  
+
   // MCMF fields
   List<String> _skills = [];
   double _productivityScore = 0.8;
@@ -28,16 +28,16 @@ class Employee {
     _onTimeRate = onTimeRate;
     _currentTaskCount = currentTaskCount;
   }
-  
-  get name => _name;
-  get role => _role;
-  get id => _id;
-  get ava => _ava;
-  get skills => _skills;
-  get productivityScore => _productivityScore;
-  get onTimeRate => _onTimeRate;
-  get currentTaskCount => _currentTaskCount;
-  
+
+  String get name => _name;
+  String get role => _role;
+  String get id => _id;
+  String get ava => _ava;
+  List<String> get skills => _skills;
+  double get productivityScore => _productivityScore;
+  double get onTimeRate => _onTimeRate;
+  int get currentTaskCount => _currentTaskCount;
+
   set setName(String name) => _name = name;
   set setRole(String role) => _role = role;
   set setId(String id) => _id = id;

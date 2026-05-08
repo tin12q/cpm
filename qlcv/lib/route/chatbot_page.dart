@@ -103,6 +103,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   if (_isLoading && index == _messages.length) {
                     return _buildTypingIndicator();
                   }
+                  if (index < 0 || index >= _messages.length) {
+                    return const SizedBox.shrink();
+                  }
                   return _buildMessageBubble(_messages[index]);
                 },
               ),

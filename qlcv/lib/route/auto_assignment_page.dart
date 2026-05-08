@@ -12,6 +12,8 @@ class AutoAssignmentPage extends StatefulWidget {
 }
 
 class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
+  List<Task> availableTasks = [];
+  List<Employee> availableUsers = [];
   List<Task> selectedTasks = [];
   List<Employee> selectedUsers = [];
   Map<String, dynamic>? previewResult;
@@ -44,12 +46,28 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
       });
       return;
     }
+    _refreshLocalData();
     _loadDefaultConfig();
+  }
+
+  void _refreshLocalData() {
+    availableTasks = List<Task>.from(DBHelper.tasks);
+    availableUsers = List<Employee>.from(DBHelper.employees);
+
+    final selectedTaskIds = selectedTasks.map((task) => task.id).toSet();
+    final selectedUserIds = selectedUsers.map((user) => user.id).toSet();
+    selectedTasks = availableTasks
+        .where((task) => selectedTaskIds.contains(task.id))
+        .toList();
+    selectedUsers = availableUsers
+        .where((user) => selectedUserIds.contains(user.id))
+        .toList();
   }
 
   Future<void> _loadDefaultConfig() async {
     try {
       var config = await AssignmentService.getDefaultConfig();
+      if (!mounted) return;
       setState(() {
         wDeadline = config['W_deadline'] ?? 0.5;
         wPriority = config['W_priority'] ?? 0.2;
@@ -58,7 +76,7 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
         wWorkload = config['W_workload'] ?? 0.05;
       });
     } catch (e) {
-      print('Error loading config: $e');
+      debugPrint('Error loading config: $e');
     }
   }
 
@@ -75,9 +93,9 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
     });
 
     try {
-      List<String> taskIds = selectedTasks.map((t) => t.id as String).toList();
+      List<String> taskIds = selectedTasks.map((t) => t.id).toList();
       List<String>? userIds = selectedUsers.isNotEmpty
-          ? selectedUsers.map((u) => u.id as String).toList()
+          ? selectedUsers.map((u) => u.id).toList()
           : null;
 
       Map<String, dynamic> config = {
@@ -94,11 +112,13 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
         config: config,
       );
 
+      if (!mounted) return;
       setState(() {
         previewResult = result;
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
@@ -155,9 +175,9 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
     });
 
     try {
-      List<String> taskIds = selectedTasks.map((t) => t.id as String).toList();
+      List<String> taskIds = selectedTasks.map((t) => t.id).toList();
       List<String>? userIds = selectedUsers.isNotEmpty
-          ? selectedUsers.map((u) => u.id as String).toList()
+          ? selectedUsers.map((u) => u.id).toList()
           : null;
 
       Map<String, dynamic> config = {
@@ -174,6 +194,7 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
         config: config,
       );
 
+      if (!mounted) return;
       setState(() {
         isLoading = false;
         previewResult = result;
@@ -189,7 +210,12 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
       // Refresh data
       await DBHelper.loadTasksPage(page: 1, limit: 25);
       await DBHelper.loadProjectsPage(page: 1, limit: 25);
+      if (!mounted) return;
+      setState(() {
+        _refreshLocalData();
+      });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
@@ -243,10 +269,14 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
             SizedBox(
               height: 200,
               child: ListView.builder(
-                itemCount: DBHelper.tasks.length,
+                itemCount: availableTasks.length,
                 itemBuilder: (context, index) {
-                  Task task = DBHelper.tasks[index];
-                  bool isSelected = selectedTasks.contains(task);
+                  if (index < 0 || index >= availableTasks.length) {
+                    return const SizedBox.shrink();
+                  }
+                  final task = availableTasks[index];
+                  final isSelected =
+                      selectedTasks.any((selected) => selected.id == task.id);
 
                   return CheckboxListTile(
                     title: Text(task.title),
@@ -256,9 +286,10 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
                     onChanged: (bool? value) {
                       setState(() {
                         if (value == true) {
-                          selectedTasks.add(task);
+                          if (!isSelected) selectedTasks.add(task);
                         } else {
-                          selectedTasks.remove(task);
+                          selectedTasks.removeWhere(
+                              (selected) => selected.id == task.id);
                         }
                       });
                     },
@@ -292,10 +323,14 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
             SizedBox(
               height: 150,
               child: ListView.builder(
-                itemCount: DBHelper.employees.length,
+                itemCount: availableUsers.length,
                 itemBuilder: (context, index) {
-                  Employee emp = DBHelper.employees[index];
-                  bool isSelected = selectedUsers.contains(emp);
+                  if (index < 0 || index >= availableUsers.length) {
+                    return const SizedBox.shrink();
+                  }
+                  final emp = availableUsers[index];
+                  final isSelected =
+                      selectedUsers.any((selected) => selected.id == emp.id);
 
                   return CheckboxListTile(
                     title: Text(emp.name),
@@ -304,9 +339,10 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
                     onChanged: (bool? value) {
                       setState(() {
                         if (value == true) {
-                          selectedUsers.add(emp);
+                          if (!isSelected) selectedUsers.add(emp);
                         } else {
-                          selectedUsers.remove(emp);
+                          selectedUsers
+                              .removeWhere((selected) => selected.id == emp.id);
                         }
                       });
                     },
@@ -371,19 +407,16 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
     );
   }
 
-  Widget _buildSlider(String label, double value, Function(double) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('$label: ${value.toStringAsFixed(2)}'),
-        Slider(
-          value: value,
-          min: 0.0,
-          max: 1.0,
-          divisions: 20,
-          onChanged: onChanged,
-        ),
-      ],
+  Widget _buildSlider(
+    String label,
+    double value,
+    ValueChanged<double> onChanged,
+  ) {
+    return _SmoothWeightSlider(
+      key: ValueKey(label),
+      label: label,
+      value: value,
+      onChanged: onChanged,
     );
   }
 
@@ -461,6 +494,62 @@ class _AutoAssignmentPageState extends State<AutoAssignmentPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SmoothWeightSlider extends StatefulWidget {
+  final String label;
+  final double value;
+  final ValueChanged<double> onChanged;
+
+  const _SmoothWeightSlider({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  State<_SmoothWeightSlider> createState() => _SmoothWeightSliderState();
+}
+
+class _SmoothWeightSliderState extends State<_SmoothWeightSlider> {
+  late double _draftValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _draftValue = widget.value;
+  }
+
+  @override
+  void didUpdateWidget(covariant _SmoothWeightSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      _draftValue = widget.value;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('${widget.label}: ${_draftValue.toStringAsFixed(2)}'),
+        Slider(
+          value: _draftValue,
+          min: 0.0,
+          max: 1.0,
+          divisions: 20,
+          onChanged: (value) {
+            setState(() {
+              _draftValue = value;
+            });
+          },
+          onChangeEnd: widget.onChanged,
+        ),
+      ],
     );
   }
 }

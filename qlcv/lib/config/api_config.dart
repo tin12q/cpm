@@ -7,6 +7,7 @@ class ApiConfig {
 
   // API Endpoints
   static const String loginEndpoint = '$baseUrl/api/auth/login';
+  static const String registerEndpoint = '$baseUrl/api/auth/register';
   static const String projectsEndpoint = '$baseUrl/api/projects';
   static const String tasksEndpoint = '$baseUrl/api/tasks';
   static const String usersEndpoint = '$baseUrl/api/users';

@@ -73,8 +73,9 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     }
+    final safeIndex = _selectedIndex.clamp(0, _widgetOptions.length - 1);
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: _widgetOptions.elementAt(safeIndex),
       bottomNavigationBar: Container(
         color: ColorPicker.primary,
         child: SafeArea(
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
             tabBackgroundColor: ColorPicker.accent,
             backgroundColor: ColorPicker.primary,
             tabs: _tabs,
-            selectedIndex: 1,
+            selectedIndex: safeIndex.clamp(0, _tabs.length - 1),
             onTabChange: (index) async {
               await DBHelper.taskUpdate();
               setState(() {

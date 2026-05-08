@@ -41,7 +41,7 @@ const previewAssignment = async (req, res) => {
 			});
 		}
 
-		const result = await TaskAssignmentService.assignTasks(
+		const result = await TaskAssignmentService.assignTasksHybrid(
 			task_ids,
 			user_ids,
 			config
@@ -152,6 +152,8 @@ const getDefaultConfig = async (req, res) => {
 			W_speed: 0.2,
 			W_skill: 0.1,
 			W_workload: 0.05,
+			W_batch_workload: 0.35,
+			maxParallelAssignees: 2,
 			MAX_PRIORITY: 5,
 			MAX_TASK_COUNT: 10,
 			description: {

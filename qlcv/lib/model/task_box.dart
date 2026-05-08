@@ -3,7 +3,6 @@ import 'package:qlcv/model/db_helper.dart';
 import 'package:qlcv/model/task_page.dart';
 import 'package:qlcv/model/projects_page.dart';
 import '../home_page.dart';
-import '../route/home.dart';
 import '../utils/status_helper.dart';
 import 'color_picker.dart';
 import 'task.dart';
@@ -24,6 +23,7 @@ class TaskCard extends StatelessWidget {
     final matches = DBHelper.projects.where((p) => p.id == task.project);
     final project = matches.isNotEmpty ? matches.first : null;
     final projectName = project?.title ?? 'Unknown Project';
+    final assigneeLabel = _assigneeLabel(task);
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -148,33 +148,32 @@ class TaskCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 12),
-              // Footer: Date and Actions
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
-                  // Due date
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_today,
-                            size: 14, color: ColorPicker.fontLight),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            task.endDateString,
-                            style: const TextStyle(
-                              color: ColorPicker.fontMedium,
-                              fontSize: 13,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
+                  _InfoChip(
+                    icon: Icons.calendar_today_outlined,
+                    label: task.endDateString,
+                    color: ColorPicker.fontMedium,
                   ),
-                  // Action buttons
-                  Row(
+                  _InfoChip(
+                    icon: task.emp.isEmpty
+                        ? Icons.person_add_alt_1_outlined
+                        : Icons.people_alt_outlined,
+                    label: assigneeLabel,
+                    color: task.emp.isEmpty
+                        ? ColorPicker.fontMedium
+                        : ColorPicker.buttonSuccess,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _CardActionButton(
@@ -299,7 +298,7 @@ class TaskCard extends StatelessWidget {
                             ),
                     ],
                   ),
-                ],
+                ),
               ),
             ],
           ),
@@ -410,7 +409,8 @@ class TaskPopupCard extends StatelessWidget {
         continue;
       }
       final matches = DBHelper.employees.where((emp) => emp.id == empId);
-      employeeNames.add(matches.isNotEmpty ? matches.first.name.toString() : empId);
+      employeeNames
+          .add(matches.isNotEmpty ? matches.first.name.toString() : empId);
     }
 
     return Dialog(
@@ -553,4 +553,24 @@ class _InfoChip extends StatelessWidget {
       ),
     );
   }
+}
+
+String _assigneeLabel(Task task) {
+  if (task.emp.isEmpty) return 'Unassigned';
+
+  final names = task.emp
+      .map<String?>((String empId) => DBHelper.empMap[empId]?.name?.toString())
+      .whereType<String>()
+      .where((String name) => name.trim().isNotEmpty)
+      .toList();
+
+  if (names.isEmpty) {
+    return '${task.emp.length} assigned';
+  }
+
+  if (names.length <= 2) {
+    return names.join(', ');
+  }
+
+  return '${names.take(2).join(', ')} +${names.length - 2}';
 }

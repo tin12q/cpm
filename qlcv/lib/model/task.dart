@@ -18,15 +18,15 @@ class Task {
   int _priority = 3; // 1=Very Low, 2=Low, 3=Medium, 4=High, 5=Critical
   bool _canParallelize = true;
 
-  get id => _id;
-  get title => _title;
-  get description => _description;
-  get status => _status;
-  get endDate => _endDate;
-  get project => _project;
-  get endDateString =>
+  String get id => _id;
+  String get title => _title;
+  String get description => _description;
+  String get status => _status;
+  DateTime get endDate => _endDate;
+  String get project => _project;
+  String get endDateString =>
       '${_endDate.day.toString()}/${_endDate.month.toString()}/${_endDate.year.toString()}';
-  get emp => _emp;
+  List<String> get emp => _emp;
 
   // MCMF getters
   int get difficulty => _difficulty;
@@ -43,13 +43,13 @@ class Task {
     return empWidget;
   }
 
-  set id(id) => _id = id;
-  set title(title) => _title = title;
-  set description(description) => _description = description;
-  set status(status) => _status = status;
-  set endDate(edate) => _endDate = edate;
-  set emp(emp) => _emp = emp;
-  set project(project) => _project = project;
+  set id(String id) => _id = id;
+  set title(String title) => _title = title;
+  set description(String description) => _description = description;
+  set status(String status) => _status = status;
+  set endDate(DateTime edate) => _endDate = edate;
+  set emp(List<String> emp) => _emp = emp;
+  set project(String project) => _project = project;
 
   // MCMF setters
   set difficulty(int d) => _difficulty = d;

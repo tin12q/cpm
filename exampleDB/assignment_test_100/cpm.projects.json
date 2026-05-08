@@ -1,0 +1,280 @@
+[
+  {
+    "_id": {
+      "$oid": "68a100000000000000000201"
+    },
+    "title": "Hệ thống quản lý đồ án môn học",
+    "description": "Web dashboard cho sinh viên lập kế hoạch dự án, chia task, xem lịch và theo dõi tiến độ.",
+    "due_date": {
+      "$numberLong": "1781517600000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000101"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000101"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "customer": {
+      "name": "Bộ môn Công nghệ phần mềm",
+      "code": "CPM-STUDENT",
+      "description": "Bộ môn Công nghệ phần mềm."
+    },
+    "contacts": [],
+    "primary_contact": null
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000202"
+    },
+    "title": "Ứng dụng mobile theo dõi tiến độ nhóm",
+    "description": "Ứng dụng Flutter giúp sinh viên tạo task, xem người phụ trách và theo dõi deadline.",
+    "due_date": {
+      "$numberLong": "1781949600000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000103"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000103"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "customer": {
+      "name": "Bộ môn Công nghệ phần mềm",
+      "code": "CPM-STUDENT",
+      "description": "Bộ môn Công nghệ phần mềm."
+    },
+    "contacts": [],
+    "primary_contact": null
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000203"
+    },
+    "title": "Module gợi ý phân công thông minh",
+    "description": "Module AI và MCMF gợi ý người phù hợp dựa trên kỹ năng và tải công việc.",
+    "due_date": {
+      "$numberLong": "1782381600000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000104"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000104"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "customer": {
+      "name": "Bộ môn Công nghệ phần mềm",
+      "code": "CPM-STUDENT",
+      "description": "Bộ môn Công nghệ phần mềm."
+    },
+    "contacts": [],
+    "primary_contact": null
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000204"
+    },
+    "title": "Cổng thông tin làm việc nhóm sinh viên",
+    "description": "Chức năng ghi chú, mention, mẫu giai đoạn và bàn giao công việc trong nhóm.",
+    "due_date": {
+      "$numberLong": "1782900000000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000101"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000101"
+      },
+      {
+        "$oid": "68a100000000000000000103"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "customer": {
+      "name": "Bộ môn Công nghệ phần mềm",
+      "code": "CPM-STUDENT",
+      "description": "Bộ môn Công nghệ phần mềm."
+    },
+    "contacts": [],
+    "primary_contact": null
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000205"
+    },
+    "title": "Kiểm thử và triển khai hệ thống quản lý",
+    "description": "Kiểm thử, triển khai, dữ liệu mẫu và theo dõi chất lượng cho hệ thống.",
+    "due_date": {
+      "$numberLong": "1783245600000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000104"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000104"
+      },
+      {
+        "$oid": "68a100000000000000000101"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "customer": {
+      "name": "Bộ môn Công nghệ phần mềm",
+      "code": "CPM-STUDENT",
+      "description": "Bộ môn Công nghệ phần mềm."
+    },
+    "contacts": [],
+    "primary_contact": null
+  }
+]
