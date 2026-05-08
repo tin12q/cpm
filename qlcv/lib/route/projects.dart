@@ -5,6 +5,7 @@ import 'package:qlcv/model/task_box.dart';
 import 'package:qlcv/model/color_picker.dart';
 import 'package:qlcv/route/project_create.dart';
 import 'package:qlcv/route/auto_assignment_page.dart';
+import 'package:qlcv/utils/status_helper.dart';
 
 import '../model/db_helper.dart';
 import '../model/project_box.dart';
@@ -23,6 +24,7 @@ class _ProjectsState extends State<Projects> {
   int _totalPages = 1;
   final int _itemsPerPage = 25;
   List<dynamic> _filteredProjects = [];
+  String? _selectedStatus;
 
   @override
   void initState() {
@@ -43,11 +45,32 @@ class _ProjectsState extends State<Projects> {
     if (mounted) {
       setState(() {
         _isLoading = false;
-        _filteredProjects = List.from(DBHelper.projects);
+        _applyFilters();
         _totalPages =
             ((DBHelper.totalProjectCount / _itemsPerPage).ceil()).clamp(1, 999);
       });
     }
+  }
+
+  void _applyFilters() {
+    List<dynamic> filtered = List.from(DBHelper.projects);
+
+    if (_searchController.text.isNotEmpty) {
+      filtered = filtered
+          .where((project) => project.title
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()))
+          .toList();
+    }
+
+    if (_selectedStatus != null) {
+      filtered = filtered
+          .where((project) =>
+              StatusHelper.normalizeStatus(project.status) == _selectedStatus)
+          .toList();
+    }
+
+    _filteredProjects = filtered;
   }
 
   void _previousPage() {
@@ -66,24 +89,44 @@ class _ProjectsState extends State<Projects> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+            backgroundColor: ColorPicker.backgroundLight,
             body: Column(
       children: [
         Container(
-          height: 60,
-          child: Row(
-            //right to left
-            mainAxisAlignment: MainAxisAlignment.end,
-
-            children: [
-              Text(
-                DBHelper.mainUser.name,
-                style: const TextStyle(
-                  color: ColorPicker.fontDark,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: ColorPicker.cardBackground,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
-              const SizedBox(width: 60),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Projects',
+                    style: TextStyle(
+                      color: ColorPicker.fontDark,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Welcome, ${DBHelper.mainUser.name}',
+                    style: const TextStyle(
+                      color: ColorPicker.fontMedium,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
               (DBHelper.mainUser.role == 'admin' ||
                       DBHelper.mainUser.role == 'manager')
                   ? Row(
@@ -108,7 +151,7 @@ class _ProjectsState extends State<Projects> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                const SizedBox(width: 10),
                         SafeArea(
                           child: InkWell(
                             onTap: () {
@@ -163,37 +206,117 @@ class _ProjectsState extends State<Projects> {
                         ),
                       ),
                     ),
-              const SizedBox(width: 30),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            width: 300, // Adjust the width as needed
-            child: TextField(
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          color: ColorPicker.cardBackground,
+          child: Column(
+            children: [
+              TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Search',
+                hintText: 'Search projects...',
+                prefixIcon:
+                    const Icon(Icons.search, color: ColorPicker.fontLight),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear,
+                            color: ColorPicker.fontLight),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                            _applyFilters();
+                          });
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: ColorPicker.backgroundLight,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                      25.0), // Adjust the border radius as needed
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide.none,
                 ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               onChanged: (value) {
                 setState(() {
-                  if (value.isEmpty) {
-                    _filteredProjects = List.from(DBHelper.projects);
-                  } else {
-                    _filteredProjects = DBHelper.projects
-                        .where((project) => project.title
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
-                        .toList();
-                  }
+                  _applyFilters();
                 });
               },
             ),
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    FilterChip(
+                      label: const Text('All'),
+                      selected: _selectedStatus == null,
+                      onSelected: (selected) {
+                        setState(() {
+                          _selectedStatus = null;
+                          _applyFilters();
+                        });
+                      },
+                      selectedColor: ColorPicker.accent,
+                      labelStyle: TextStyle(
+                        color: _selectedStatus == null
+                            ? Colors.white
+                            : ColorPicker.fontMedium,
+                        fontWeight: _selectedStatus == null
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ...StatusHelper.projectStatuses.map((status) {
+                      final isSelected = _selectedStatus == status;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: FilterChip(
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                StatusHelper.getStatusIcon(status),
+                                size: 16,
+                                color: isSelected
+                                    ? Colors.white
+                                    : StatusHelper.getStatusColor(status),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(StatusHelper.getStatusLabel(status)),
+                            ],
+                          ),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedStatus = selected ? status : null;
+                              _applyFilters();
+                            });
+                          },
+                          selectedColor: StatusHelper.getStatusColor(status),
+                          backgroundColor:
+                              StatusHelper.getStatusColor(status)
+                                  .withOpacity(0.1),
+                          labelStyle: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : StatusHelper.getStatusColor(status),
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -230,55 +353,74 @@ class _ProjectsState extends State<Projects> {
                       },
                     ),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed:
-                    _currentPage > 1 && !_isLoading ? _previousPage : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorPicker.accent,
-                  foregroundColor: ColorPicker.primary,
+        if (_totalPages > 1)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: ColorPicker.cardBackground,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, -2),
                 ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.arrow_back_ios, size: 16),
-                    SizedBox(width: 4),
-                    Text('Previous'),
-                  ],
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed:
+                      _currentPage > 1 && !_isLoading ? _previousPage : null,
+                  icon: const Icon(Icons.chevron_left),
+                  style: IconButton.styleFrom(
+                    backgroundColor: _currentPage > 1 && !_isLoading
+                        ? ColorPicker.accent
+                        : ColorPicker.fontLight.withOpacity(0.2),
+                    foregroundColor: _currentPage > 1 && !_isLoading
+                        ? Colors.white
+                        : ColorPicker.fontLight,
+                  ),
                 ),
-              ),
-              Text(
-                'Page $_currentPage of $_totalPages',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: ColorPicker.fontDark,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: ColorPicker.backgroundLight,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Page $_currentPage of $_totalPages',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: ColorPicker.fontDark,
+                    ),
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: _currentPage < _totalPages &&
-                        !_isLoading &&
-                        DBHelper.hasMoreProjects
-                    ? _nextPage
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorPicker.accent,
-                  foregroundColor: ColorPicker.primary,
+                IconButton(
+                  onPressed: _currentPage < _totalPages &&
+                          !_isLoading &&
+                          DBHelper.hasMoreProjects
+                      ? _nextPage
+                      : null,
+                  icon: const Icon(Icons.chevron_right),
+                  style: IconButton.styleFrom(
+                    backgroundColor: _currentPage < _totalPages &&
+                            !_isLoading &&
+                            DBHelper.hasMoreProjects
+                        ? ColorPicker.accent
+                        : ColorPicker.fontLight.withOpacity(0.2),
+                    foregroundColor: _currentPage < _totalPages &&
+                            !_isLoading &&
+                            DBHelper.hasMoreProjects
+                        ? Colors.white
+                        : ColorPicker.fontLight,
+                  ),
                 ),
-                child: const Row(
-                  children: [
-                    Text('Next'),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward_ios, size: 16),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        )
+              ],
+            ),
+          )
       ],
     )));
   }

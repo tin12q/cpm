@@ -5,25 +5,24 @@ import 'home_page.dart';
 import 'route/calendar.dart';
 import 'model/db_helper.dart';
 import 'route/login_page.dart';
+import 'route/register_page.dart';
 import 'dart:async';
 
 Timer? timer;
 bool isPaused = false;
-
-
 
 void main() async {
   runApp(MaterialApp(
     initialRoute: '/login',
     routes: {
       '/login': (context) => SignInPage(),
+      '/register': (context) => SignUpPage(),
       '/home': (context) => const HomePage(),
     },
     debugShowCheckedModeBanner: false,
   ));
-  timer = Timer.periodic(Duration(seconds: 10), (Timer t) {
-    print(isPaused);
-    if (!isPaused) {
+  timer = Timer.periodic(const Duration(seconds: 10), (Timer t) {
+    if (!isPaused && DBHelper.token.isNotEmpty) {
       DBHelper.resetAndFetchData();
     }
   });

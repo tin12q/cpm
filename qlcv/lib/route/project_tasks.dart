@@ -1,103 +1,254 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-//import 'package:qlcv/model/task.dart';
-import 'package:qlcv/model/task_box.dart';
 import 'package:qlcv/model/color_picker.dart';
+import 'package:qlcv/model/task.dart';
+import 'package:qlcv/model/task_box.dart';
+import 'package:qlcv/utils/status_helper.dart';
 
 import '../model/db_helper.dart';
 import 'task_create.dart';
 
 class ProjectTasks extends StatefulWidget {
   const ProjectTasks({Key? key}) : super(key: key);
+
   @override
   State<ProjectTasks> createState() => _ProjectTasksState();
 }
 
 class _ProjectTasksState extends State<ProjectTasks> {
+  final TextEditingController _searchController = TextEditingController();
+  String? _selectedStatus;
+  List<Task> _filteredTasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _applyFilters();
+  }
+
+  void _applyFilters() {
+    List<Task> filtered = List.from(DBHelper.projectTasks);
+
+    if (_searchController.text.isNotEmpty) {
+      filtered = filtered
+          .where((task) => task.title
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()))
+          .toList();
+    }
+
+    if (_selectedStatus != null) {
+      filtered = filtered
+          .where((task) =>
+              StatusHelper.normalizeStatus(task.status) == _selectedStatus)
+          .toList();
+    }
+
+    _filteredTasks = filtered;
+  }
+
+  Future<void> _openCreateTask() async {
+    if (DBHelper.mainUser.role != 'admin' &&
+        DBHelper.mainUser.role != 'manager') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Access Denied'),
+            content: const Text(
+                'Employees cannot create tasks. Please contact your manager or admin.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TaskCreateRoute(),
+      ),
+    );
+    if (mounted) {
+      setState(_applyFilters);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-            body: Column(
-      children: [
-        Container(
-          height: 60,
-          child: Row(
-            //right to left
-            mainAxisAlignment: MainAxisAlignment.end,
-
-            children: [
-              Text(
-                DBHelper.mainUser.name,
-                style: const TextStyle(
-                  color: ColorPicker.fontDark,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+      child: Scaffold(
+        backgroundColor: ColorPicker.backgroundLight,
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: ColorPicker.cardBackground,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              const SizedBox(width: 60),
-              (DBHelper.mainUser.role == 'admin' ||
-                      DBHelper.mainUser.role == 'manager')
-                  ? SafeArea(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TaskCreateRoute(),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Project Tasks',
+                          style: TextStyle(
+                            color: ColorPicker.fontDark,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          DBHelper.mainUser.name,
+                          style: const TextStyle(
+                            color: ColorPicker.fontMedium,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _openCreateTask,
+                    icon: const Icon(Icons.add_task, size: 18),
+                    label: const Text('Add Task'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: ColorPicker.accent,
+                      side: const BorderSide(color: ColorPicker.accent),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              color: ColorPicker.cardBackground,
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search tasks...',
+                      prefixIcon: const Icon(Icons.search,
+                          color: ColorPicker.fontLight),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear,
+                                  color: ColorPicker.fontLight),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _applyFilters();
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: ColorPicker.backgroundLight,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(_applyFilters);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        FilterChip(
+                          label: const Text('All'),
+                          selected: _selectedStatus == null,
+                          selectedColor: ColorPicker.accent,
+                          labelStyle: TextStyle(
+                            color: _selectedStatus == null
+                                ? Colors.white
+                                : ColorPicker.fontMedium,
+                          ),
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedStatus = null;
+                              _applyFilters();
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        ...StatusHelper.taskStatuses.map((status) {
+                          final isSelected = _selectedStatus == status;
+                          final color = StatusHelper.getStatusColor(status);
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: FilterChip(
+                              label: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    StatusHelper.getStatusIcon(status),
+                                    size: 16,
+                                    color:
+                                        isSelected ? Colors.white : color,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(StatusHelper.getStatusLabel(status)),
+                                ],
+                              ),
+                              selected: isSelected,
+                              selectedColor: color,
+                              backgroundColor: color.withOpacity(0.1),
+                              labelStyle: TextStyle(
+                                color: isSelected ? Colors.white : color,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                              onSelected: (selected) {
+                                setState(() {
+                                  _selectedStatus = selected ? status : null;
+                                  _applyFilters();
+                                });
+                              },
                             ),
                           );
-                        },
-                        child: const CircleAvatar(
-                          backgroundColor: ColorPicker.accent,
-                          //size
-                          radius: 20,
-                          child: Icon(
-                            Icons.add,
-                            color: ColorPicker.primary,
-                          ),
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _filteredTasks.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No tasks found',
+                        style: TextStyle(
+                          color: ColorPicker.fontMedium,
+                          fontSize: 16,
                         ),
                       ),
                     )
-                  : SafeArea(
-                      child: InkWell(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Access Denied'),
-                                content: const Text(
-                                    'Employees cannot create tasks. Please contact your manager or admin.'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: const CircleAvatar(
-                          backgroundColor: ColorPicker.accent,
-                          //size
-                          radius: 20,
-                          child: Icon(
-                            Icons.add,
-                            color: ColorPicker.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-              const SizedBox(width: 30),
-            ],
-          ),
+                  : TaskBoxList(tasks: _filteredTasks),
+            ),
+          ],
         ),
-        Expanded(
-          child: TaskBoxList(tasks: DBHelper.projectTasks),
-        )
-      ],
-    )));
+      ),
+    );
   }
 }

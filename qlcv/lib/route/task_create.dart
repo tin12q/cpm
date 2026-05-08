@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qlcv/model/color_picker.dart';
 import 'package:qlcv/model/dep.dart';
@@ -11,6 +10,7 @@ import '../main.dart';
 import '../model/db_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:qlcv/model/task.dart';
+import 'package:qlcv/utils/status_helper.dart';
 
 import '../model/emp.dart';
 import 'home.dart';
@@ -29,6 +29,7 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
   List<String> employees = [];
   DateTime end = DateTime.now();
   String empName = "";
+  String selectedStatus = 'in_progress';
   @override
   void initState() {
     dateinput.text = "";
@@ -52,12 +53,23 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
         title: const Text('Create Task'),
         backgroundColor: ColorPicker.accent,
       ),
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  16,
+                  16,
+                  16 + MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
               Row(
                 children: [
                   const Text(
@@ -73,7 +85,9 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
                     child: TextField(
                       controller: titleinput,
                       decoration: const InputDecoration(
+                        labelText: 'Task title',
                         hintText: 'Enter title',
+                        border: OutlineInputBorder(),
                       ),
                     ),
                   ),
@@ -94,6 +108,7 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     key: ValueKey(selectedEmployeeIds.join(',')),
+                    isExpanded: true,
                     decoration: InputDecoration(
                       hintText: 'Select employees',
                       border: OutlineInputBorder(
@@ -113,8 +128,11 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
                       return uniqueEmps.values
                           .map((employee) => DropdownMenuItem<String>(
                                 value: employee.id,
-                                child:
-                                    Text('${employee.name} (${employee.role})'),
+                                child: Text(
+                                  '${employee.name} (${employee.role})',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ))
                           .toList();
                     }(),
@@ -183,10 +201,12 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
               TextField(
                 controller: dateinput, //editing controller of this TextField
                 decoration: InputDecoration(
-                  icon: Icon((Platform.isIOS)
+                  icon: Icon((!kIsWeb &&
+                          defaultTargetPlatform == TargetPlatform.iOS)
                       ? CupertinoIcons.calendar_badge_plus
                       : Icons.calendar_month), //icon of text field
                   labelText: "End Date", //label text of field
+                  border: const OutlineInputBorder(),
                 ),
                 readOnly:
                     true, //set it true, so that user will not able to edit text
@@ -202,9 +222,8 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
                           ),
                       context: context,
                       initialDate: DateTime.now(),
-                      firstDate: DateTime(
-                          2023), //DateTime.now() - not to allow to choose before today.
-                      lastDate: DateTime(2025));
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2100));
 
                   if (pickedDate != null) {
                     //print(pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
@@ -223,14 +242,39 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
                 },
               ),
               const SizedBox(height: 20),
-              Expanded(
-                  child: TextField(
+              DropdownButtonFormField<String>(
+                value: selectedStatus,
+                decoration: InputDecoration(
+                  labelText: 'Task status',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                items: StatusHelper.taskStatuses
+                    .map((status) => DropdownMenuItem<String>(
+                          value: status,
+                          child: Text(StatusHelper.getStatusLabel(status)),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      selectedStatus = value;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
+              TextField(
                 controller: descinput,
                 decoration: const InputDecoration(
+                  labelText: 'Task description',
                   hintText: 'Enter description',
+                  border: OutlineInputBorder(),
                 ),
-                maxLines: null,
-              )),
+                minLines: 4,
+                maxLines: 6,
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -253,6 +297,9 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
                 ],
               ),
               const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -289,7 +336,7 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
       Task task = new Task(
           title: titleinput.text,
           description: descinput.text,
-          status: 'in_progress',
+          status: selectedStatus,
           project: DBHelper.currentProjectId,
           endDate: end,
           emp: selectedEmployeeIds);
