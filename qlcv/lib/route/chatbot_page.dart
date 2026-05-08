@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../model/color_picker.dart';
 import '../services/chatbot_service.dart';
 
 class ChatbotPage extends StatefulWidget {
@@ -17,18 +19,28 @@ class _ChatbotPageState extends State<ChatbotPage> {
   @override
   void initState() {
     super.initState();
-    // Add welcome message
+    _addWelcomeMessage();
+  }
+
+  void _addWelcomeMessage() {
     _messages.add(ChatMessage(
       text:
-          'Hello! I\'m your project management assistant. How can I help you today?',
+          'Hello! I can help summarize tasks, explain project status, and suggest next steps.',
       isUser: false,
       timestamp: DateTime.now(),
     ));
   }
 
+  void _clearChat() {
+    setState(() {
+      _messages.clear();
+      _addWelcomeMessage();
+    });
+  }
+
   void _sendMessage() async {
-    String message = _messageController.text.trim();
-    if (message.isEmpty) return;
+    final message = _messageController.text.trim();
+    if (message.isEmpty || _isLoading) return;
 
     setState(() {
       _messages.add(ChatMessage(
@@ -42,35 +54,29 @@ class _ChatbotPageState extends State<ChatbotPage> {
     _messageController.clear();
     _scrollToBottom();
 
-    // Get response from chatbot service
-    var response = await ChatbotService.sendMessage(message);
+    final response = await ChatbotService.sendMessage(message);
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
-      if (response['success']) {
-        _messages.add(ChatMessage(
-          text: response['response'],
-          isUser: false,
-          timestamp: DateTime.now(),
-        ));
-      } else {
-        _messages.add(ChatMessage(
-          text: 'Sorry, I encountered an error. Please try again.',
-          isUser: false,
-          timestamp: DateTime.now(),
-        ));
-      }
+      _messages.add(ChatMessage(
+        text: response['success']
+            ? response['response']
+            : 'Sorry, I encountered an error. Please try again.',
+        isUser: false,
+        timestamp: DateTime.now(),
+      ));
     });
 
     _scrollToBottom();
   }
 
   void _scrollToBottom() {
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 260),
           curve: Curves.easeOut,
         );
       }
@@ -80,110 +86,91 @@ class _ChatbotPageState extends State<ChatbotPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: ColorPicker.backgroundLight,
+      body: SafeArea(
+        child: Column(
           children: [
-            Icon(Icons.smart_toy, color: Colors.white),
-            SizedBox(width: 10),
-            Text('AI Assistant', style: TextStyle(color: Colors.white)),
+            _buildHeader(),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                itemCount: _messages.length + (_isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (_isLoading && index == _messages.length) {
+                    return _buildTypingIndicator();
+                  }
+                  return _buildMessageBubble(_messages[index]);
+                },
+              ),
+            ),
+            _buildComposer(),
           ],
         ),
-        backgroundColor: Colors.deepPurple,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.delete_outline, color: Colors.white),
-            onPressed: () {
-              setState(() {
-                _messages.clear();
-                _messages.add(ChatMessage(
-                  text:
-                      'Hello! I\'m your project management assistant. How can I help you today?',
-                  isUser: false,
-                  timestamp: DateTime.now(),
-                ));
-              });
-            },
-            tooltip: 'Clear chat',
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: ColorPicker.cardBackground,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      body: Column(
+      child: Row(
         children: [
-          // Messages list
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return _buildMessageBubble(_messages[index]);
-              },
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: ColorPicker.accent.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.smart_toy_outlined,
+              color: ColorPicker.accent,
             ),
           ),
-
-          // Loading indicator
-          if (_isLoading)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  SizedBox(width: 16),
-                  CircularProgressIndicator(strokeWidth: 2),
-                  SizedBox(width: 12),
-                  Text('Thinking...', style: TextStyle(color: Colors.grey)),
-                ],
-              ),
-            ),
-
-          // Input area
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: Offset(0, -2),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'AI Assistant',
+                  style: TextStyle(
+                    color: ColorPicker.fontDark,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Project and task support',
+                  style: TextStyle(
+                    color: ColorPicker.fontMedium,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: InputDecoration(
-                          hintText: 'Ask me anything...',
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
-                          ),
-                        ),
-                        maxLines: null,
-                        textCapitalization: TextCapitalization.sentences,
-                        onSubmitted: (_) => _sendMessage(),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  CircleAvatar(
-                    backgroundColor: Colors.deepPurple,
-                    child: IconButton(
-                      icon: Icon(Icons.send, color: Colors.white, size: 20),
-                      onPressed: _sendMessage,
-                    ),
-                  ),
-                ],
-              ),
+          ),
+          Tooltip(
+            message: 'Clear chat',
+            child: IconButton(
+              onPressed: _clearChat,
+              icon: const Icon(Icons.delete_outline),
+              color: ColorPicker.buttonDanger,
             ),
           ),
         ],
@@ -191,40 +178,145 @@ class _ChatbotPageState extends State<ChatbotPage> {
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
-    return Align(
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+  Widget _buildComposer() {
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 160),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.fromLTRB(
+        12,
+        8,
+        12,
+        12 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
-        margin: EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: ColorPicker.cardBackground,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: ColorPicker.cardBorder),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _messageController,
+                minLines: 1,
+                maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  hintText: 'Ask about tasks or projects...',
+                  border: InputBorder.none,
+                  isDense: true,
+                ),
+                onSubmitted: (_) => _sendMessage(),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Tooltip(
+              message: 'Send message',
+              child: IconButton.filled(
+                onPressed: _isLoading ? null : _sendMessage,
+                style: IconButton.styleFrom(
+                  backgroundColor: ColorPicker.accent,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor:
+                      ColorPicker.fontLight.withOpacity(0.25),
+                ),
+                icon: const Icon(Icons.send_rounded, size: 19),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTypingIndicator() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: ColorPicker.cardBackground,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: ColorPicker.cardBorder),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            SizedBox(width: 10),
+            Text(
+              'Thinking...',
+              style: TextStyle(color: ColorPicker.fontMedium),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageBubble(ChatMessage message) {
+    final alignment =
+        message.isUser ? Alignment.centerRight : Alignment.centerLeft;
+    final bubbleColor =
+        message.isUser ? ColorPicker.accent : ColorPicker.cardBackground;
+    final textColor = message.isUser ? Colors.white : ColorPicker.fontDark;
+
+    return Align(
+      alignment: alignment,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.78,
+        ),
         child: Column(
           crossAxisAlignment: message.isUser
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: [
             Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75,
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isUser ? Colors.deepPurple : Colors.grey[200],
-                borderRadius: BorderRadius.circular(20),
+                color: bubbleColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(16),
+                  topRight: const Radius.circular(16),
+                  bottomLeft: Radius.circular(message.isUser ? 16 : 4),
+                  bottomRight: Radius.circular(message.isUser ? 4 : 16),
+                ),
+                border: message.isUser
+                    ? null
+                    : Border.all(color: ColorPicker.cardBorder),
               ),
               child: Text(
                 message.text,
                 style: TextStyle(
-                  color: message.isUser ? Colors.white : Colors.black87,
+                  color: textColor,
                   fontSize: 15,
+                  height: 1.35,
                 ),
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
                 _formatTime(message.timestamp),
-                style: TextStyle(
-                  color: Colors.grey,
+                style: const TextStyle(
+                  color: ColorPicker.fontLight,
                   fontSize: 11,
                 ),
               ),

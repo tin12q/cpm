@@ -7,6 +7,7 @@ import 'package:qlcv/model/projects_page.dart';
 import 'package:qlcv/route/project_tasks.dart';
 import '../home_page.dart';
 import '../route/home.dart';
+import '../utils/status_helper.dart';
 import 'color_picker.dart';
 import 'task.dart';
 import 'db_helper.dart';
@@ -61,9 +62,13 @@ class _TaskPageState extends State<TaskPage> {
 
     final titleController = TextEditingController(text: task.title);
     final descriptionController = TextEditingController(text: task.description);
-    final statusController = TextEditingController(text: task.status);
+    String selectedStatus = StatusHelper.normalizeStatus(task.status);
+    if (!StatusHelper.taskStatuses.contains(selectedStatus)) {
+      selectedStatus = 'in_progress';
+    }
 
     return Scaffold(
+      backgroundColor: ColorPicker.backgroundLight,
       appBar: AppBar(
         title: const Text('Task Details'),
         backgroundColor: ColorPicker.accent,
@@ -80,21 +85,24 @@ class _TaskPageState extends State<TaskPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                alignment: WrapAlignment.spaceBetween,
                 children: [
                   // Only admin and manager can update tasks
                   (DBHelper.mainUser.role == 'admin' ||
                           DBHelper.mainUser.role == 'manager')
-                      ? ElevatedButton(
+                      ? ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorPicker.primary,
-                            foregroundColor: ColorPicker.accent,
+                            backgroundColor: ColorPicker.accent,
+                            foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
-                          child: Text('Update Task'),
+                          icon: const Icon(Icons.save_outlined, size: 18),
+                          label: const Text('Update Task'),
                           onPressed: () {
                             String content =
                                 'Are you sure you want to update this task?';
@@ -120,7 +128,7 @@ class _TaskPageState extends State<TaskPage> {
                                             titleController.text,
                                             descriptionController.text,
                                             task.endDate,
-                                            statusController.text,
+                                            selectedStatus,
                                             selectedEmployeeIds,
                                             difficulty: task.difficulty,
                                             priority: task.priority,
@@ -148,20 +156,22 @@ class _TaskPageState extends State<TaskPage> {
                           },
                         )
                       : SizedBox.shrink(),
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorPicker.primary,
+                      backgroundColor: ColorPicker.cardBackground,
                       foregroundColor: ColorPicker.accent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: Text('View Project'),
+                    icon: const Icon(Icons.folder_open, size: 18),
+                    label: const Text('View Project'),
                     onPressed: () async {
                       // Find the project for this task
-                      final project = DBHelper.projects
-                          .where((p) => p.id == task.project)
-                          .firstOrNull;
+                      final matches = DBHelper.projects
+                          .where((p) => p.id == task.project);
+                      final project =
+                          matches.isNotEmpty ? matches.first : null;
                       if (project != null) {
                         DBHelper.currentProjectId = project.id;
                         await DBHelper.getEmpByProjectId(project.id);
@@ -197,6 +207,8 @@ class _TaskPageState extends State<TaskPage> {
                   fontWeight: FontWeight.bold,
                 ),
                 decoration: InputDecoration(
+                  labelText: 'Task title',
+                  border: const OutlineInputBorder(),
                   suffixIcon: DBHelper.mainUser.role == 'employee'
                       ? Icon(Icons.lock, size: 16, color: Colors.grey)
                       : null,
@@ -208,6 +220,8 @@ class _TaskPageState extends State<TaskPage> {
                 readOnly: DBHelper.mainUser.role == 'employee',
                 style: const TextStyle(fontSize: 16.0),
                 decoration: InputDecoration(
+                  labelText: 'Task description',
+                  border: const OutlineInputBorder(),
                   suffixIcon: DBHelper.mainUser.role == 'employee'
                       ? Icon(Icons.lock, size: 16, color: Colors.grey)
                       : null,
@@ -241,8 +255,8 @@ class _TaskPageState extends State<TaskPage> {
                   final selectedDate = await showDatePicker(
                     context: context,
                     initialDate: task.endDate.isAfter(DateTime.now())
-                        ? DateTime.now()
-                        : task.endDate,
+                        ? task.endDate
+                        : DateTime.now(),
                     firstDate: DateTime.now(),
                     lastDate: DateTime(3000), // set this to a future date
                   );
@@ -253,17 +267,38 @@ class _TaskPageState extends State<TaskPage> {
                   }
                 },
                 style: const TextStyle(fontSize: 16.0),
+                decoration: const InputDecoration(
+                  labelText: 'End date',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16.0),
-              TextField(
-                controller: statusController,
-                readOnly: DBHelper.mainUser.role == 'employee',
-                style: const TextStyle(fontSize: 16.0),
+              DropdownButtonFormField<String>(
+                value: selectedStatus,
                 decoration: InputDecoration(
+                  labelText: 'Task status',
+                  border: const OutlineInputBorder(),
                   suffixIcon: DBHelper.mainUser.role == 'employee'
                       ? Icon(Icons.lock, size: 16, color: Colors.grey)
                       : null,
                 ),
+                items: StatusHelper.taskStatuses
+                    .map((status) => DropdownMenuItem<String>(
+                          value: status,
+                          child: Text(StatusHelper.getStatusLabel(status)),
+                        ))
+                    .toList(),
+                onChanged: (DBHelper.mainUser.role == 'admin' ||
+                        DBHelper.mainUser.role == 'manager')
+                    ? (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedStatus = value;
+                            task.status = value;
+                          });
+                        }
+                      }
+                    : null,
               ),
               const SizedBox(height: 16.0),
               // MCMF Fields Section
@@ -272,93 +307,73 @@ class _TaskPageState extends State<TaskPage> {
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Difficulty',
-                              style: TextStyle(fontSize: 16.0),
-                            ),
-                          ),
-                          DropdownButton<int>(
-                            value: task.difficulty,
-                            underline: SizedBox(),
-                            items: [
-                              DropdownMenuItem(value: 1, child: Text('Basic')),
-                              DropdownMenuItem(value: 2, child: Text('Easy')),
-                              DropdownMenuItem(value: 3, child: Text('Medium')),
-                              DropdownMenuItem(value: 4, child: Text('Hard')),
-                            ],
-                            onChanged: (DBHelper.mainUser.role == 'admin' ||
-                                    DBHelper.mainUser.role == 'manager')
-                                ? (value) {
-                                    setState(() {
-                                      task.difficulty = value ?? 2;
-                                    });
-                                  }
-                                : null,
-                          ),
-                          if (DBHelper.mainUser.role == 'employee')
-                            Icon(Icons.lock, size: 16, color: Colors.grey),
-                        ],
-                      ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final stackFields = constraints.maxWidth < 520;
+                  final difficultyField = DropdownButtonFormField<int>(
+                    value: task.difficulty,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Difficulty',
+                      border: OutlineInputBorder(),
                     ),
-                  ),
-                  const SizedBox(width: 12.0),
-                  Expanded(
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Priority',
-                              style: TextStyle(fontSize: 16.0),
-                            ),
-                          ),
-                          DropdownButton<int>(
-                            value: task.priority,
-                            underline: SizedBox(),
-                            items: [
-                              DropdownMenuItem(
-                                  value: 1, child: Text('Very Low')),
-                              DropdownMenuItem(value: 2, child: Text('Low')),
-                              DropdownMenuItem(value: 3, child: Text('Medium')),
-                              DropdownMenuItem(value: 4, child: Text('High')),
-                              DropdownMenuItem(
-                                  value: 5, child: Text('Critical')),
-                            ],
-                            onChanged: (DBHelper.mainUser.role == 'admin' ||
-                                    DBHelper.mainUser.role == 'manager')
-                                ? (value) {
-                                    setState(() {
-                                      task.priority = value ?? 3;
-                                    });
-                                  }
-                                : null,
-                          ),
-                          if (DBHelper.mainUser.role == 'employee')
-                            Icon(Icons.lock, size: 16, color: Colors.grey),
-                        ],
-                      ),
+                    items: const [
+                      DropdownMenuItem(value: 1, child: Text('Basic')),
+                      DropdownMenuItem(value: 2, child: Text('Easy')),
+                      DropdownMenuItem(value: 3, child: Text('Medium')),
+                      DropdownMenuItem(value: 4, child: Text('Hard')),
+                    ],
+                    onChanged: (DBHelper.mainUser.role == 'admin' ||
+                            DBHelper.mainUser.role == 'manager')
+                        ? (value) {
+                            setState(() {
+                              task.difficulty = value ?? 2;
+                            });
+                          }
+                        : null,
+                  );
+                  final priorityField = DropdownButtonFormField<int>(
+                    value: task.priority,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Priority',
+                      border: OutlineInputBorder(),
                     ),
-                  ),
-                ],
+                    items: const [
+                      DropdownMenuItem(value: 1, child: Text('Very Low')),
+                      DropdownMenuItem(value: 2, child: Text('Low')),
+                      DropdownMenuItem(value: 3, child: Text('Medium')),
+                      DropdownMenuItem(value: 4, child: Text('High')),
+                      DropdownMenuItem(value: 5, child: Text('Critical')),
+                    ],
+                    onChanged: (DBHelper.mainUser.role == 'admin' ||
+                            DBHelper.mainUser.role == 'manager')
+                        ? (value) {
+                            setState(() {
+                              task.priority = value ?? 3;
+                            });
+                          }
+                        : null,
+                  );
+
+                  if (stackFields) {
+                    return Column(
+                      children: [
+                        difficultyField,
+                        const SizedBox(height: 12.0),
+                        priorityField,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      Expanded(child: difficultyField),
+                      const SizedBox(width: 12.0),
+                      Expanded(child: priorityField),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 12.0),
               Container(
@@ -403,6 +418,7 @@ class _TaskPageState extends State<TaskPage> {
                         // Dropdown for employee selection
                         DropdownButtonFormField<String>(
                           key: ValueKey(selectedEmployeeIds.join(',')),
+                          isExpanded: true,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -422,7 +438,11 @@ class _TaskPageState extends State<TaskPage> {
                             return uniqueEmps.values
                                 .map((emp) => DropdownMenuItem<String>(
                                       value: emp.id,
-                                      child: Text('${emp.name} (${emp.role})'),
+                                      child: Text(
+                                        '${emp.name} (${emp.role})',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ))
                                 .toList();
                           }(),
@@ -444,9 +464,10 @@ class _TaskPageState extends State<TaskPage> {
                             runSpacing: 8.0,
                             children: selectedEmployeeIds.map((empId) {
                               // Find employee, fallback to empMap if not in empProject
-                              var emp = DBHelper.empProject
-                                  .where((e) => e.id == empId)
-                                  .firstOrNull;
+                              final matches = DBHelper.empProject
+                                  .where((e) => e.id == empId);
+                              var emp =
+                                  matches.isNotEmpty ? matches.first : null;
                               if (emp == null &&
                                   DBHelper.empMap.containsKey(empId)) {
                                 emp = DBHelper.empMap[empId];

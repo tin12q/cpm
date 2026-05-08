@@ -10,6 +10,7 @@ import 'package:qlcv/route/home.dart';
 import 'package:qlcv/route/project_tasks.dart';
 import 'package:qlcv/route/project_assignment_page.dart';
 import '../home_page.dart';
+import '../utils/status_helper.dart';
 import 'color_picker.dart';
 import 'project.dart';
 import 'db_helper.dart';
@@ -61,9 +62,13 @@ class _ProjectPageState extends State<ProjectPage> {
     final titleController = TextEditingController(text: project.title);
     final descriptionController =
         TextEditingController(text: project.description);
-    final statusController = TextEditingController(text: project.status);
+    String selectedStatus = StatusHelper.normalizeStatus(project.status);
+    if (!StatusHelper.projectStatuses.contains(selectedStatus)) {
+      selectedStatus = 'in_progress';
+    }
 
     return Scaffold(
+      backgroundColor: ColorPicker.backgroundLight,
       appBar: AppBar(
         title: const Text('Project Details'),
         backgroundColor: ColorPicker.accent,
@@ -80,21 +85,24 @@ class _ProjectPageState extends State<ProjectPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                alignment: WrapAlignment.spaceBetween,
                 children: [
                   // Only admin and manager can update projects
                   (DBHelper.mainUser.role == 'admin' ||
                           DBHelper.mainUser.role == 'manager')
-                      ? ElevatedButton(
+                      ? ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorPicker.primary,
-                            foregroundColor: ColorPicker.accent,
+                            backgroundColor: ColorPicker.accent,
+                            foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
-                          child: Text('Update Project'),
+                          icon: const Icon(Icons.save_outlined, size: 18),
+                          label: const Text('Update Project'),
                           onPressed: () {
                             showDialog(
                               context: context,
@@ -119,7 +127,7 @@ class _ProjectPageState extends State<ProjectPage> {
                                             titleController.text,
                                             descriptionController.text,
                                             project.endDate,
-                                            statusController.text,
+                                            selectedStatus,
                                             selectedTeamIds);
                                         if (context.mounted) {
                                           Navigator.of(context)
@@ -152,15 +160,16 @@ class _ProjectPageState extends State<ProjectPage> {
                             ),
                           ),
                         ),
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorPicker.primary,
+                      backgroundColor: ColorPicker.cardBackground,
                       foregroundColor: ColorPicker.accent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: Text('Tasks Details'),
+                    icon: const Icon(Icons.task_alt, size: 18),
+                    label: const Text('Tasks Details'),
                     onPressed: () async {
                       await DBHelper.taskUpdateWithProjectId(project.id);
                       await DBHelper.getEmpByProjectId(
@@ -243,6 +252,8 @@ class _ProjectPageState extends State<ProjectPage> {
                   fontWeight: FontWeight.bold,
                 ),
                 decoration: InputDecoration(
+                  labelText: 'Project title',
+                  border: const OutlineInputBorder(),
                   suffixIcon: DBHelper.mainUser.role == 'employee'
                       ? Icon(Icons.lock, size: 16, color: Colors.grey)
                       : null,
@@ -254,6 +265,8 @@ class _ProjectPageState extends State<ProjectPage> {
                 readOnly: DBHelper.mainUser.role == 'employee',
                 style: const TextStyle(fontSize: 16.0),
                 decoration: InputDecoration(
+                  labelText: 'Project description',
+                  border: const OutlineInputBorder(),
                   suffixIcon: DBHelper.mainUser.role == 'employee'
                       ? Icon(Icons.lock, size: 16, color: Colors.grey)
                       : null,
@@ -268,8 +281,8 @@ class _ProjectPageState extends State<ProjectPage> {
                   final selectedDate = await showDatePicker(
                     context: context,
                     initialDate: project.endDate.isAfter(DateTime.now())
-                        ? DateTime.now()
-                        : project.endDate,
+                        ? project.endDate
+                        : DateTime.now(),
                     firstDate: DateTime.now(),
                     lastDate: DateTime(3000), // set this to a future date
                   );
@@ -280,17 +293,38 @@ class _ProjectPageState extends State<ProjectPage> {
                   }
                 },
                 style: const TextStyle(fontSize: 16.0),
+                decoration: const InputDecoration(
+                  labelText: 'End date',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16.0),
-              TextField(
-                controller: statusController,
-                readOnly: DBHelper.mainUser.role == 'employee',
-                style: const TextStyle(fontSize: 16.0),
+              DropdownButtonFormField<String>(
+                value: selectedStatus,
                 decoration: InputDecoration(
+                  labelText: 'Project status',
+                  border: const OutlineInputBorder(),
                   suffixIcon: DBHelper.mainUser.role == 'employee'
                       ? Icon(Icons.lock, size: 16, color: Colors.grey)
                       : null,
                 ),
+                items: StatusHelper.projectStatuses
+                    .map((status) => DropdownMenuItem<String>(
+                          value: status,
+                          child: Text(StatusHelper.getStatusLabel(status)),
+                        ))
+                    .toList(),
+                onChanged: (DBHelper.mainUser.role == 'admin' ||
+                        DBHelper.mainUser.role == 'manager')
+                    ? (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedStatus = value;
+                            project.status = value;
+                          });
+                        }
+                      }
+                    : null,
               ),
               const SizedBox(height: 16.0),
               const Text(
@@ -347,9 +381,10 @@ class _ProjectPageState extends State<ProjectPage> {
                             runSpacing: 8.0,
                             children: selectedTeamIds.map((teamId) {
                               // Find team safely without throwing error
-                              final team = DBHelper.deps
-                                  .where((d) => d.id == teamId)
-                                  .firstOrNull;
+                              final matches = DBHelper.deps
+                                  .where((d) => d.id == teamId);
+                              final team =
+                                  matches.isNotEmpty ? matches.first : null;
                               if (team == null) {
                                 // Skip this chip if team not found
                                 return const SizedBox.shrink();

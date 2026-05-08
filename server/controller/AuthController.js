@@ -7,14 +7,53 @@ function escapeRegex(input = "") {
     return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-//TODO: fix this
 const register = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { name, email, username, password, role } = req.body;
+        const normalizedUsername = String(username || email || "").trim();
+        const normalizedEmail = String(email || normalizedUsername).trim();
+        const normalizedName = String(name || normalizedUsername).trim();
+        const normalizedRole = String(role || "employee").trim().toLowerCase();
+        const validRoles = ["admin", "manager", "employee"];
+
+        if (!normalizedUsername || !password || !normalizedName) {
+            return res.status(400).json({ error: 'Name, username, and password are required' });
+        }
+
+        if (!validRoles.includes(normalizedRole)) {
+            return res.status(400).json({ error: 'Invalid role' });
+        }
+
+        const usernameRegex = new RegExp(`^${escapeRegex(normalizedUsername)}$`, 'i');
+        const emailRegex = new RegExp(`^${escapeRegex(normalizedEmail)}$`, 'i');
+        const existingAuth = await Auth.findOne({ username: usernameRegex });
+        const existingUser = await User.findOne({ email: emailRegex });
+
+        if (existingAuth || existingUser) {
+            return res.status(409).json({ error: 'User already exists' });
+        }
+
+        const person = new User({
+            name: normalizedName,
+            email: normalizedEmail,
+            role: normalizedRole,
+        });
+        await person.save();
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new Auth({ username, password: hashedPassword });
-        await user.save();
-        res.status(201).json({ message: 'User registered successfully' });
+        const auth = new Auth({
+            username: normalizedUsername,
+            password: hashedPassword,
+            role: normalizedRole,
+            user: person._id,
+        });
+        await auth.save();
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            id: person._id,
+            role: normalizedRole,
+        });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

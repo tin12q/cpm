@@ -1,11 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:qlcv/home_page.dart';
 import 'package:qlcv/model/db_helper.dart';
 
 import '../model/color_picker.dart';
-import '../model/task.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -115,6 +111,18 @@ class _SignInPageState extends State<SignInPage> {
                           : const Text('Sign In'),
                     ),
                   ),
+                  const SizedBox(height: 16.0),
+                  TextButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            Navigator.pushNamed(context, '/register');
+                          },
+                    child: const Text(
+                      'Create a new account',
+                      style: TextStyle(color: ColorPicker.accent),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -134,16 +142,23 @@ class _SignInPageState extends State<SignInPage> {
     });
 
     try {
-
       await DBHelper.logIn(
-        email: _emailController.text,
+        email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-
+      if (!mounted) return;
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/home',
+        (route) => false,
+      );
     } on Exception catch (e) {
-      // * Create User to
-      String errorMessage = 'An error occurred, please check your credentials';
+      String errorMessage = e.toString().replaceFirst('Exception: ', '');
+      if (errorMessage.isEmpty) {
+        errorMessage = 'An error occurred, please check your credentials';
+      }
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage,
@@ -153,14 +168,10 @@ class _SignInPageState extends State<SignInPage> {
         ),
       );
     } finally {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/home',
-        (route) => false,
-      );
     }
   }
 }

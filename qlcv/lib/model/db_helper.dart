@@ -8,9 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:qlcv/model/dep.dart';
 import 'package:qlcv/model/task.dart';
 import 'package:qlcv/model/project.dart';
+import 'package:qlcv/utils/status_helper.dart';
 import 'emp.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:qlcv/utils/session_storage.dart' as session_storage;
 
 class DBHelper {
   static var client = http.Client();
@@ -60,7 +62,8 @@ class DBHelper {
             id: project['_id'],
             title: project['title'] ?? 'default_value',
             description: project['description'] ?? 'default_value',
-            status: project['status'] ?? 'default_value',
+            status: StatusHelper.normalizeStatus(
+                project['status']?.toString() ?? 'in_progress'),
             endDate: DateTime.fromMillisecondsSinceEpoch(
                 int.parse(project['due_date'].toString())),
             dep: project['team'] ?? 'default_value',
@@ -69,7 +72,8 @@ class DBHelper {
             id: project['_id'],
             title: project['title'] ?? 'default_value',
             description: project['description'] ?? 'default_value',
-            status: project['status'] ?? 'default_value',
+            status: StatusHelper.normalizeStatus(
+                project['status']?.toString() ?? 'in_progress'),
             endDate: DateTime.fromMillisecondsSinceEpoch(
                 int.parse(project['due_date'].toString())),
             dep: project['team'] ?? 'default_value',
@@ -386,7 +390,7 @@ class DBHelper {
         body: <String, String>{
           'title': project.title,
           'description': project.description,
-          'status': project.status,
+          'status': StatusHelper.normalizeStatus(project.status),
           'due_date': dateToMiliseconds.toString(),
           'teams': project.teams.join(','),
         },
@@ -434,7 +438,8 @@ class DBHelper {
                 id: task['_id'],
                 title: task['title'],
                 description: task['description'],
-                status: task['status'],
+                status: StatusHelper.normalizeStatus(
+                    task['status']?.toString() ?? 'in_progress'),
                 project: task['project'],
                 endDate: DateTime.fromMillisecondsSinceEpoch(
                     int.parse(task['due_date'].toString())),
@@ -446,7 +451,8 @@ class DBHelper {
                 id: task['_id'],
                 title: task['title'],
                 description: task['description'],
-                status: task['status'],
+                status: StatusHelper.normalizeStatus(
+                    task['status']?.toString() ?? 'in_progress'),
                 project: task['project'],
                 endDate: DateTime.fromMillisecondsSinceEpoch(
                     int.parse(task['due_date'].toString())),
@@ -460,7 +466,8 @@ class DBHelper {
                   id: task['_id'],
                   title: task['title'],
                   description: task['description'],
-                  status: task['status'],
+                  status: StatusHelper.normalizeStatus(
+                      task['status']?.toString() ?? 'in_progress'),
                   project: task['project'],
                   endDate: DateTime.fromMillisecondsSinceEpoch(
                       int.parse(task['due_date'].toString())),
@@ -472,7 +479,8 @@ class DBHelper {
                   id: task['_id'],
                   title: task['title'],
                   description: task['description'],
-                  status: task['status'],
+                  status: StatusHelper.normalizeStatus(
+                      task['status']?.toString() ?? 'in_progress'),
                   project: task['project'],
                   endDate: DateTime.fromMillisecondsSinceEpoch(
                       int.parse(task['due_date'].toString())),
@@ -517,7 +525,8 @@ class DBHelper {
             id: project['_id'],
             title: project['title'] ?? 'default_value',
             description: project['description'] ?? 'default_value',
-            status: project['status'] ?? 'default_value',
+            status: StatusHelper.normalizeStatus(
+                project['status']?.toString() ?? 'in_progress'),
             endDate: DateTime.parse(project['due_date'].toString()),
             teams: projectTeams,
           ));
@@ -566,7 +575,8 @@ class DBHelper {
             id: project['_id'],
             title: project['title'] ?? 'default_value',
             description: project['description'] ?? 'default_value',
-            status: project['status'] ?? 'default_value',
+            status: StatusHelper.normalizeStatus(
+                project['status']?.toString() ?? 'in_progress'),
             endDate: DateTime.fromMillisecondsSinceEpoch(
                 int.parse(project['due_date'].toString())),
             teams: projectTeams,
@@ -583,7 +593,7 @@ class DBHelper {
   static Future<void> logIn(
       {required String email, required String password}) async {
     try {
-      var url = Uri.parse('${ApiConfig.baseUrl}/api/auth/login');
+      var url = Uri.parse(ApiConfig.loginEndpoint);
       var response = await http.post(
         url,
         headers: <String, String>{
@@ -596,13 +606,70 @@ class DBHelper {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        token = response.headers['authorization']!.split(" ")[1];
-        await getMainUser(id: data['id']);
+        final authHeader = response.headers['authorization'];
+        final userId = data['id']?.toString();
+
+        if (authHeader == null || !authHeader.startsWith('Bearer ')) {
+          throw Exception('Login response did not include a token.');
+        }
+        if (userId == null || userId.isEmpty) {
+          throw Exception('Login response did not include a user id.');
+        }
+
+        token = authHeader.split(" ")[1];
+        await session_storage.saveSession(token: token, userId: userId);
+        await getMainUser(id: userId);
+
+        if (mainUser.id.isEmpty) {
+          throw Exception('Failed to load logged in user.');
+        }
       } else {
-        throw Exception('Failed to login.');
+        String message = 'Failed to login.';
+        try {
+          final data = jsonDecode(response.body);
+          message = data['error']?.toString() ?? message;
+        } catch (_) {}
+        throw Exception(message);
       }
     } catch (e) {
       AppLogger.error('Failed to login', e, null, 'DBHelper');
+      rethrow;
+    }
+  }
+
+  static Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+    required String role,
+  }) async {
+    try {
+      var url = Uri.parse(ApiConfig.registerEndpoint);
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: <String, String>{
+          'name': name,
+          'email': email,
+          'username': email,
+          'password': password,
+          'role': role,
+        },
+      );
+
+      if (response.statusCode != 201) {
+        String message = 'Failed to register.';
+        try {
+          final data = jsonDecode(response.body);
+          message = data['error']?.toString() ?? message;
+        } catch (_) {}
+        throw Exception(message);
+      }
+    } catch (e) {
+      AppLogger.error('Failed to register', e, null, 'DBHelper');
+      rethrow;
     }
   }
 
@@ -730,7 +797,7 @@ class DBHelper {
         body: <String, String>{
           'title': task.title,
           'description': task.description,
-          'status': task.status,
+          'status': StatusHelper.normalizeStatus(task.status),
           'assigned_to': [empId].join(','),
           'project': currentProjectId,
           'due_date': dateToMiliseconds.toString(),
@@ -775,8 +842,8 @@ class DBHelper {
         body: <String, String>{
           'title': task.title,
           'description': task.description,
-          'status': task.status,
-          'endDate': task.endDate.toString(),
+          'status': StatusHelper.normalizeStatus(task.status),
+          'due_date': task.endDate.millisecondsSinceEpoch.toString(),
           'assigned_to': task.emp.join(','),
           'difficulty': task.difficulty.toString(),
           'priority': task.priority.toString(),
@@ -820,6 +887,38 @@ class DBHelper {
   static void initMap() {
     empMap = {for (var e in employees) e.id: e};
     depMap = {for (var d in deps) d.name: d.emp};
+  }
+
+  static Future<bool> restoreSession() async {
+    if (token.isNotEmpty && mainUser.id.isNotEmpty) {
+      return true;
+    }
+
+    final savedToken = await session_storage.readToken();
+    final savedUserId = await session_storage.readUserId();
+    if (savedToken == null ||
+        savedToken.isEmpty ||
+        savedUserId == null ||
+        savedUserId.isEmpty) {
+      return false;
+    }
+
+    token = savedToken;
+    await getMainUser(id: savedUserId);
+    if (mainUser.id.isEmpty) {
+      token = '';
+      await session_storage.clearSession();
+      return false;
+    }
+
+    return true;
+  }
+
+  static Future<void> logOut() async {
+    token = '';
+    mainUser = Employee(name: '', role: '', id: '');
+    await session_storage.clearSession();
+    reset();
   }
 
   static int currentProjectPage = 1;
@@ -885,7 +984,8 @@ class DBHelper {
             id: project['_id'],
             title: project['title'] ?? 'default_value',
             description: project['description'] ?? 'default_value',
-            status: project['status'] ?? 'default_value',
+            status: StatusHelper.normalizeStatus(
+                project['status']?.toString() ?? 'in_progress'),
             endDate: DateTime.fromMillisecondsSinceEpoch(
                 int.parse(project['due_date'].toString())),
             teams: projectTeams,
@@ -894,7 +994,8 @@ class DBHelper {
             id: project['_id'],
             title: project['title'] ?? 'default_value',
             description: project['description'] ?? 'default_value',
-            status: project['status'] ?? 'default_value',
+            status: StatusHelper.normalizeStatus(
+                project['status']?.toString() ?? 'in_progress'),
             endDate: DateTime.fromMillisecondsSinceEpoch(
                 int.parse(project['due_date'].toString())),
             teams: projectTeams,
@@ -946,7 +1047,8 @@ class DBHelper {
             id: project['_id'],
             title: project['title'] ?? 'default_value',
             description: project['description'] ?? 'default_value',
-            status: project['status'] ?? 'default_value',
+            status: StatusHelper.normalizeStatus(
+                project['status']?.toString() ?? 'in_progress'),
             endDate: DateTime.fromMillisecondsSinceEpoch(
                 int.parse(project['due_date'].toString())),
             teams: projectTeams,
@@ -990,7 +1092,8 @@ class DBHelper {
                 id: task['_id'],
                 title: task['title'],
                 description: task['description'],
-                status: task['status'],
+                status: StatusHelper.normalizeStatus(
+                    task['status']?.toString() ?? 'in_progress'),
                 project: task['project'],
                 endDate: DateTime.fromMillisecondsSinceEpoch(
                     int.parse(task['due_date'].toString())),
@@ -1002,7 +1105,8 @@ class DBHelper {
                 id: task['_id'],
                 title: task['title'],
                 description: task['description'],
-                status: task['status'],
+                status: StatusHelper.normalizeStatus(
+                    task['status']?.toString() ?? 'in_progress'),
                 project: task['project'],
                 endDate: DateTime.fromMillisecondsSinceEpoch(
                     int.parse(task['due_date'].toString())),
@@ -1054,7 +1158,8 @@ class DBHelper {
                 id: task['_id'],
                 title: task['title'],
                 description: task['description'],
-                status: task['status'],
+                status: StatusHelper.normalizeStatus(
+                    task['status']?.toString() ?? 'in_progress'),
                 project: task['project'],
                 endDate: DateTime.fromMillisecondsSinceEpoch(
                     int.parse(task['due_date'].toString())),

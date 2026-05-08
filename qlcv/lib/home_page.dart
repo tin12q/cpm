@@ -1,9 +1,7 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:qlcv/model/emp.dart';
 import 'model/db_helper.dart';
 
 //import 'model/task.dart';
@@ -37,6 +35,13 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> loadData() async {
     if (!_dataLoaded) {
+      final sessionRestored = await DBHelper.restoreSession();
+      if (!sessionRestored) {
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+        return;
+      }
+
       DBHelper.reset();
       // Load only essential data - teams first
       await DBHelper.getDep();
@@ -50,6 +55,7 @@ class _HomePageState extends State<HomePage> {
       DBHelper.initMap();
       DBHelper.updateTaskEMP();
       DBHelper.projectTasks.clear();
+      if (!mounted) return;
       setState(() {
         _dataLoaded = true;
       });
@@ -99,7 +105,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  final _tabs = (Platform.isIOS)
+  final _tabs = (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS)
       ? const [
           GButton(
             icon: CupertinoIcons.square_grid_2x2,
