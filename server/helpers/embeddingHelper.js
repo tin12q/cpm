@@ -6,6 +6,11 @@
  */
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const {
+	embedText: getOpenAICompatibleEmbedding,
+	isOpenAICompatibleConfigured,
+	getOpenAICompatibleConfig,
+} = require("./openAICompatibleClient");
 
 // ============================================================================
 // CONFIGURATION
@@ -13,11 +18,12 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const CONFIG = {
 	// PhoBERT service URL (local)
-	phobertServiceUrl:
-		process.env.PHOBERT_SERVICE_URL || "http://localhost:5001",
+	phobertServiceUrl: process.env.PHOBERT_SERVICE_URL || "http://localhost:5001",
 
 	// Gemini API (fallback)
 	geminiApiKey: process.env.GEMINI_API_KEY,
+	geminiEmbeddingModel:
+		process.env.GEMINI_EMBEDDING_MODEL || "gemini-embedding-001",
 
 	// Hybrid weights
 	weights: {
@@ -87,7 +93,7 @@ class TFIDFCalculator {
 		allSkillSets.forEach((skills) => {
 			const normalizedSkills = normalizeSkillList(skills);
 			const uniqueSkills = new Set(
-				normalizedSkills.map((s) => s.toLowerCase().trim())
+				normalizedSkills.map((s) => s.toLowerCase().trim()),
 			);
 			uniqueSkills.forEach((skill) => {
 				this.vocabulary.set(skill, (this.vocabulary.get(skill) || 0) + 1);
@@ -101,7 +107,7 @@ class TFIDFCalculator {
 	calculateTF(skill, skillSet) {
 		const normalizedSkill = skill.toLowerCase().trim();
 		const count = skillSet.filter(
-			(s) => s.toLowerCase().trim() === normalizedSkill
+			(s) => s.toLowerCase().trim() === normalizedSkill,
 		).length;
 		return count / Math.max(skillSet.length, 1);
 	}
@@ -125,7 +131,6 @@ class TFIDFCalculator {
 	 * Calculate TF-IDF vector for a skill set
 	 */
 	calculateTFIDFVector(skillSet) {
-
 		const vector = new Map();
 		const normalizedSkillSet = normalizeSkillList(skillSet);
 
@@ -163,10 +168,10 @@ class TFIDFCalculator {
 
 		// Normalize by vector magnitudes
 		const taskMagnitude = Math.sqrt(
-			Array.from(taskVector.values()).reduce((sum, v) => sum + v * v, 0)
+			Array.from(taskVector.values()).reduce((sum, v) => sum + v * v, 0),
 		);
 		const userMagnitude = Math.sqrt(
-			Array.from(userVector.values()).reduce((sum, v) => sum + v * v, 0)
+			Array.from(userVector.values()).reduce((sum, v) => sum + v * v, 0),
 		);
 
 		if (taskMagnitude === 0 || userMagnitude === 0) return 0;
@@ -292,7 +297,9 @@ async function getGeminiEmbedding(text) {
 	}
 
 	try {
-		const model = geminiClient.getGenerativeModel({ model: "embedding-001" });
+		const model = geminiClient.getGenerativeModel({
+			model: CONFIG.geminiEmbeddingModel,
+		});
 		const result = await model.embedContent(text);
 		return result.embedding.values;
 	} catch (error) {
@@ -344,6 +351,26 @@ async function calculateGeminiSimilarity(taskSkills, userSkills) {
 	return dotProduct(taskNorm, userNorm);
 }
 
+async function calculateOpenAICompatibleSimilarity(taskSkills, userSkills) {
+	const taskTokens = normalizeSkillList(taskSkills);
+	const userTokens = normalizeSkillList(userSkills);
+
+	if (!taskTokens || taskTokens.length === 0) return 0;
+	if (!userTokens || userTokens.length === 0) return 0;
+
+	const taskText = taskTokens.join(", ");
+	const userText = userTokens.join(", ");
+	const [taskEmb, userEmb] = await Promise.all([
+		getOpenAICompatibleEmbedding(taskText),
+		getOpenAICompatibleEmbedding(userText),
+	]);
+
+	if (!taskEmb || !userEmb) return 0;
+	const taskNorm = normalizeVector(taskEmb);
+	const userNorm = normalizeVector(userEmb);
+	return dotProduct(taskNorm, userNorm);
+}
+
 // ============================================================================
 // EXACT MATCH (COSINE SIMILARITY)
 // ============================================================================
@@ -381,7 +408,7 @@ function calculateExactSkillMatch(taskSkills, userSkills) {
 async function calculateAdvancedHybridSkillMatch(
 	taskSkills,
 	userSkills,
-	options = {}
+	options = {},
 ) {
 	const normalizedTaskSkills = normalizeSkillList(taskSkills);
 	const normalizedUserSkills = normalizeSkillList(userSkills);
@@ -407,7 +434,7 @@ async function calculateAdvancedHybridSkillMatch(
 	// 1. Exact Match (Always calculate)
 	scores.exact = calculateExactSkillMatch(
 		normalizedTaskSkills,
-		normalizedUserSkills
+		normalizedUserSkills,
 	);
 
 	// 2. Embedding Score (PhoBERT or Gemini fallback)
@@ -418,13 +445,37 @@ async function calculateAdvancedHybridSkillMatch(
 		} else if (CONFIG.usePhoBERT && phobertAvailable) {
 			scores.embedding = await calculatePhoBERTSimilarity(
 				taskTextParts,
-				userTextParts
+				userTextParts,
 			);
+		} else if (isOpenAICompatibleConfigured()) {
+			console.log(
+				"PhoBERT unavailable, using OpenAI-compatible embedding fallback",
+			);
+			try {
+				scores.embedding = await calculateOpenAICompatibleSimilarity(
+					taskTextParts,
+					userTextParts,
+				);
+			} catch (openAICompatibleError) {
+				console.error(
+					"OpenAI-compatible embedding failed:",
+					openAICompatibleError.message,
+				);
+				if (CONFIG.geminiApiKey) {
+					console.log("Using Gemini embedding fallback");
+					scores.embedding = await calculateGeminiSimilarity(
+						taskTextParts,
+						userTextParts,
+					);
+				} else {
+					throw openAICompatibleError;
+				}
+			}
 		} else if (CONFIG.geminiApiKey) {
 			console.log("PhoBERT unavailable, using Gemini fallback");
 			scores.embedding = await calculateGeminiSimilarity(
 				taskTextParts,
-				userTextParts
+				userTextParts,
 			);
 		} else {
 			// No embedding available, increase exact match weight
@@ -442,7 +493,7 @@ async function calculateAdvancedHybridSkillMatch(
 	if (CONFIG.useTFIDF && tfidfCalculator.documentCount > 0) {
 		scores.tfidf = tfidfCalculator.calculateSimilarity(
 			normalizedTaskSkills,
-			normalizedUserSkills
+			normalizedUserSkills,
 		);
 	} else {
 		// No TF-IDF available, redistribute weight
@@ -474,7 +525,7 @@ async function calculateAdvancedHybridSkillMatch(
 async function calculateHybridSkillMatch(
 	taskSkills,
 	userSkills,
-	semanticScore = null
+	semanticScore = null,
 ) {
 	// Backward compatibility: if semanticScore provided, use old method
 	if (semanticScore !== null) {
@@ -485,7 +536,7 @@ async function calculateHybridSkillMatch(
 	// Use advanced hybrid method
 	const result = await calculateAdvancedHybridSkillMatch(
 		taskSkills,
-		userSkills
+		userSkills,
 	);
 	return result.score;
 }
@@ -518,12 +569,19 @@ async function initializeEmbeddingSystem(allUsers = []) {
 		if (allSkillSets.length > 0) {
 			tfidfCalculator.buildVocabulary(allSkillSets);
 			console.log(
-				`✓ TF-IDF vocabulary built: ${tfidfCalculator.vocabulary.size} unique skills from ${allSkillSets.length} users`
+				`✓ TF-IDF vocabulary built: ${tfidfCalculator.vocabulary.size} unique skills from ${allSkillSets.length} users`,
 			);
 		}
 	}
 
-	// 3. Check Gemini availability
+	// 3. Check OpenAI-compatible / Gemini availability
+	if (isOpenAICompatibleConfigured()) {
+		console.log(
+			`✓ OpenAI-compatible embedding configured (${getOpenAICompatibleConfig().embeddingModel})`,
+		);
+	} else {
+		console.log("✗ OpenAI-compatible embedding not configured");
+	}
 	if (CONFIG.geminiApiKey) {
 		console.log("✓ Gemini API key configured (fallback available)");
 	} else {
@@ -533,6 +591,7 @@ async function initializeEmbeddingSystem(allUsers = []) {
 	return {
 		phobertAvailable,
 		tfidfReady: tfidfCalculator.documentCount > 0,
+		openAICompatibleAvailable: isOpenAICompatibleConfigured(),
 		geminiAvailable: !!CONFIG.geminiApiKey,
 	};
 }
@@ -548,7 +607,7 @@ function updateTFIDFVocabulary(allUsers) {
 	if (allSkillSets.length > 0) {
 		tfidfCalculator.buildVocabulary(allSkillSets);
 		console.log(
-			`TF-IDF vocabulary updated: ${tfidfCalculator.vocabulary.size} skills`
+			`TF-IDF vocabulary updated: ${tfidfCalculator.vocabulary.size} skills`,
 		);
 	}
 }
@@ -568,6 +627,11 @@ async function getEmbeddingSystemStatus() {
 			ready: tfidfCalculator.documentCount > 0,
 			vocabulary_size: tfidfCalculator.vocabulary.size,
 			document_count: tfidfCalculator.documentCount,
+		},
+		openAICompatible: {
+			configured: isOpenAICompatibleConfigured(),
+			available: isOpenAICompatibleConfigured(),
+			model: getOpenAICompatibleConfig().embeddingModel,
 		},
 		gemini: {
 			configured: !!CONFIG.geminiApiKey,
@@ -682,6 +746,7 @@ module.exports = {
 	// Individual scoring methods
 	calculatePhoBERTSimilarity,
 	calculateGeminiSimilarity,
+	calculateOpenAICompatibleSimilarity,
 
 	// TF-IDF
 	TFIDFCalculator,

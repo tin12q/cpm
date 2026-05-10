@@ -25,7 +25,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   void _addWelcomeMessage() {
     _messages.add(ChatMessage(
       text:
-          'Xin chào, mình là CPM Agent. Mình có thể giải thích API, quyền theo role, task/project/team và luồng phân công AI + MCMF.',
+          'Xin chào, mình là CPM Agent. Bạn có thể hỏi mình về các dự án, nhiệm vụ hoặc yêu cầu hỗ trợ liên quan đến công việc của bạn. Mình sẽ cố gắng giúp đỡ bạn một cách tốt nhất!',
       isUser: false,
       timestamp: DateTime.now(),
     ));
