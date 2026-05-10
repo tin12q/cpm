@@ -182,14 +182,18 @@ class _ProjectsState extends State<Projects> {
                                 const SizedBox(width: 10),
                                 SafeArea(
                                   child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
+                                    onTap: () async {
+                                      final created =
+                                          await Navigator.push<bool>(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              ProjectCreateRoute(),
+                                              const ProjectCreateRoute(),
                                         ),
                                       );
+                                      if (created == true && mounted) {
+                                        await _loadPage(1);
+                                      }
                                     },
                                     child: const CircleAvatar(
                                       backgroundColor: ColorPicker.accent,

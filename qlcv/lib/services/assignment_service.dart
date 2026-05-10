@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../model/db_helper.dart';
+import '../utils/logger.dart';
 
 class AssignmentService {
   /// Get default assignment configuration
@@ -21,7 +22,8 @@ class AssignmentService {
         throw Exception('Failed to get default config');
       }
     } catch (e) {
-      print('Error getting default config: $e');
+      AppLogger.error(
+          'Error getting default config', e, null, 'AssignmentService');
       rethrow;
     }
   }
@@ -62,7 +64,49 @@ class AssignmentService {
         throw Exception('Failed to preview assignment: ${response.body}');
       }
     } catch (e) {
-      print('Error previewing assignment: $e');
+      AppLogger.error(
+          'Error previewing assignment', e, null, 'AssignmentService');
+      rethrow;
+    }
+  }
+
+  /// Preview assignment for a task draft that has not been saved yet.
+  static Future<Map<String, dynamic>> previewDraftAssignment({
+    required Map<String, dynamic> draftTask,
+    List<String>? userIds,
+    Map<String, dynamic>? config,
+  }) async {
+    try {
+      final url = Uri.parse(ApiConfig.assignmentPreview);
+      final body = <String, dynamic>{
+        'draft_task': draftTask,
+      };
+
+      if (userIds != null && userIds.isNotEmpty) {
+        body['user_ids'] = userIds;
+      }
+
+      if (config != null) {
+        body['config'] = config;
+      }
+
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${DBHelper.token}',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+
+      throw Exception('Failed to preview draft assignment: ${response.body}');
+    } catch (e) {
+      AppLogger.error(
+          'Error previewing draft assignment', e, null, 'AssignmentService');
       rethrow;
     }
   }
@@ -103,7 +147,8 @@ class AssignmentService {
         throw Exception('Failed to apply assignment: ${response.body}');
       }
     } catch (e) {
-      print('Error applying assignment: $e');
+      AppLogger.error(
+          'Error applying assignment', e, null, 'AssignmentService');
       rethrow;
     }
   }
@@ -135,7 +180,8 @@ class AssignmentService {
         throw Exception('Failed to override assignment: ${response.body}');
       }
     } catch (e) {
-      print('Error overriding assignment: $e');
+      AppLogger.error(
+          'Error overriding assignment', e, null, 'AssignmentService');
       rethrow;
     }
   }
@@ -169,7 +215,8 @@ class AssignmentService {
         throw Exception('Failed to reassign project: ${response.body}');
       }
     } catch (e) {
-      print('Error reassigning project: $e');
+      AppLogger.error(
+          'Error reassigning project', e, null, 'AssignmentService');
       rethrow;
     }
   }

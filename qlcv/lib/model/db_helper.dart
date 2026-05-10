@@ -336,7 +336,7 @@ class DBHelper {
       }, body: <String, String>{
         'title': project.title,
         'description': project.description,
-        'status': 'in_progress',
+        'status': StatusHelper.normalizeStatus(project.status),
         'teams':
             project.teams.isNotEmpty ? project.teams.join(',') : currentDepId,
         'due_date': dateToMiliseconds.toString(),
@@ -845,7 +845,6 @@ class DBHelper {
     try {
       var url = Uri.parse('${ApiConfig.baseUrl}/api/tasks/');
       AppLogger.debug('Adding task: ${task.title}', 'DBHelper');
-      String empId = task.emp[0];
       var dateToMiliseconds = task.endDate.millisecondsSinceEpoch;
       var response = await http.post(
         url,
@@ -857,9 +856,12 @@ class DBHelper {
           'title': task.title,
           'description': task.description,
           'status': StatusHelper.normalizeStatus(task.status),
-          'assigned_to': [empId].join(','),
+          'assigned_to': task.emp.join(','),
           'project': currentProjectId,
           'due_date': dateToMiliseconds.toString(),
+          'difficulty': task.difficulty.toString(),
+          'priority': task.priority.toString(),
+          'can_parallelize': task.canParallelize.toString(),
         },
       );
       AppLogger.debug(

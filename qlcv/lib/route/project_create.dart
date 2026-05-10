@@ -1,344 +1,570 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:qlcv/model/color_picker.dart';
-import 'package:qlcv/model/dep.dart';
-import 'package:qlcv/route/projects.dart';
-import 'package:qlcv/utils/logger.dart';
-
-import '../home_page.dart';
-import '../main.dart';
-import '../model/db_helper.dart';
 import 'package:intl/intl.dart';
-import 'package:qlcv/model/task.dart';
+import 'package:qlcv/model/color_picker.dart';
+import 'package:qlcv/model/project.dart';
+import 'package:qlcv/utils/logger.dart';
 import 'package:qlcv/utils/status_helper.dart';
 
-import '../model/project.dart';
+import '../main.dart';
+import '../model/db_helper.dart';
 
 class ProjectCreateRoute extends StatefulWidget {
+  const ProjectCreateRoute({Key? key}) : super(key: key);
+
   @override
   State<ProjectCreateRoute> createState() => _ProjectCreateRouteState();
 }
 
 class _ProjectCreateRouteState extends State<ProjectCreateRoute> {
-  //text controller
-  TextEditingController dateinput = TextEditingController();
-  TextEditingController titleinput = TextEditingController();
-  TextEditingController descinput = TextEditingController();
-  DateTime end = DateTime.now();
-  List<String> selectedTeamIds = [];
-  String depName = "";
-  String selectedStatus = 'in_progress';
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  DateTime? _dueDate;
+  final List<String> _selectedTeamIds = [];
+  String _selectedStatus = 'in_progress';
+  bool _isSubmitting = false;
+
   @override
   void initState() {
-    dateinput.text = "";
-    depName = ""; //set the initial value of text field
     super.initState();
     isPaused = true;
   }
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: page to create a new task
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Project'),
-        backgroundColor: ColorPicker.accent,
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    isPaused = false;
+    super.dispose();
+  }
+
+  Future<void> _pickDueDate() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _dueDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+      builder: (context, child) => Theme(
+        data: ThemeData.light().copyWith(
+          colorScheme: const ColorScheme.light(primary: ColorPicker.accent),
+        ),
+        child: child!,
       ),
-      resizeToAvoidBottomInset: true,
+    );
+
+    if (pickedDate == null) return;
+    setState(() {
+      _dueDate = pickedDate;
+    });
+  }
+
+  Future<void> _createProject() async {
+    final title = _titleController.text.trim();
+    final description = _descriptionController.text.trim();
+
+    if (title.isEmpty ||
+        description.isEmpty ||
+        _dueDate == null ||
+        _selectedTeamIds.isEmpty) {
+      _showMessage('Please complete title, description, due date and team.');
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      final project = Project(
+        title: title,
+        description: description,
+        status: _selectedStatus,
+        endDate: _dueDate!,
+        teams: _selectedTeamIds,
+      );
+
+      await DBHelper.addProject(project);
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } on Exception catch (error) {
+      AppLogger.error(
+        'Failed to create project',
+        error,
+        null,
+        'ProjectCreateRoute',
+      );
+      if (mounted) {
+        _showMessage('Could not create project. Please try again.');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: ColorPicker.buttonDanger,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dueDateText = _dueDate == null
+        ? 'Pick due date'
+        : DateFormat('d/M/yyyy').format(_dueDate!);
+
+    return Scaffold(
+      backgroundColor: ColorPicker.backgroundLight,
+      appBar: AppBar(
+        title: const Text('Create project'),
+        backgroundColor: ColorPicker.cardBackground,
+        foregroundColor: ColorPicker.fontDark,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              16,
-              16,
-              16,
-              16 + MediaQuery.of(context).viewInsets.bottom,
-            ),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            8,
+            16,
+            24 + MediaQuery.of(context).viewInsets.bottom,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  const Text(
-                    'Title',
-                    style: TextStyle(
-                      color: ColorPicker.fontDark,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: TextField(
-                      controller: titleinput,
-                      decoration: const InputDecoration(
-                        labelText: 'Project title',
-                        hintText: 'Enter title',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
+              const _HeaderPanel(
+                title: 'New project',
+                subtitle: 'Set up project scope, timeline, and team ownership.',
+                icon: Icons.create_new_folder_outlined,
               ),
-              const SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 14),
+              _FormSection(
+                title: 'Overview',
+                icon: Icons.subject_outlined,
                 children: [
-                  const Text(
-                    'Teams',
-                    style: TextStyle(
-                      color: ColorPicker.fontDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    key: ValueKey(selectedTeamIds.join(',')),
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      hintText: 'Select teams',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                    ),
-                    items: () {
-                      // Create a map to track unique team IDs
-                      final Map<String, dynamic> uniqueTeams = {};
-                      for (var dep in DBHelper.deps) {
-                        if (!selectedTeamIds.contains(dep.id)) {
-                          uniqueTeams[dep.id] = dep;
-                        }
-                      }
-                      return uniqueTeams.values
-                          .map((dep) => DropdownMenuItem<String>(
-                                value: dep.id,
-                                child: Text(
-                                  dep.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ))
-                          .toList();
-                    }(),
-                    onChanged: (String? value) {
-                      if (value != null && !selectedTeamIds.contains(value)) {
-                        setState(() {
-                          selectedTeamIds.add(value);
-                        });
-                      }
-                    },
-                    value: null,
+                  _StyledTextField(
+                    controller: _titleController,
+                    label: 'Project title',
+                    icon: Icons.drive_file_rename_outline,
+                    textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 12),
-                  // Display selected teams as chips
-                  if (selectedTeamIds.isNotEmpty)
-                    Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      children: selectedTeamIds.map((teamId) {
-                        final team = DBHelper.deps.firstWhere(
-                          (d) => d.id == teamId,
-                          orElse: () => DBHelper.deps.first,
-                        );
-                        return Chip(
-                          label: Text(team.name),
-                          deleteIcon: Icon(Icons.close, size: 18),
-                          onDeleted: () {
-                            setState(() {
-                              selectedTeamIds.remove(teamId);
-                            });
-                          },
-                          backgroundColor: ColorPicker.primary.withOpacity(0.2),
-                          deleteIconColor: ColorPicker.primary,
-                        );
-                      }).toList(),
-                    ),
-                  if (selectedTeamIds.isEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(top: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: Colors.orange),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.warning, color: Colors.orange, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Please select at least one team',
-                              style: TextStyle(
-                                color: Colors.orange.shade900,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: dateinput, //editing controller of this TextField
-                decoration: InputDecoration(
-                  icon: Icon((!kIsWeb &&
-                          defaultTargetPlatform == TargetPlatform.iOS)
-                      ? CupertinoIcons.calendar_badge_plus
-                      : Icons.calendar_month), //icon of text field
-                  labelText: "End Date", //label text of field
-                  border: const OutlineInputBorder(),
-                ),
-                readOnly:
-                    true, //set it true, so that user will not able to edit text
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                      builder: (context, child) => Theme(
-                            data: ThemeData.light().copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: ColorPicker.accent,
-                              ),
-                            ),
-                            child: child!,
-                          ),
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2100));
-
-                  if (pickedDate != null) {
-                    //print(pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(pickedDate);
-
-                    //print(formattedDate);
-
-                    setState(() {
-                      dateinput.text = formattedDate;
-                      end = pickedDate;
-                    });
-                  } else {
-                    print("Date is not selected");
-                  }
-                },
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: selectedStatus,
-                decoration: InputDecoration(
-                  labelText: 'Project status',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                  _StyledTextField(
+                    controller: _descriptionController,
+                    label: 'Description',
+                    icon: Icons.notes_outlined,
+                    minLines: 4,
+                    maxLines: 6,
                   ),
-                ),
-                items: StatusHelper.projectStatuses
-                    .map((status) => DropdownMenuItem<String>(
-                          value: status,
-                          child: Text(StatusHelper.getStatusLabel(status)),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      selectedStatus = value;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: descinput,
-                decoration: const InputDecoration(
-                  labelText: 'Project description',
-                  hintText: 'Enter description',
-                  border: OutlineInputBorder(),
-                ),
-                minLines: 4,
-                maxLines: 6,
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                      onPressed: _back,
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            ColorPicker.accent),
-                      ),
-                      child: const Text('Cancel')),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                      onPressed: _createProject,
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            ColorPicker.accent),
-                      ),
-                      child: const Text('Create')),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
+              _FormSection(
+                title: 'Schedule and status',
+                icon: Icons.event_available_outlined,
+                children: [
+                  _DateTile(
+                    label: 'Due date',
+                    value: dueDateText,
+                    selected: _dueDate != null,
+                    onTap: _pickDueDate,
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedStatus,
+                    decoration: _fieldDecoration(
+                      label: 'Project status',
+                      icon: StatusHelper.getStatusIcon(_selectedStatus),
+                    ),
+                    items: StatusHelper.projectStatuses
+                        .map(
+                          (status) => DropdownMenuItem<String>(
+                            value: status,
+                            child: Text(StatusHelper.getStatusLabel(status)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() {
+                        _selectedStatus = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _FormSection(
+                title: 'Teams',
+                icon: Icons.groups_2_outlined,
+                children: [
+                  _TeamSelector(
+                    selectedTeamIds: _selectedTeamIds,
+                    onAdd: (teamId) {
+                      setState(() {
+                        _selectedTeamIds.add(teamId);
+                      });
+                    },
+                    onRemove: (teamId) {
+                      setState(() {
+                        _selectedTeamIds.remove(teamId);
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              _ActionBar(
+                isSubmitting: _isSubmitting,
+                onCancel: () => Navigator.pop(context, false),
+                onSubmit: _createProject,
+              ),
             ],
-          ),
           ),
         ),
       ),
     );
   }
+}
 
-  void _back() {
-    Navigator.pop(context);
-  }
+class _HeaderPanel extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+
+  const _HeaderPanel({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+  });
 
   @override
-  void dispose() {
-    isPaused = false;
-    super.dispose();
-  }
-
-  void _createProject() async {
-    try {
-      if (titleinput.text == "" ||
-          selectedTeamIds.isEmpty ||
-          dateinput.text == "" ||
-          descinput.text == "") {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all the fields',
-                style: TextStyle(color: ColorPicker.primary)),
-            backgroundColor: ColorPicker.accent,
-            duration: Duration(seconds: 2),
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ColorPicker.cardBackground,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: ColorPicker.accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: ColorPicker.accent),
           ),
-        );
-        throw Exception("Please fill all the fields");
-      }
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: ColorPicker.fontDark,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: ColorPicker.fontMedium,
+                    fontSize: 14,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-      Project project = new Project(
-        title: titleinput.text,
-        description: descinput.text,
-        status: selectedStatus,
-        endDate: end,
-        teams: selectedTeamIds, // Use selected teams array
-      );
+class _FormSection extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final List<Widget> children;
 
-      await DBHelper.addProject(project);
-      DBHelper.projects.add(project);
-      Navigator.pop(context);
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-        (Route<dynamic> route) => false,
-      );
-    } on Exception catch (e) {
-      AppLogger.error(
-          'Failed to create project', e, null, 'ProjectCreateRoute');
-    }
+  const _FormSection({
+    required this.title,
+    required this.icon,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ColorPicker.cardBackground,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 19, color: ColorPicker.accent),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: ColorPicker.fontDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _StyledTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final int? minLines;
+  final int? maxLines;
+  final TextInputAction? textInputAction;
+
+  const _StyledTextField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    this.minLines,
+    this.maxLines,
+    this.textInputAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      minLines: minLines,
+      maxLines: maxLines ?? 1,
+      textInputAction: textInputAction,
+      style: const TextStyle(color: ColorPicker.fontDark, fontSize: 15),
+      decoration: _fieldDecoration(label: label, icon: icon),
+    );
+  }
+}
+
+InputDecoration _fieldDecoration({
+  required String label,
+  required IconData icon,
+}) {
+  return InputDecoration(
+    labelText: label,
+    prefixIcon: Icon(icon, size: 20),
+    filled: true,
+    fillColor: ColorPicker.backgroundLight,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: ColorPicker.cardBorder),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: ColorPicker.cardBorder),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: ColorPicker.accent, width: 1.5),
+    ),
+  );
+}
+
+class _DateTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _DateTile({
+    required this.label,
+    required this.value,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: InputDecorator(
+        decoration: _fieldDecoration(
+          label: label,
+          icon: Icons.calendar_today_outlined,
+        ),
+        child: Text(
+          value,
+          style: TextStyle(
+            color: selected ? ColorPicker.fontDark : ColorPicker.fontLight,
+            fontSize: 15,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TeamSelector extends StatelessWidget {
+  final List<String> selectedTeamIds;
+  final ValueChanged<String> onAdd;
+  final ValueChanged<String> onRemove;
+
+  const _TeamSelector({
+    required this.selectedTeamIds,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<String>(
+          key: ValueKey(selectedTeamIds.join(',')),
+          isExpanded: true,
+          decoration: _fieldDecoration(
+            label: 'Add team',
+            icon: Icons.group_add_outlined,
+          ),
+          items: DBHelper.deps
+              .where((team) => !selectedTeamIds.contains(team.id))
+              .map(
+                (team) => DropdownMenuItem<String>(
+                  value: team.id,
+                  child: Text(
+                    team.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value == null || selectedTeamIds.contains(value)) return;
+            onAdd(value);
+          },
+          initialValue: null,
+        ),
+        const SizedBox(height: 12),
+        if (selectedTeamIds.isEmpty)
+          const _InlineWarning(text: 'Please select at least one team')
+        else
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: selectedTeamIds.map((teamId) {
+              final matches = DBHelper.deps.where((team) => team.id == teamId);
+              if (matches.isEmpty) return const SizedBox.shrink();
+              final team = matches.first;
+              return Chip(
+                avatar: const Icon(Icons.groups_2_outlined, size: 17),
+                label: Text(team.name),
+                deleteIcon: const Icon(Icons.close, size: 18),
+                onDeleted: () => onRemove(teamId),
+                backgroundColor: ColorPicker.backgroundLight,
+                side: const BorderSide(color: ColorPicker.cardBorder),
+              );
+            }).toList(),
+          ),
+        if (DBHelper.deps.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Text(
+              'No teams available.',
+              style: TextStyle(color: ColorPicker.fontMedium),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ActionBar extends StatelessWidget {
+  final bool isSubmitting;
+  final VoidCallback onCancel;
+  final VoidCallback onSubmit;
+
+  const _ActionBar({
+    required this.isSubmitting,
+    required this.onCancel,
+    required this.onSubmit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: isSubmitting ? null : onCancel,
+            icon: const Icon(Icons.close_outlined, size: 18),
+            label: const Text('Cancel'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: FilledButton.icon(
+            onPressed: isSubmitting ? null : onSubmit,
+            icon: isSubmitting
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.create_new_folder_outlined, size: 18),
+            label: Text(isSubmitting ? 'Creating' : 'Create project'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InlineWarning extends StatelessWidget {
+  final String text;
+
+  const _InlineWarning({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(Icons.warning_amber_outlined, color: Colors.orange.shade700),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: TextStyle(color: Colors.orange.shade900)),
+        ),
+      ],
+    );
   }
 }

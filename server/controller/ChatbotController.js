@@ -67,6 +67,9 @@ Executable backend tools in this chatbot route:
 - list_tasks
 - create_task for admin/manager when project and assignee can be resolved
 - preview_assignment without applying database changes
+- daily_report for today's project/task summary
+- overdue_report for late tasks and late assignees
+- personnel_stats for workload, overdue, due-today, and skill summary
 
 Do not say you have already applied, deleted, overridden, reassigned, or bulk-updated anything unless a future backend tool actually does that operation.
 `;
@@ -74,11 +77,11 @@ Do not say you have already applied, deleted, overridden, reassigned, or bulk-up
 function rolePolicy(role) {
 	switch (String(role || "").toLowerCase()) {
 		case "admin":
-			return "Current role: admin. Full guidance allowed. Executable chatbot tools are list projects, list tasks, create task, and preview assignment only.";
+			return "Current role: admin. Full guidance allowed. Executable chatbot tools are list projects, list tasks, create task, preview assignment, reports, overdue checks, and personnel statistics.";
 		case "manager":
-			return "Current role: manager. Guide project/task/team operations in manager scope. Executable chatbot tools are list projects, list tasks, create task, and preview assignment only.";
+			return "Current role: manager. Guide project/task/team operations in manager scope. Executable chatbot tools are list projects, list tasks, create task, preview assignment, reports, overdue checks, and personnel statistics in accessible projects.";
 		case "employee":
-			return "Current role: employee. Read-only guidance only. Do not suggest direct create, update, delete, apply, override, or reassign actions.";
+			return "Current role: employee. Read-only guidance only. Reports and stats must be limited to assigned or accessible work. Do not suggest direct create, update, delete, apply, override, or reassign actions.";
 		default:
 			return "Current role: unknown. Give safe read-only guidance.";
 	}
@@ -151,7 +154,7 @@ Current role: ${role || "unknown"}
 Return STRICT JSON only. Do not use markdown.
 Schema:
 {
-  "action": "answer_only" | "list_projects" | "list_tasks" | "list_project_members" | "create_task" | "preview_assignment",
+  "action": "answer_only" | "list_projects" | "list_tasks" | "list_project_members" | "create_task" | "preview_assignment" | "daily_report" | "overdue_report" | "personnel_stats",
   "language": "vi" | "en",
   "params": {
     "project_name": string | null,
@@ -172,6 +175,9 @@ Rules:
 - If the user asks who is in a project or asks for project members, use "list_project_members".
 - If the user asks to create/add a task, use "create_task".
 - If the user asks to preview/auto assign/recommend assignees, use "preview_assignment".
+- If the user asks for today's summary, daily report, project status today, or "tong hop du an hom nay", use "daily_report".
+- If the user asks whether anything is late/overdue, "tre han", or who is late, use "overdue_report".
+- If the user asks for personnel/human-resource/member workload/statistics, "thong ke nhan su", use "personnel_stats".
 - Do not use create_task for employees if role is employee; still classify the user intent as create_task and backend will reject.
 - For Vietnamese "mai/ngày mai", convert to tomorrow based on Current date.
 - Keep missing fields null. Do not invent project or assignee names.
@@ -323,6 +329,13 @@ function classifyIntentHeuristic(message) {
 	const asksAssignment =
 		/\b(preview|phan cong|assignment|assign|auto assign|goi y|de xuat)\b/.test(text) &&
 		(mentionsTask || mentionsProject || text.includes("mcmf"));
+	const asksReport =
+		/\b(bao cao|report|tong hop|summary|hom nay|today|tinh hinh)\b/.test(text) &&
+		(mentionsTask || mentionsProject || text.includes("du an") || text.includes("cong viec"));
+	const asksOverdue =
+		/\b(tre han|qua han|overdue|late|delay|cham deadline|ai tre)\b/.test(text);
+	const asksPersonnelStats =
+		/\b(thong ke nhan su|nhan su|workload|tai viec|tai cong viec|member workload|hieu suat|nguoi nao dang)\b/.test(text);
 
 	if (asksMembers) {
 		return {
@@ -335,6 +348,30 @@ function classifyIntentHeuristic(message) {
 	if (asksAssignment) {
 		return {
 			action: "preview_assignment",
+			language: "vi",
+			params: getEmptyParams({ limit }),
+		};
+	}
+
+	if (asksOverdue) {
+		return {
+			action: "overdue_report",
+			language: "vi",
+			params: getEmptyParams({ limit }),
+		};
+	}
+
+	if (asksPersonnelStats) {
+		return {
+			action: "personnel_stats",
+			language: "vi",
+			params: getEmptyParams({ limit }),
+		};
+	}
+
+	if (asksReport) {
+		return {
+			action: "daily_report",
 			language: "vi",
 			params: getEmptyParams({ limit }),
 		};
@@ -372,6 +409,7 @@ function getStaticAnswer(message) {
 			"2. Tìm task theo deadline, trạng thái hoặc theo project.",
 			"3. Tạo task mới khi bạn nói rõ task thuộc project nào và giao cho ai.",
 			"4. Gợi ý người phù hợp để nhận task trước khi bạn áp dụng phân công.",
+			"5. Tổng hợp báo cáo hôm nay, task trễ hạn, ai đang trễ và thống kê nhân sự.",
 			"",
 			"Bạn có thể nhắn kiểu: “Liệt kê 3 task gần deadline nhất” hoặc “Preview phân công cho dự án ...”.",
 		].join("\n");
@@ -498,6 +536,87 @@ function formatDateMillis(dateIso, fallbackMillis) {
 
 function taskStatus(task) {
 	return String(task.status || "in progress");
+}
+
+function getTodayBounds() {
+	const now = new Date();
+	const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+	return {
+		now,
+		start,
+		end: start + 24 * 60 * 60 * 1000 - 1,
+		next7End: start + 8 * 24 * 60 * 60 * 1000 - 1,
+	};
+}
+
+function isCompletedTask(task) {
+	const status = normalizeText(task?.status || "");
+	return ["completed", "done", "finished", "complete", "hoan thanh", "da xong"].some((item) =>
+		status.includes(item)
+	);
+}
+
+function isTaskOverdue(task, todayStart = getTodayBounds().start) {
+	const due = Number(task?.due_date);
+	return Number.isFinite(due) && due < todayStart && !isCompletedTask(task);
+}
+
+function isTaskDueToday(task, bounds = getTodayBounds()) {
+	const due = Number(task?.due_date);
+	return Number.isFinite(due) && due >= bounds.start && due <= bounds.end && !isCompletedTask(task);
+}
+
+function formatDate(value) {
+	if (!value) return "chưa có deadline";
+	return new Date(value).toLocaleDateString("vi-VN");
+}
+
+function formatAssignees(task) {
+	const assignees = (task?.assigned_to || [])
+		.map((user) => user?.name || user?.email)
+		.filter(Boolean)
+		.join(", ");
+	return assignees || "chưa có người làm";
+}
+
+async function getReportScope({ user, params, message }) {
+	const { project, projects } = await resolveProject({
+		user,
+		projectId: params?.project_id,
+		projectName: params?.project_name,
+		message,
+	});
+	const scopedProjects = project ? [project] : projects;
+	const projectIds = scopedProjects.map((item) => item._id);
+	const query = { project: { $in: projectIds } };
+	if (user?.role === "employee") {
+		query.assigned_to = { $elemMatch: { $eq: new mongoose.Types.ObjectId(user.id) } };
+	}
+	return {
+		project,
+		projects: scopedProjects,
+		projectIds,
+		query,
+	};
+}
+
+function groupOverdueByAssignee(tasks) {
+	const groups = new Map();
+	for (const task of tasks) {
+		const assignees = task.assigned_to?.length ? task.assigned_to : [{ name: "Chưa rõ người làm" }];
+		for (const assignee of assignees) {
+			const key = String(assignee?._id || assignee?.id || assignee?.name || "unknown");
+			const current = groups.get(key) || {
+				name: assignee?.name || assignee?.email || "Chưa rõ người làm",
+				count: 0,
+				tasks: [],
+			};
+			current.count += 1;
+			current.tasks.push(task);
+			groups.set(key, current);
+		}
+	}
+	return [...groups.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
 async function listProjectsTool({ user, params }) {
@@ -694,6 +813,180 @@ async function listProjectMembersTool({ user, params, message }) {
 	].join("\n");
 }
 
+async function dailyReportTool({ user, params, message }) {
+	const bounds = getTodayBounds();
+	const scope = await getReportScope({ user, params, message });
+	if (scope.projects.length === 0) {
+		return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem để tổng hợp.";
+	}
+
+	const tasks = await Task.find(scope.query)
+		.populate("assigned_to", "name email")
+		.sort({ due_date: 1 });
+	const activeTasks = tasks.filter((task) => !isCompletedTask(task));
+	const dueToday = activeTasks.filter((task) => isTaskDueToday(task, bounds));
+	const overdue = activeTasks.filter((task) => isTaskOverdue(task, bounds.start));
+	const upcoming = activeTasks.filter((task) => {
+		const due = Number(task.due_date);
+		return Number.isFinite(due) && due > bounds.end && due <= bounds.next7End;
+	});
+	const completed = tasks.filter(isCompletedTask);
+	const projectLabel = scope.project
+		? `project "${scope.project.title}"`
+		: `${scope.projects.length} project`;
+
+	const lines = [
+		`Báo cáo hôm nay (${formatDate(bounds.start)}) cho ${projectLabel}:`,
+		`- Tổng task: ${tasks.length}; đang mở: ${activeTasks.length}; hoàn thành: ${completed.length}.`,
+		`- Đến hạn hôm nay: ${dueToday.length}; trễ hạn: ${overdue.length}; đến hạn trong 7 ngày tới: ${upcoming.length}.`,
+	];
+
+	if (dueToday.length > 0) {
+		lines.push("", "Task đến hạn hôm nay:");
+		dueToday.slice(0, 5).forEach((task) => {
+			lines.push(`- ${task.title} - ${formatAssignees(task)} (${taskStatus(task)})`);
+		});
+	}
+
+	if (overdue.length > 0) {
+		lines.push("", "Đang trễ hạn:");
+		overdue.slice(0, 5).forEach((task) => {
+			lines.push(`- ${task.title} - deadline ${formatDate(task.due_date)}, người làm: ${formatAssignees(task)}`);
+		});
+		const latePeople = groupOverdueByAssignee(overdue)
+			.slice(0, 5)
+			.map((item) => `${item.name}: ${item.count} task`)
+			.join("; ");
+		lines.push(`Ai đang trễ: ${latePeople}.`);
+	} else {
+		lines.push("", "Hiện chưa có task trễ hạn trong phạm vi này.");
+	}
+
+	return lines.join("\n");
+}
+
+async function overdueReportTool({ user, params, message }) {
+	const bounds = getTodayBounds();
+	const scope = await getReportScope({ user, params, message });
+	if (scope.projects.length === 0) {
+		return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem để kiểm tra trễ hạn.";
+	}
+
+	const tasks = await Task.find(scope.query)
+		.populate("assigned_to", "name email")
+		.populate("project", "title")
+		.sort({ due_date: 1 });
+	const overdue = tasks.filter((task) => isTaskOverdue(task, bounds.start));
+	if (overdue.length === 0) {
+		return "Hiện chưa có task trễ hạn trong phạm vi bạn có quyền xem.";
+	}
+
+	const latePeople = groupOverdueByAssignee(overdue);
+	const lines = [
+		`Có ${overdue.length} task đang trễ hạn.`,
+		"Ai đang trễ:",
+		...latePeople.slice(0, 8).map((item, index) => `${index + 1}. ${item.name}: ${item.count} task`),
+		"",
+		"Task trễ hạn cần xem trước:",
+	];
+	overdue.slice(0, Math.min(Number(params?.limit) || 8, 12)).forEach((task) => {
+		const projectTitle = task.project?.title ? `, project: ${task.project.title}` : "";
+		lines.push(`- ${task.title} - deadline ${formatDate(task.due_date)}, người làm: ${formatAssignees(task)}${projectTitle}`);
+	});
+
+	return lines.join("\n");
+}
+
+async function personnelStatsTool({ user, params, message }) {
+	const bounds = getTodayBounds();
+	const scope = await getReportScope({ user, params, message });
+	if (scope.projects.length === 0) {
+		return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem để thống kê nhân sự.";
+	}
+
+	let users = [];
+	if (scope.project) {
+		users = await getProjectMembers(scope.project);
+	} else {
+		const teamIds = [
+			...new Set(scope.projects.flatMap((project) => getProjectTeamIds(project))),
+		];
+		const teams = await Team.find({ _id: { $in: teamIds } }).select("members");
+		const memberIds = [
+			...new Set(
+				teams.flatMap((team) => (team.members || []).map((member) => member.toString()))
+			),
+		];
+		users = await User.find({ _id: { $in: memberIds } }).select(
+			"name email role skills current_task_count productivity_score on_time_rate"
+		);
+	}
+
+	if (user?.role === "employee") {
+		users = users.filter((item) => item._id.toString() === String(user.id));
+	}
+
+	const tasks = await Task.find(scope.query)
+		.populate("assigned_to", "name email")
+		.sort({ due_date: 1 });
+	const stats = new Map();
+	for (const member of users) {
+		stats.set(member._id.toString(), {
+			member,
+			total: 0,
+			active: 0,
+			overdue: 0,
+			dueToday: 0,
+			completed: 0,
+		});
+	}
+
+	for (const task of tasks) {
+		for (const assignee of task.assigned_to || []) {
+			const key = String(assignee?._id || assignee?.id || "");
+			if (!stats.has(key)) continue;
+			const item = stats.get(key);
+			item.total += 1;
+			if (isCompletedTask(task)) {
+				item.completed += 1;
+			} else {
+				item.active += 1;
+				if (isTaskOverdue(task, bounds.start)) item.overdue += 1;
+				if (isTaskDueToday(task, bounds)) item.dueToday += 1;
+			}
+		}
+	}
+
+	const rows = [...stats.values()].sort(
+		(a, b) =>
+			b.overdue - a.overdue ||
+			b.active - a.active ||
+			String(a.member.name || a.member.email || "").localeCompare(
+				String(b.member.name || b.member.email || "")
+			)
+	);
+	const totalActive = rows.reduce((sum, item) => sum + item.active, 0);
+	const totalOverdue = rows.reduce((sum, item) => sum + item.overdue, 0);
+	const lines = [
+		`Thống kê nhân sự (${scope.project ? scope.project.title : `${scope.projects.length} project`}):`,
+		`- Số thành viên: ${rows.length}; task đang mở: ${totalActive}; task trễ hạn: ${totalOverdue}.`,
+	];
+
+	rows.slice(0, Math.min(Number(params?.limit) || 10, 12)).forEach((item, index) => {
+		const member = item.member;
+		const skills = (member.skills || []).map((skill) => skill.name).filter(Boolean).slice(0, 3).join(", ");
+		const rate = Number.isFinite(member.on_time_rate) ? `, đúng hạn ${member.on_time_rate}%` : "";
+		const productivity = Number.isFinite(member.productivity_score)
+			? `, năng suất ${member.productivity_score}`
+			: "";
+		lines.push(
+			`${index + 1}. ${member.name || member.email}: active ${item.active}, hôm nay ${item.dueToday}, trễ ${item.overdue}, hoàn thành ${item.completed}${rate}${productivity}${skills ? `, skill: ${skills}` : ""}`
+		);
+	});
+
+	return lines.join("\n");
+}
+
 async function previewAssignmentTool({ user, params, message }) {
 	if (!["admin", "manager"].includes(user?.role)) {
 		return "Role hiện tại chỉ có quyền xem, không thể preview phân công tự động.";
@@ -818,6 +1111,12 @@ async function executeTool({ intent, user, message }) {
 			return listProjectMembersTool({ user, params: intent.params || {}, message });
 		case "preview_assignment":
 			return previewAssignmentTool({ user, params: intent.params || {}, message });
+		case "daily_report":
+			return dailyReportTool({ user, params: intent.params || {}, message });
+		case "overdue_report":
+			return overdueReportTool({ user, params: intent.params || {}, message });
+		case "personnel_stats":
+			return personnelStatsTool({ user, params: intent.params || {}, message });
 		default:
 			return null;
 	}
