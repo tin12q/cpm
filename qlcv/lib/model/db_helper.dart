@@ -4,7 +4,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:qlcv/utils/logger.dart';
 import 'package:qlcv/config/api_config.dart';
-import 'package:intl/intl.dart';
 import 'package:qlcv/model/dep.dart';
 import 'package:qlcv/model/task.dart';
 import 'package:qlcv/model/project.dart';
@@ -284,11 +283,6 @@ class DBHelper {
 
   static Future<void> getEmpProject(String projectId) async {
     empProject.clear();
-    try {
-      var url = Uri.parse('${ApiConfig.baseUrl}/api/projects/$projectId');
-    } catch (e) {
-      AppLogger.error('Failed in getEmpProject', e, null, 'DBHelper');
-    }
   }
 
   static Future<void> getMainUser({required String id}) async {
@@ -540,19 +534,84 @@ class DBHelper {
     }
   }
 
-  static taskUpdateWithProjectId(String projectId) {
+  static Future<void> taskUpdateWithProjectId(
+    String projectId, {
+    int limit = 200,
+  }) async {
     projectTasks.clear();
-    for (Task task in tasks) {
-      if (task.project == projectId) {
-        projectTasks.add(task);
+    try {
+      final url = Uri.parse('${ApiConfig.baseUrl}/api/tasks/project/$projectId')
+          .replace(queryParameters: {
+        'page': '1',
+        'limit': limit.toString(),
+      });
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        for (final task in data) {
+          final members = (task['assigned_to'] as List<dynamic>? ?? [])
+              .map((item) {
+                if (item is Map<String, dynamic>) {
+                  return item['_id']?.toString() ??
+                      item['id']?.toString() ??
+                      '';
+                }
+                return item.toString();
+              })
+              .where((id) => id.isNotEmpty)
+              .toList();
+
+          final parsedTask = Task(
+            id: task['_id'],
+            title: task['title'] ?? '',
+            description: task['description'] ?? '',
+            status: StatusHelper.normalizeStatus(
+                task['status']?.toString() ?? 'in_progress'),
+            project: task['project']?.toString() ?? projectId,
+            endDate: DateTime.fromMillisecondsSinceEpoch(
+                int.parse(task['due_date'].toString())),
+            emp: members,
+            difficulty: task['difficulty'] ?? 2,
+            priority: task['priority'] ?? 3,
+            canParallelize: task['can_parallelize'] ?? true,
+          );
+
+          projectTasks.add(parsedTask);
+
+          final existingIndex =
+              tasks.indexWhere((item) => item.id == parsedTask.id);
+          if (existingIndex >= 0) {
+            tasks[existingIndex] = parsedTask;
+          } else if (mainUser.role == 'admin' ||
+              parsedTask.emp.contains(mainUser.id)) {
+            tasks.add(parsedTask);
+          }
+        }
+        updateTaskEMP();
+      } else {
+        throw Exception('Failed to load project tasks.');
       }
+    } catch (e) {
+      AppLogger.error(
+          'Failed to load tasks for project $projectId', e, null, 'DBHelper');
     }
   }
 
   static Future<void> searchProjectByName(String name) async {
     projects.clear();
     try {
-      var url = Uri.parse('${ApiConfig.baseUrl}/api/projects/name/$name');
+      var url = Uri.parse('${ApiConfig.baseUrl}/api/projects/search')
+          .replace(queryParameters: {
+        'search': name,
+        'page': '1',
+        'limit': '50',
+      });
       var response = await http.get(
         url,
         headers: <String, String>{

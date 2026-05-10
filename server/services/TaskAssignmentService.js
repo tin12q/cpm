@@ -344,6 +344,7 @@ class TaskAssignmentService {
 					{
 						taskTitle,
 						taskDescription,
+						disableExternalEmbedding: config.disableExternalEmbedding,
 					}
 				);
 

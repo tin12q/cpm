@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:qlcv/model/color_picker.dart';
 import 'package:qlcv/model/task.dart';
 import 'package:qlcv/model/task_box.dart';
+import 'package:qlcv/utils/search_helper.dart';
 import 'package:qlcv/utils/status_helper.dart';
 
 import '../model/db_helper.dart';
@@ -18,6 +21,8 @@ class _ProjectTasksState extends State<ProjectTasks> {
   final TextEditingController _searchController = TextEditingController();
   String? _selectedStatus;
   List<Task> _filteredTasks = [];
+  bool _isLoading = false;
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -25,14 +30,30 @@ class _ProjectTasksState extends State<ProjectTasks> {
     _applyFilters();
   }
 
+  Future<void> _reloadProjectTasks() async {
+    if (DBHelper.currentProjectId.isEmpty || _isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    await DBHelper.taskUpdateWithProjectId(DBHelper.currentProjectId);
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        _applyFilters();
+      });
+    }
+  }
+
   void _applyFilters() {
     List<Task> filtered = List.from(DBHelper.projectTasks);
+    final query = _searchController.text.trim();
 
-    if (_searchController.text.isNotEmpty) {
+    if (query.isNotEmpty) {
       filtered = filtered
-          .where((Task task) => task.title
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase()))
+          .where((Task task) => SearchHelper.matchesAny(query, [
+                task.title,
+                task.description,
+              ]))
           .toList();
     }
 
@@ -44,6 +65,15 @@ class _ProjectTasksState extends State<ProjectTasks> {
     }
 
     _filteredTasks = filtered;
+  }
+
+  void _scheduleReload() {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 250), () {
+      if (mounted) {
+        _reloadProjectTasks();
+      }
+    });
   }
 
   Future<void> _openCreateTask() async {
@@ -75,8 +105,15 @@ class _ProjectTasksState extends State<ProjectTasks> {
       ),
     );
     if (mounted) {
-      setState(_applyFilters);
+      await _reloadProjectTasks();
     }
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -92,7 +129,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
                 color: ColorPicker.cardBackground,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -163,6 +200,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
                                   _searchController.clear();
                                   _applyFilters();
                                 });
+                                _reloadProjectTasks();
                               },
                             )
                           : null,
@@ -175,6 +213,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
                     ),
                     onChanged: (value) {
                       setState(_applyFilters);
+                      _scheduleReload();
                     },
                   ),
                   const SizedBox(height: 12),
@@ -196,6 +235,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
                               _selectedStatus = null;
                               _applyFilters();
                             });
+                            _reloadProjectTasks();
                           },
                         ),
                         const SizedBox(width: 8),
@@ -219,7 +259,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
                               ),
                               selected: isSelected,
                               selectedColor: color,
-                              backgroundColor: color.withOpacity(0.1),
+                              backgroundColor: color.withValues(alpha: 0.1),
                               labelStyle: TextStyle(
                                 color: isSelected ? Colors.white : color,
                                 fontWeight: isSelected
@@ -231,6 +271,7 @@ class _ProjectTasksState extends State<ProjectTasks> {
                                   _selectedStatus = selected ? status : null;
                                   _applyFilters();
                                 });
+                                _reloadProjectTasks();
                               },
                             ),
                           );
@@ -242,17 +283,19 @@ class _ProjectTasksState extends State<ProjectTasks> {
               ),
             ),
             Expanded(
-              child: _filteredTasks.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No tasks found',
-                        style: TextStyle(
-                          color: ColorPicker.fontMedium,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                  : TaskBoxList(tasks: _filteredTasks),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filteredTasks.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No tasks found',
+                            style: TextStyle(
+                              color: ColorPicker.fontMedium,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+                      : TaskBoxList(tasks: _filteredTasks),
             ),
           ],
         ),

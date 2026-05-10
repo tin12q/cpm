@@ -7,7 +7,7 @@ class ChatbotPage extends StatefulWidget {
   const ChatbotPage({Key? key}) : super(key: key);
 
   @override
-  _ChatbotPageState createState() => _ChatbotPageState();
+  State<ChatbotPage> createState() => _ChatbotPageState();
 }
 
 class _ChatbotPageState extends State<ChatbotPage> {
@@ -25,7 +25,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   void _addWelcomeMessage() {
     _messages.add(ChatMessage(
       text:
-          'Hello! I can help summarize tasks, explain project status, and suggest next steps.',
+          'Xin chào, mình là CPM Agent. Mình có thể giải thích API, quyền theo role, task/project/team và luồng phân công AI + MCMF.',
       isUser: false,
       timestamp: DateTime.now(),
     ));
@@ -60,9 +60,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
     setState(() {
       _isLoading = false;
       _messages.add(ChatMessage(
-        text: response['success']
-            ? response['response']
-            : 'Sorry, I encountered an error. Please try again.',
+        text: response['success'] == true
+            ? response['response'].toString()
+            : response['error']?.toString() ??
+                'Sorry, I encountered an error. Please try again.',
         isUser: false,
         timestamp: DateTime.now(),
       ));
@@ -124,7 +125,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
         color: ColorPicker.cardBackground,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -136,7 +137,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: ColorPicker.accent.withOpacity(0.12),
+              color: ColorPicker.accent.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
@@ -199,7 +200,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
           border: Border.all(color: ColorPicker.cardBorder),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -230,7 +231,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   backgroundColor: ColorPicker.accent,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor:
-                      ColorPicker.fontLight.withOpacity(0.25),
+                      ColorPicker.fontLight.withValues(alpha: 0.25),
                 ),
                 icon: const Icon(Icons.send_rounded, size: 19),
               ),

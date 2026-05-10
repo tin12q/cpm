@@ -13,6 +13,7 @@ class ApiConfig {
   static const String usersEndpoint = '$baseUrl/api/users';
   static const String teamsEndpoint = '$baseUrl/api/teams';
   static const String assignmentsEndpoint = '$baseUrl/api/assignments';
+  static const String chatbotEndpoint = '$baseUrl/api/chatbot/message';
 
   // Assignment specific endpoints
   static String assignmentPreview = '$assignmentsEndpoint/preview';

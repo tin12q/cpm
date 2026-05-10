@@ -38,6 +38,7 @@ dependencies:
   clean_calendar: ^1.1.0
   image_picker: ^0.8.4+4
   file_picker: ^8.0.1
+  path_provider: ^2.1.5
   fl_chart: ^1.1.1
   provider: ^6.0.5
   intl: ^0.17.0

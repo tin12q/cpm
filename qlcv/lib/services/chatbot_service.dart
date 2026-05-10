@@ -1,255 +1,387 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
 import '../config/api_config.dart';
 import '../model/db_helper.dart';
 import '../utils/logger.dart';
 
 class ChatbotService {
-  /// Send a message to the chatbot and get a response
-  /// You can integrate with any AI API later (OpenAI, Gemini, Claude, etc.)
+  /// Send a message to the chatbot and get a response.
+  ///
+  /// The current app still returns local mock responses, but the system prompt
+  /// below is ready to be passed to a real AI provider later.
   static Future<Map<String, dynamic>> sendMessage(String message) async {
     try {
-      // Check user role first
-      String userRole = DBHelper.mainUser.role.toLowerCase();
+      final userRole = DBHelper.mainUser.role.toLowerCase();
 
-      // Validate user role before processing
       if (!['admin', 'manager', 'employee'].contains(userRole)) {
         return {
           'success': false,
-          'error': 'Invalid user role. Please log in again.',
+          'error': 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.',
         };
       }
 
-      // TODO: Replace this with your actual AI API endpoint
-      // For now, this is a placeholder that returns a mock response
+      final response = await http.post(
+        Uri.parse(ApiConfig.chatbotEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${DBHelper.token}',
+        },
+        body: jsonEncode({
+          'message': message,
+        }),
+      );
 
-      // Example structure for OpenAI API:
-      // var url = Uri.parse('https://api.openai.com/v1/chat/completions');
-      // var response = await http.post(
-      //   url,
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': 'Bearer YOUR_API_KEY',
-      //   },
-      //   body: jsonEncode({
-      //     'model': 'gpt-3.5-turbo',
-      //     'messages': [
-      //       {'role': 'system', 'content': _getRoleBasedSystemPrompt(userRole)},
-      //       {'role': 'user', 'content': message}
-      //     ],
-      //   }),
-      // );
+      final data = jsonDecode(response.body);
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          data is Map<String, dynamic>) {
+        return {
+          'success': data['success'] == true,
+          'response': data['response']?.toString() ??
+              _getMockResponse(message, userRole),
+          'timestamp':
+              data['timestamp']?.toString() ?? DateTime.now().toIso8601String(),
+        };
+      }
 
-      // Mock response for now
-      await Future.delayed(Duration(seconds: 1)); // Simulate API delay
+      if (data is Map<String, dynamic>) {
+        return {
+          'success': false,
+          'error': data['error']?.toString() ?? 'AI service request failed',
+        };
+      }
 
       return {
-        'success': true,
-        'response': _getMockResponse(message, userRole),
-        'timestamp': DateTime.now().toIso8601String(),
+        'success': false,
+        'error': 'AI service request failed with status ${response.statusCode}',
       };
     } catch (e) {
       AppLogger.error('Chatbot request failed', e, null, 'ChatbotService');
       return {
         'success': false,
-        'error': 'Failed to get response: $e',
+        'error': 'Không thể lấy phản hồi từ chatbot: $e',
       };
     }
   }
 
-  /// System prompt for AI - Use this when integrating with actual AI API
-  static const String SYSTEM_PROMPT =
-      '''You are an expert Project Management AI Assistant for a professional task tracking and team management application.
+  /// System prompt for a real AI provider.
+  ///
+  /// Use [getAgentSystemPrompt] instead of this raw prompt when sending to an
+  /// AI model so the user role and API catalog are included.
+  static const String systemPrompt = '''
+You are CPM Agent, an AI assistant inside a project/task management app for small projects and student teams.
 
-Your primary role is to help users with:
+Your job:
+- Understand the user's role, current task/project context, and intent.
+- Explain what the app can do and guide users to the right feature.
+- When tool/API execution is available, map user intent to the correct CPM API endpoint.
+- For assignment questions, explain the hybrid AI + MCMF assignment flow clearly.
+- Keep answers concise, practical, and tied to CPM workflows.
 
-1. TASK MANAGEMENT:
-   - Creating, assigning, and tracking tasks
-   - Using the Auto-Assignment feature (MCMF algorithm) that assigns tasks based on:
-     * Skills matching (cosine similarity between required and user skills)
-     * Deadline urgency (tasks with closer deadlines get higher priority)
-     * Team member workload balance
-     * Productivity scores and on-time rates
-   - Task prioritization and status tracking
+Important behavior:
+- Do not claim that an API call was executed unless the host app actually executed it.
+- Do not invent routes. Use the API catalog in this prompt.
+- Respect role permissions. Employees should receive read-only guidance.
+- Prefer Vietnamese when the user writes Vietnamese.
+- If an action is risky, ask for confirmation before suggesting apply/delete/update.
+''';
 
-2. PROJECT MANAGEMENT:
-   - Project planning and organization
-   - Timeline and deadline management
-   - Progress tracking and reporting
-   - Resource allocation across projects
+  static const String apiCapabilityContext = '''
+CPM API catalog
+Base path: /api
+Authentication: protected endpoints require Authorization: Bearer <token>.
 
-3. TEAM MANAGEMENT:
-   - Team member skill assessment
-   - Workload distribution and balance
-   - Performance tracking (productivity scores, on-time rates)
-   - Capacity planning
+Auth:
+- POST /api/auth/login: log in and receive token/user id.
+- POST /api/auth/register: create a new account.
 
-4. ANALYTICS & INSIGHTS:
-   - Provide data-driven recommendations
-   - Identify bottlenecks and overloaded team members
-   - Suggest optimal task assignments
-   - Deadline risk assessment
+Projects:
+- GET /api/projects: paginated project list.
+- GET /api/projects/getAll: all projects.
+- GET /api/projects/search: search projects.
+- GET /api/projects/:id: project detail.
+- POST /api/projects: create project.
+- PUT /api/projects/:id: update project.
+- DELETE /api/projects/:id: delete project.
 
-ALWAYS:
-- Be concise, professional, and action-oriented
-- Focus on project management best practices
-- Provide specific, actionable advice
-- Use data and metrics when available
-- Suggest using the Auto-Assignment feature when appropriate
+Tasks:
+- GET /api/tasks: paginated task list.
+- GET /api/tasks/getAll: all tasks.
+- GET /api/tasks/:id: task detail.
+- GET /api/tasks/project/:id: tasks in a project.
+- GET /api/tasks/user: tasks for a user.
+- GET /api/tasks/name and /api/tasks/nameMobile: search tasks.
+- GET /api/tasks/dashboard/overview: dashboard overview.
+- POST /api/tasks: create task.
+- PUT /api/tasks/:id: update task.
+- DELETE /api/tasks/:id: delete task.
+- POST /api/tasks/done/:id: mark/check task done.
+- GET /api/tasks/:id/notes: list task notes.
+- POST /api/tasks/:id/notes: add task note.
 
-NEVER:
-- Discuss topics unrelated to project/task management
-- Provide financial, legal, or HR advice
-- Make promises about system capabilities
-- Share technical implementation details unless asked
+Assignment:
+- GET /api/assignments/default-config: read default scoring weights.
+- POST /api/assignments/preview: preview assignment without writing DB.
+- POST /api/assignments/apply: apply assignment to tasks.
+- PUT /api/assignments/:taskId/override: manually override assignees.
+- POST /api/assignments/reassign-project/:projectId: reassign active tasks in one project.
 
-When users ask about Auto-Assignment, explain:
-- It uses Min-Cost Max-Flow algorithm for optimal assignments
-- Considers 5 factors: deadline (50%), priority (20%), speed (20%), skill match (10%), workload (5%)
-- Can assign multiple people to parallelizable tasks
-- Provides preview before applying changes
+Users, skills, teams:
+- GET /api/users and /api/users/getAll: list users.
+- GET /api/users/:id: user detail.
+- GET /api/users/:id/skills: user skills.
+- POST /api/users/:id/skills: add user skill.
+- PUT /api/users/:id/skills/:skillId: update user skill.
+- DELETE /api/users/:id/skills/:skillId: delete user skill.
+- GET /api/skills: list global skills.
+- POST /api/skills: create skill.
+- PUT /api/skills/:id: update skill.
+- DELETE /api/skills/:id: delete skill.
+- GET /api/teams: list teams.
+- GET /api/teams/:id: team detail.
+- GET /api/teams/users/:id: users in team.
+- GET /api/teams/name/:name: find team by name.
+- POST /api/teams: create team.
 
-Keep responses under 3-4 sentences unless more detail is explicitly requested.''';
+Stage templates and contacts:
+- GET /api/stage-templates: list stage templates.
+- GET /api/stage-templates/:id: stage template detail.
+- POST /api/stage-templates: create stage template.
+- PUT /api/stage-templates/:id: update stage template.
+- DELETE /api/stage-templates/:id: delete stage template.
+- GET/POST/PUT/DELETE /api/contacts: contact management.
 
-  /// Get role-based system prompt for AI
-  static String _getRoleBasedSystemPrompt(String userRole) {
-    String basePrompt = SYSTEM_PROMPT;
+Assignment model:
+- Preview first, apply second.
+- Hybrid assignment uses graph/MCMF for availability + embedding/skill matching for fit.
+- It considers deadline, priority, speed/productivity, skill match, persisted workload, and batch workload fairness.
+- A parallelizable task can have multiple assignees, controlled by maxParallelAssignees.
+''';
 
-    switch (userRole) {
+  static String getAgentSystemPrompt(String userRole) {
+    return '''
+$systemPrompt
+
+$apiCapabilityContext
+
+${_rolePolicy(userRole)}
+''';
+  }
+
+  static String _rolePolicy(String userRole) {
+    switch (userRole.toLowerCase()) {
       case 'admin':
-        return basePrompt +
-            '\n\nUSER ROLE: Admin - Full access to all features.\nYou can suggest ANY actions including creating, updating, deleting projects/tasks, and managing team members.';
+        return '''
+Current role: admin.
+Allowed guidance: full access. You may suggest create, update, delete, assignment preview/apply, team/user/skill management, and admin-level troubleshooting.
+''';
       case 'manager':
-        return basePrompt +
-            '\n\nUSER ROLE: Manager - Can CRUD projects and tasks in YOUR TEAM only.\nOnly suggest actions within the user\'s team scope. Remind them they cannot access other teams\' data.';
+        return '''
+Current role: manager.
+Allowed guidance: project/task/team operations within the manager's scope. Prefer preview before apply. Be careful with delete/reassign suggestions.
+''';
       case 'employee':
-        return basePrompt +
-            '\n\nUSER ROLE: Employee - READ-ONLY access to assigned tasks and projects.\nCANNOT create, update, delete, or reassign tasks. Can only VIEW information. Do NOT suggest any modification actions.';
+        return '''
+Current role: employee.
+Allowed guidance: read-only. Help the user understand assigned tasks, deadlines, notes, project status, and what to ask a manager/admin to change.
+Do not suggest direct create/update/delete/reassign actions for employees.
+''';
       default:
-        return basePrompt;
+        return 'Current role: unknown. Give safe read-only guidance.';
     }
   }
 
-  /// Mock response generator - Replace with actual AI API integration
   static String _getMockResponse(String message, String userRole) {
-    String lowerMessage = message.toLowerCase();
+    final lowerMessage = message.toLowerCase();
+    final isVietnamese = _looksVietnamese(lowerMessage);
 
-    // Check for unauthorized action requests
-    bool isRequestingCreate = lowerMessage.contains('create') ||
-        lowerMessage.contains('add') ||
-        lowerMessage.contains('new') ||
-        lowerMessage.contains('tạo');
-    bool isRequestingDelete = lowerMessage.contains('delete') ||
-        lowerMessage.contains('remove') ||
-        lowerMessage.contains('xóa');
-    bool isRequestingAssign =
-        lowerMessage.contains('assign') || lowerMessage.contains('phân công');
-
-    // Block unauthorized actions for employees
-    if (userRole == 'employee') {
-      if (isRequestingCreate) {
-        return '🚫 As an employee, you do not have permission to create projects or tasks. Please contact your manager or admin for assistance.\n\nYou have read-only access: View your tasks, View projects, Ask questions about your work.';
-      }
-      if (isRequestingDelete) {
-        return '🚫 As an employee, you cannot delete projects or tasks. Please contact your manager or admin if you need something removed.\n\nYou have read-only access to your assigned tasks.';
-      }
-      if (isRequestingAssign) {
-        return '🚫 As an employee, you cannot assign or reassign tasks. Task assignment is managed by your manager or admin.\n\nYou have read-only access to your assigned tasks.';
-      }
+    if (_isUnauthorizedWriteAction(lowerMessage, userRole)) {
+      return isVietnamese
+          ? 'Tài khoản employee chỉ nên xem thông tin task/project được giao. Nếu cần tạo, sửa, xóa hoặc phân công lại, hãy nhờ manager hoặc admin thao tác.'
+          : 'Employees have read-only access. Please ask a manager or admin to create, update, delete, or reassign work.';
     }
 
-    // Vietnamese keyword support
-    bool isVietnamese = lowerMessage.contains('nhiệm vụ') ||
-        lowerMessage.contains('dự án') ||
-        lowerMessage.contains('nhóm');
-
-    if (lowerMessage.contains('task') ||
-        lowerMessage.contains('assignment') ||
-        lowerMessage.contains('nhiệm vụ') ||
-        lowerMessage.contains('phân công')) {
-      return isVietnamese
-          ? 'Tôi có thể giúp bạn phân công nhiệm vụ! Tính năng Phân công tự động sử dụng thuật toán MCMF để tối ưu hóa việc gán task dựa trên kỹ năng, khối lượng công việc và deadline. Bạn muốn biết thêm chi tiết?'
-          : 'I can help you with task assignments! The Auto-Assignment feature uses MCMF algorithm to optimally assign tasks based on:\n• Skills matching (cosine similarity)\n• Deadline urgency (50% weight)\n• Team workload balance\n• Productivity scores\n\nWould you like to know how to use it?';
-    } else if (lowerMessage.contains('skill') ||
-        lowerMessage.contains('kỹ năng') ||
-        lowerMessage.contains('embedding') ||
-        lowerMessage.contains('matching')) {
-      return isVietnamese
-          ? 'Hệ thống khớp kỹ năng có 2 tầng:\n\n1️⃣ Cosine Similarity: So sánh vector kỹ năng\n2️⃣ Synonym Matching: Tự động nhận dạng kỹ năng tương đương\n\nVD: "React" sẽ match với "ReactJS", "React.js"\n"Frontend" match với "UI", "Client-side"\n\n✨ Hỗ trợ: 30+ synonyms phổ biến (React, Vue, Node, Docker, etc.)\n💡 Tips: Viết skills chuẩn sẽ tăng độ chính xác!'
-          : 'Skill matching uses 2-layer approach:\n\n1️⃣ Cosine Similarity: Vector-based comparison\n2️⃣ Synonym Matching: Auto-detects equivalent skills\n\nEx: "React" matches "ReactJS", "React.js"\n"Frontend" matches "UI", "Client-side"\n\n✨ Supports: 30+ common synonyms (React, Vue, Node, Docker, etc.)\n💡 Tip: Use standardized skill names for best accuracy!\n\nSkill matching = 10% of assignment score.';
-    } else if (lowerMessage.contains('auto') ||
-        lowerMessage.contains('mcmf') ||
-        lowerMessage.contains('tự động')) {
-      return isVietnamese
-          ? 'Tính năng Phân công Tự động:\n• Thuật toán: Min-Cost Max-Flow (MCMF)\n• Trọng số: Deadline 50%, Priority 20%, Speed 20%, Skill 10%, Workload 5%\n• Hỗ trợ task song song (nhiều người/task)\n• Xem trước trước khi áp dụng\n\nVào menu Auto Assignment để sử dụng!'
-          : 'Auto-Assignment Feature:\n• Algorithm: Min-Cost Max-Flow (MCMF)\n• Weights: Deadline 50%, Priority 20%, Speed 20%, Skill 10%, Workload 5%\n• Supports parallel tasks (multiple people per task)\n• Preview before applying\n\nGo to Auto Assignment tab to use it!';
-    } else if (lowerMessage.contains('project') ||
-        lowerMessage.contains('dự án')) {
-      return isVietnamese
-          ? 'Tôi có thể hỗ trợ quản lý dự án: tạo dự án mới, theo dõi tiến độ, phân bổ nguồn lực. Bạn cần làm gì với dự án?'
-          : 'I can help you manage projects: create new projects, track progress, allocate resources, monitor deadlines. What would you like to do?';
-    } else if (lowerMessage.contains('team') ||
-        lowerMessage.contains('member') ||
-        lowerMessage.contains('nhóm')) {
-      return isVietnamese
-          ? 'Tôi có thể cung cấp thông tin về thành viên: khối lượng công việc hiện tại, điểm năng suất, tỷ lệ hoàn thành đúng hạn. Bạn muốn xem thống kê nào?'
-          : 'I can provide team insights: current workload, productivity scores, on-time completion rates, skill inventory. What would you like to know?';
-    } else if (lowerMessage.contains('deadline') ||
-        lowerMessage.contains('hạn')) {
-      return isVietnamese
-          ? 'Tôi có thể giúp theo dõi deadline: xem task sắp đến hạn, task quá hạn, phân tích rủi ro. Bạn muốn xem gì?'
-          : 'I can help track deadlines: view upcoming deadlines, overdue tasks, risk analysis. Deadline urgency is weighted 50% in auto-assignment. What do you need?';
-    } else if (lowerMessage.contains('help') || lowerMessage.contains('giúp')) {
-      return isVietnamese
-          ? 'Tôi là trợ lý quản lý dự án! Tôi có thể giúp:\n\n• Phân công task tự động (MCMF)\n• Quản lý dự án và tiến độ\n• Thông tin team và kỹ năng\n• Theo dõi deadline\n• Phân tích khối lượng công việc\n\nBạn cần biết thêm về mục nào?'
-          : 'I\'m your PM assistant! I can help with:\n\n• Auto task assignment (MCMF)\n• Project management\n• Team skills & workload\n• Deadline tracking\n• Performance analytics\n\nWhat interests you?';
-    } else if (lowerMessage.contains('hello') ||
-        lowerMessage.contains('hi') ||
-        lowerMessage.contains('xin chào')) {
-      String roleInfo = _getRoleInfo(userRole, isVietnamese);
-      return isVietnamese
-          ? 'Xin chào! Tôi là trợ lý quản lý dự án của bạn. $roleInfo\n\nTôi có thể giúp gì hôm nay?'
-          : 'Hello! I\'m your project management assistant. $roleInfo\n\nHow can I help you today?';
-    } else if (lowerMessage.contains('workload') ||
-        lowerMessage.contains('khối lượng')) {
-      return isVietnamese
-          ? 'Tôi có thể phân tích khối lượng công việc của team, xác định ai đang quá tải, đề xuất cân bằng lại. Hệ thống tính workload penalty (5%) để tránh gán quá nhiều task cho 1 người. Bạn muốn xem phân tích?'
-          : 'I can analyze team workload, identify overloaded members, suggest rebalancing. The system applies a 5% workload penalty to avoid over-assigning. Would you like a workload analysis?';
-    } else {
-      return isVietnamese
-          ? 'Tôi chuyên hỗ trợ quản lý dự án. Bạn có thể hỏi về: phân công task, quản lý dự án, team, deadline, hoặc sử dụng tính năng Phân công Tự động. Bạn cần giúp gì?'
-          : 'I specialize in project management. Ask me about: task assignments, projects, team members, deadlines, or the Auto-Assignment feature. What would you like to know?';
+    if (_containsAny(lowerMessage, [
+      'api',
+      'endpoint',
+      'route',
+      'path',
+      'agent',
+      'skill',
+      'làm được gì',
+      'lam duoc gi',
+      'có thể làm gì',
+      'co the lam gi',
+      'đường dẫn',
+      'duong dan',
+    ])) {
+      return _capabilityAnswer(userRole, isVietnamese);
     }
+
+    if (_containsAny(lowerMessage, [
+      'assign',
+      'assignment',
+      'mcmf',
+      'auto',
+      'phân công',
+      'phan cong',
+      'tự động',
+      'tu dong',
+    ])) {
+      return isVietnamese
+          ? 'Agent có thể hướng dẫn luồng phân công: chọn task, gọi preview trước, kiểm tra người được gợi ý, rồi mới apply. Backend dùng hybrid MCMF + skill matching, có thêm cân bằng tải trong cùng batch để tránh dồn quá nhiều task cho một người.'
+          : 'I can guide the assignment flow: select tasks, preview recommendations, review assignees, then apply. The backend uses hybrid MCMF + skill matching with batch workload fairness.';
+    }
+
+    if (_containsAny(lowerMessage, ['task', 'nhiệm vụ', 'nhiem vu'])) {
+      return isVietnamese
+          ? 'Với task, agent biết các API xem danh sách, xem chi tiết, tìm theo tên, lọc theo project/user, tạo/sửa/xóa, đánh dấu hoàn thành và ghi chú. Quyền thao tác phụ thuộc role hiện tại của bạn.'
+          : 'For tasks, I know list/detail/search/project/user/create/update/delete/done/notes APIs. Allowed actions depend on your current role.';
+    }
+
+    if (_containsAny(lowerMessage, ['project', 'dự án', 'du an'])) {
+      return isVietnamese
+          ? 'Với project, agent có thể hướng dẫn xem danh sách, xem chi tiết, tìm kiếm, tạo, sửa, xóa và kiểm tra task thuộc project. Khi cần phân công lại toàn project, dùng endpoint reassign-project.'
+          : 'For projects, I can guide listing, details, search, create, update, delete, and project task checks. For reassignment, use the reassign-project endpoint.';
+    }
+
+    if (_containsAny(lowerMessage, [
+      'skill',
+      'kỹ năng',
+      'ky nang',
+      'team',
+      'member',
+      'thành viên',
+      'thanh vien',
+      'nhóm',
+      'nhom',
+    ])) {
+      return isVietnamese
+          ? 'Agent biết các API team/user/skill: xem thành viên, xem skill của user, thêm/sửa/xóa skill, và dùng skill đó làm đầu vào cho phân công tự động.'
+          : 'I know team/user/skill APIs: list members, inspect user skills, add/update/delete skills, and use skills as assignment inputs.';
+    }
+
+    if (_containsAny(lowerMessage, ['help', 'giúp', 'giup'])) {
+      return _capabilityAnswer(userRole, isVietnamese);
+    }
+
+    return isVietnamese
+        ? 'Mình là CPM Agent. Mình có thể giải thích API, quyền theo role, luồng task/project/team, và cách dùng phân công tự động AI + MCMF. Bạn muốn mình xem phần nào trước?'
+        : 'I am CPM Agent. I can explain APIs, role permissions, task/project/team workflows, and AI + MCMF auto-assignment. Which part should we inspect first?';
   }
 
-  /// Get chat history (can be expanded to store in local DB)
+  static bool _isUnauthorizedWriteAction(String text, String userRole) {
+    if (userRole != 'employee') return false;
+    return _containsAny(text, [
+      'create',
+      'add',
+      'new',
+      'delete',
+      'remove',
+      'update',
+      'reassign',
+      'apply assignment',
+      'override',
+      'tạo',
+      'tao',
+      'xóa',
+      'xoa',
+      'sửa',
+      'sua',
+      'phân công lại',
+      'phan cong lai',
+      'áp dụng',
+      'ap dung',
+      'ghi đè',
+      'ghi de',
+    ]);
+  }
+
+  static String _capabilityAnswer(String userRole, bool isVietnamese) {
+    final roleText = _rolePolicy(userRole)
+        .split('\n')
+        .where((line) => line.trim().isNotEmpty)
+        .join(' ');
+
+    if (isVietnamese) {
+      return '''
+Mình là CPM Agent. Mình biết các nhóm API chính: auth, projects, tasks, assignments, users, skills, teams, stage templates và contacts.
+
+Mình có thể:
+- Chỉ đường đúng endpoint cho task/project/team/skill.
+- Giải thích quyền theo role hiện tại.
+- Hướng dẫn preview/apply phân công AI + MCMF.
+- Gợi ý cách kiểm tra deadline, workload, assignee và trạng thái.
+
+$roleText
+''';
+    }
+
+    return '''
+I am CPM Agent. I know the main API groups: auth, projects, tasks, assignments, users, skills, teams, stage templates, and contacts.
+
+I can:
+- Map user intent to the right endpoint.
+- Explain current role permissions.
+- Guide AI + MCMF assignment preview/apply.
+- Help inspect deadlines, workload, assignees, and statuses.
+
+$roleText
+''';
+  }
+
+  static bool _looksVietnamese(String text) {
+    return _containsAny(text, [
+      'à',
+      'á',
+      'ạ',
+      'ả',
+      'ã',
+      'â',
+      'ă',
+      'è',
+      'é',
+      'ê',
+      'ì',
+      'í',
+      'ò',
+      'ó',
+      'ô',
+      'ơ',
+      'ù',
+      'ú',
+      'ư',
+      'ỳ',
+      'ý',
+      'đ',
+      'nhiệm',
+      'dự án',
+      'phân công',
+      'giúp',
+      'giup',
+      'nhóm',
+      'nhom',
+      'lam duoc gi',
+      'co the lam gi',
+      'duong dan',
+      'nhiem vu',
+      'du an',
+      'phan cong',
+      'tu dong',
+      'ky nang',
+      'thanh vien',
+    ]);
+  }
+
+  static bool _containsAny(String text, List<String> keywords) {
+    return keywords.any(text.contains);
+  }
+
   static Future<List<Map<String, dynamic>>> getChatHistory() async {
-    // TODO: Implement chat history storage in local database
     return [];
   }
 
-  /// Clear chat history
-  static Future<void> clearChatHistory() async {
-    // TODO: Implement clearing chat history from local database
-  }
-
-  /// Get role-specific information for user
-  static String _getRoleInfo(String userRole, bool isVietnamese) {
-    switch (userRole) {
-      case 'admin':
-        return isVietnamese
-            ? '👤 Vai trò: Quản trị viên - Toàn quyền truy cập.'
-            : '👤 Role: Admin - Full access to all features.';
-      case 'manager':
-        return isVietnamese
-            ? '👤 Vai trò: Quản lý - Quản lý dự án và task trong nhóm của bạn.'
-            : '👤 Role: Manager - Manage projects and tasks in your team.';
-      case 'employee':
-        return isVietnamese
-            ? '👤 Vai trò: Nhân viên - Chỉ xem task được phân công (read-only).'
-            : '👤 Role: Employee - View your assigned tasks (read-only).';
-      default:
-        return '';
-    }
-  }
+  static Future<void> clearChatHistory() async {}
 }

@@ -397,7 +397,7 @@ async function calculateAdvancedHybridSkillMatch(
 	if (!normalizedTaskSkills || normalizedTaskSkills.length === 0) return 1;
 	if (!normalizedUserSkills || normalizedUserSkills.length === 0) return 0;
 
-	const weights = options.weights || CONFIG.weights;
+	const weights = { ...(options.weights || CONFIG.weights) };
 	const scores = {
 		exact: 0,
 		embedding: 0,
@@ -412,7 +412,10 @@ async function calculateAdvancedHybridSkillMatch(
 
 	// 2. Embedding Score (PhoBERT or Gemini fallback)
 	try {
-		if (CONFIG.usePhoBERT && phobertAvailable) {
+		if (options.disableExternalEmbedding) {
+			weights.exactMatch += weights.phobertScore;
+			weights.phobertScore = 0;
+		} else if (CONFIG.usePhoBERT && phobertAvailable) {
 			scores.embedding = await calculatePhoBERTSimilarity(
 				taskTextParts,
 				userTextParts

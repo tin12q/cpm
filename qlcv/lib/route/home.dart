@@ -1,12 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-//import 'package:qlcv/model/task.dart';
 import 'package:qlcv/model/task_box.dart';
 import 'package:qlcv/model/color_picker.dart';
+import 'package:qlcv/utils/search_helper.dart';
 import 'package:qlcv/utils/status_helper.dart';
 
 import '../model/db_helper.dart';
-import 'task_create.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -22,6 +22,7 @@ class _HomeState extends State<Home> {
   final int _itemsPerPage = 25;
   List<dynamic> _filteredTasks = [];
   String? _selectedStatus; // null means "All"
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -37,27 +38,34 @@ class _HomeState extends State<Home> {
       _currentPage = page;
     });
 
-    await DBHelper.loadTasksPage(page: page, limit: _itemsPerPage);
+    final hasLocalQuery =
+        _searchController.text.trim().isNotEmpty || _selectedStatus != null;
+    await DBHelper.loadTasksPage(
+      page: hasLocalQuery ? 1 : page,
+      limit: hasLocalQuery ? 200 : _itemsPerPage,
+    );
 
     if (mounted) {
       setState(() {
         _isLoading = false;
         _applyFilters();
-        _totalPages =
-            ((DBHelper.totalTaskCount / _itemsPerPage).ceil()).clamp(1, 999);
+        _totalPages = hasLocalQuery
+            ? 1
+            : ((DBHelper.totalTaskCount / _itemsPerPage).ceil()).clamp(1, 999);
       });
     }
   }
 
   void _applyFilters() {
     List<dynamic> filtered = List.from(DBHelper.tasks);
+    final query = _searchController.text.trim();
 
-    // Apply search filter
-    if (_searchController.text.isNotEmpty) {
+    if (query.isNotEmpty) {
       filtered = filtered
-          .where((task) => task.title
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase()))
+          .where((task) => SearchHelper.matchesAny(query, [
+                task.title,
+                task.description,
+              ]))
           .toList();
     }
 
@@ -70,6 +78,15 @@ class _HomeState extends State<Home> {
     }
 
     _filteredTasks = filtered;
+  }
+
+  void _scheduleReload() {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 250), () {
+      if (mounted) {
+        _loadPage(1);
+      }
+    });
   }
 
   void _previousPage() {
@@ -85,6 +102,13 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
@@ -93,13 +117,13 @@ class _HomeState extends State<Home> {
               children: [
                 // Header
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   decoration: BoxDecoration(
                     color: ColorPicker.cardBackground,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -163,8 +187,8 @@ class _HomeState extends State<Home> {
                                   onPressed: () {
                                     setState(() {
                                       _searchController.clear();
-                                      _applyFilters();
                                     });
+                                    _loadPage(1);
                                   },
                                 )
                               : null,
@@ -178,9 +202,8 @@ class _HomeState extends State<Home> {
                               horizontal: 16, vertical: 12),
                         ),
                         onChanged: (value) {
-                          setState(() {
-                            _applyFilters();
-                          });
+                          setState(_applyFilters);
+                          _scheduleReload();
                         },
                       ),
                       const SizedBox(height: 12),
@@ -195,8 +218,8 @@ class _HomeState extends State<Home> {
                               onSelected: (selected) {
                                 setState(() {
                                   _selectedStatus = null;
-                                  _applyFilters();
                                 });
+                                _loadPage(1);
                               },
                               selectedColor: ColorPicker.accent,
                               labelStyle: TextStyle(
@@ -234,14 +257,14 @@ class _HomeState extends State<Home> {
                                     setState(() {
                                       _selectedStatus =
                                           selected ? status : null;
-                                      _applyFilters();
                                     });
+                                    _loadPage(1);
                                   },
                                   selectedColor:
                                       StatusHelper.getStatusColor(status),
-                                  backgroundColor: StatusHelper.getStatusColor(
-                                          status)
-                                      .withOpacity(0.1),
+                                  backgroundColor:
+                                      StatusHelper.getStatusColor(status)
+                                          .withValues(alpha: 0.1),
                                   labelStyle: TextStyle(
                                     color: isSelected
                                         ? Colors.white
@@ -268,7 +291,7 @@ class _HomeState extends State<Home> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.inbox_outlined,
                                     size: 64,
                                     color: ColorPicker.fontLight,
@@ -311,7 +334,7 @@ class _HomeState extends State<Home> {
                       color: ColorPicker.cardBackground,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 4,
                           offset: const Offset(0, -2),
                         ),
@@ -328,7 +351,7 @@ class _HomeState extends State<Home> {
                           style: IconButton.styleFrom(
                             backgroundColor: _currentPage > 1 && !_isLoading
                                 ? ColorPicker.accent
-                                : ColorPicker.fontLight.withOpacity(0.2),
+                                : ColorPicker.fontLight.withValues(alpha: 0.2),
                             foregroundColor: _currentPage > 1 && !_isLoading
                                 ? Colors.white
                                 : ColorPicker.fontLight,
@@ -362,7 +385,7 @@ class _HomeState extends State<Home> {
                                     !_isLoading &&
                                     DBHelper.hasMoreTasks
                                 ? ColorPicker.accent
-                                : ColorPicker.fontLight.withOpacity(0.2),
+                                : ColorPicker.fontLight.withValues(alpha: 0.2),
                             foregroundColor: _currentPage < _totalPages &&
                                     !_isLoading &&
                                     DBHelper.hasMoreTasks
