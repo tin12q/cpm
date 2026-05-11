@@ -19,6 +19,16 @@ const taskSchema = new mongoose.Schema({
   can_parallelize: { type: Boolean, default: true },
   required_skills: [{ type: String, trim: true }],
   skills_required: [{ type: String, trim: true }],
+  attachments: [
+    {
+      original_name: { type: String, required: true },
+      filename: { type: String, required: true },
+      mimetype: { type: String },
+      size: { type: Number, default: 0 },
+      content_base64: { type: String, required: true, select: false },
+      uploaded_at: { type: Number, default: () => Date.now() },
+    },
+  ],
 });
 
 taskSchema.pre("save", function validateTask(next) {

@@ -26,6 +26,9 @@ export default function EditTask({ id, idt, stages = [], onSuccess }) {
   const [availableStages, setAvailableStages] = useState(normalizeStages(stages));
   const [assignedTo, setAssignedTo] = useState([]);
   const [selectedOption, setSelectedOption] = useState([]);
+  const [existingAttachments, setExistingAttachments] = useState([]);
+  const [newAttachments, setNewAttachments] = useState([]);
+  const [removedAttachmentIds, setRemovedAttachmentIds] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -56,6 +59,9 @@ export default function EditTask({ id, idt, stages = [], onSuccess }) {
         setDescription(task.description || "");
         setDueDate(task.due_date ? new Date(task.due_date).toISOString().split("T")[0] : "");
         setStatus(task.status || "in progress");
+        setExistingAttachments(Array.isArray(task.attachments) ? task.attachments : []);
+        setNewAttachments([]);
+        setRemovedAttachmentIds([]);
         setAssignedTo(assigned.map((member) => (typeof member === "object" ? member._id || member.toString() : member)));
         setSelectedOption(
           assigned.map((member) => ({
@@ -107,16 +113,21 @@ export default function EditTask({ id, idt, stages = [], onSuccess }) {
     setSubmitting(true);
 
     try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("due_date", dueDate ? String(new Date(dueDate).getTime()) : "");
+      formData.append("status", status);
+      formData.append("stage", stage);
+      formData.append("assigned_to", assignedTo.join(","));
+      formData.append("remove_attachment_ids", removedAttachmentIds.join(","));
+      newAttachments.forEach((file) => {
+        formData.append("attachments", file);
+      });
+
       await axios.put(
         `${apiBase}/tasks/${idt}`,
-        {
-          title,
-          description,
-          due_date: dueDate ? new Date(dueDate).getTime() : null,
-          status,
-          stage,
-          assigned_to: assignedTo,
-        },
+        formData,
         { headers }
       );
       setToastMessage("Task updated successfully");
@@ -206,6 +217,54 @@ export default function EditTask({ id, idt, stages = [], onSuccess }) {
                 </div>
               </div>
 
+              <div className="sketch-field">
+                <span className="sketch-field__label">Attachments</span>
+                <input
+                  className="sketch-input-plain"
+                  type="file"
+                  multiple
+                  onChange={(event) => setNewAttachments(Array.from(event.target.files || []))}
+                />
+                <div className="mt-3 grid gap-2">
+                  {existingAttachments.length === 0 && newAttachments.length === 0 && (
+                    <div className="text-sm text-slate-500">No files attached</div>
+                  )}
+                  {existingAttachments.map((file) => (
+                    <div key={file._id || file.filename} className="sketch-note flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                      <span className="truncate font-semibold text-slate-800">{file.original_name || file.filename}</span>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-xs text-slate-500">{formatFileSize(file.size || 0)}</span>
+                        <button
+                          type="button"
+                          className="rounded-full px-2 py-1 text-xs font-bold text-rose-700 hover:bg-rose-50"
+                          onClick={() => {
+                            setExistingAttachments((current) => current.filter((item) => item._id !== file._id));
+                            if (file._id) setRemovedAttachmentIds((current) => [...current, file._id]);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {newAttachments.map((file) => (
+                    <div key={`${file.name}-${file.size}-${file.lastModified}`} className="sketch-note flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                      <span className="truncate font-semibold text-slate-800">{file.name}</span>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-xs text-slate-500">{formatFileSize(file.size)}</span>
+                        <button
+                          type="button"
+                          className="rounded-full px-2 py-1 text-xs font-bold text-rose-700 hover:bg-rose-50"
+                          onClick={() => setNewAttachments((current) => current.filter((item) => item !== file))}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="text" className="rounded-full px-5 py-2 font-semibold text-slate-600" onClick={handleOpen}>
                   Cancel
@@ -223,4 +282,12 @@ export default function EditTask({ id, idt, stages = [], onSuccess }) {
       </Alert>
     </>
   );
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb >= 100 ? kb.toFixed(0) : kb.toFixed(1)} KB`;
+  const mb = kb / 1024;
+  return `${mb >= 100 ? mb.toFixed(0) : mb.toFixed(1)} MB`;
 }

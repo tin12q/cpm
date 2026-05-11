@@ -3,7 +3,7 @@
     "_id": {
       "$oid": "68a100000000000000000101"
     },
-    "name": "Nhóm 01 - Giao diện Web",
+    "name": "Nhóm 01 - Web và Dashboard",
     "members": [
       {
         "$oid": "68a100000000000000010101"

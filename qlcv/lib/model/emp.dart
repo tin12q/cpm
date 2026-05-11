@@ -3,6 +3,7 @@ class Employee {
   String _role = '';
   String _id = '';
   String _ava = '';
+  String _email = '';
 
   // MCMF fields
   List<String> _skills = [];
@@ -14,6 +15,7 @@ class Employee {
     required role,
     required id,
     ava = '',
+    email = '',
     List<String> skills = const [],
     double productivityScore = 0.8,
     double onTimeRate = 85.0,
@@ -23,6 +25,7 @@ class Employee {
     _role = role;
     _id = id;
     _ava = ava;
+    _email = email;
     _skills = skills;
     _productivityScore = productivityScore;
     _onTimeRate = onTimeRate;
@@ -33,6 +36,7 @@ class Employee {
   String get role => _role;
   String get id => _id;
   String get ava => _ava;
+  String get email => _email;
   List<String> get skills => _skills;
   double get productivityScore => _productivityScore;
   double get onTimeRate => _onTimeRate;
@@ -42,6 +46,7 @@ class Employee {
   set setRole(String role) => _role = role;
   set setId(String id) => _id = id;
   set setAva(String ava) => _ava = ava;
+  set setEmail(String email) => _email = email;
   set setSkills(List<String> skills) => _skills = skills;
   set setProductivityScore(double score) => _productivityScore = score;
   set setOnTimeRate(double rate) => _onTimeRate = rate;

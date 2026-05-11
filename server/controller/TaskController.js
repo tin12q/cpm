@@ -4,6 +4,19 @@ const Task = require("../models/task.model");
 const Project = require("../models/project.model");
 const TaskNote = require("../models/taskNote.model");
 const TaskAssignmentService = require("../services/TaskAssignmentService");
+const {
+  deriveTaskStatus,
+  syncOverdueTasks,
+  syncProjectStatus,
+  syncProjectStatuses,
+  syncTaskAndProject,
+} = require("../helpers/statusLifecycle");
+
+const MAX_TOTAL_ATTACHMENT_BASE64_LENGTH = 12 * 1024 * 1024;
+
+function isAdminRole(user) {
+  return ["superadmin", "admin"].includes(user?.role);
+}
 
 function getProjectTeamIds(project) {
   if (!project) {
@@ -30,7 +43,7 @@ function taskAssignedToUser(task, userId) {
 }
 
 async function ensureProjectAccess(user, project) {
-  if (user.role === "admin") {
+  if (isAdminRole(user)) {
     return true;
   }
   const teamIds = await getUserTeamIds(user.id);
@@ -80,6 +93,58 @@ function normalizeRequiredSkills(value) {
     .filter(Boolean))];
 }
 
+function normalizeBoolean(value, fallback = true) {
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+  if (typeof value === "boolean") {
+    return value;
+  }
+  return !["false", "0", "no", "off"].includes(String(value).trim().toLowerCase());
+}
+
+function normalizeTaskAttachments(files) {
+  if (!Array.isArray(files)) {
+    return [];
+  }
+
+  return files.map((file) => ({
+    original_name: file.originalname,
+    filename: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size,
+    content_base64: file.buffer.toString("base64"),
+    uploaded_at: Date.now(),
+  }));
+}
+
+function validateAttachmentPayloadSize(attachments) {
+  const totalBase64Length = attachments.reduce(
+    (total, attachment) => total + (attachment.content_base64?.length || 0),
+    0
+  );
+
+  if (totalBase64Length > MAX_TOTAL_ATTACHMENT_BASE64_LENGTH) {
+    throw new Error("Total attachment size is too large for database storage");
+  }
+}
+
+function sanitizeTaskForResponse(task) {
+  if (!task) {
+    return task;
+  }
+
+  const json = typeof task.toObject === "function" ? task.toObject() : { ...task };
+  json.status = deriveTaskStatus(json);
+  if (Array.isArray(json.attachments)) {
+    json.attachments = json.attachments.map((attachment) => {
+      const { content_base64, ...metadata } = attachment;
+      return metadata;
+    });
+  }
+  return json;
+}
+
 function getProjectStages(project) {
   return Project.normalizeStages(project?.stages);
 }
@@ -109,7 +174,7 @@ async function getProjectMembers(project) {
 }
 
 async function getAccessibleProjects(user) {
-  if (user.role === "admin") {
+  if (isAdminRole(user)) {
     return Project.find();
   }
 
@@ -153,7 +218,7 @@ function getTaskStageCounts(tasks, projects) {
 function getStatusCounts(tasks) {
   return tasks.reduce(
     (acc, task) => {
-      const status = String(task.status || "in progress").toLowerCase();
+      const status = deriveTaskStatus(task);
       if (status === "completed") acc.completed += 1;
       else if (status === "late") acc.late += 1;
       else acc.in_progress += 1;
@@ -184,21 +249,24 @@ async function createTask(req, res) {
     const needsAutoAssignment = assignedTo.length === 0;
     const stage = resolveStageValue(req.body.stage, project);
     const requiredSkills = normalizeRequiredSkills(req.body.required_skills || req.body.skills_required);
+    const attachments = normalizeTaskAttachments(req.files);
+    validateAttachmentPayloadSize(attachments);
 
     if (needsAutoAssignment) {
       const doc = {
         title: req.body.title,
         description: req.body.description,
         due_date: req.body.due_date,
-        status: req.body.status || "in progress",
+        status: deriveTaskStatus({ status: req.body.status || "in progress", due_date: req.body.due_date }),
         stage,
         project: new mongoose.Types.ObjectId(req.body.project),
         assigned_to: [],
         difficulty: req.body.difficulty || 2,
         priority: req.body.priority || 3,
-        can_parallelize: req.body.can_parallelize !== false,
+        can_parallelize: normalizeBoolean(req.body.can_parallelize, true),
         required_skills: requiredSkills,
         skills_required: requiredSkills,
+        attachments,
       };
 
       const insertResult = await Task.collection.insertOne(doc);
@@ -211,8 +279,9 @@ async function createTask(req, res) {
         );
 
         const updatedTask = await Task.findById(taskId);
+        await syncProjectStatus(project._id);
         return res.status(201).json({
-          task: updatedTask,
+          task: sanitizeTaskForResponse(updatedTask),
           autoAssigned: true,
           assignmentDetails: assignmentResult.assignments[0] || null,
         });
@@ -229,18 +298,20 @@ async function createTask(req, res) {
       title: req.body.title,
       description: req.body.description,
       due_date: req.body.due_date,
-      status: req.body.status || "in progress",
+      status: deriveTaskStatus({ status: req.body.status || "in progress", due_date: req.body.due_date }),
       stage,
       project: new mongoose.Types.ObjectId(req.body.project),
       assigned_to: assignedTo.map((id) => new mongoose.Types.ObjectId(id)),
       difficulty: req.body.difficulty || 2,
       priority: req.body.priority || 3,
-      can_parallelize: req.body.can_parallelize !== false,
+      can_parallelize: normalizeBoolean(req.body.can_parallelize, true),
       required_skills: requiredSkills,
       skills_required: requiredSkills,
+      attachments,
     });
     await task.save();
-    res.status(201).json(task);
+    await syncProjectStatus(project._id);
+    res.status(201).json(sanitizeTaskForResponse(task));
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -250,18 +321,20 @@ async function getTasks(req, res) {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
   try {
-    if (req.user.role === "admin") {
+    if (isAdminRole(req.user)) {
+      await syncOverdueTasks();
       const tasks = await Task.find().limit(limit).skip(limit * (page - 1));
-      return res.json(tasks);
+      return res.json(tasks.map(sanitizeTaskForResponse));
     }
 
     const teamIds = await getUserTeamIds(req.user.id);
     const projects = await Project.find({ teams: { $in: teamIds } }).select("_id");
     const projectIds = projects.map((project) => project._id);
+    await syncOverdueTasks({ project: { $in: projectIds } });
     const tasks = await Task.find({ project: { $in: projectIds } })
       .limit(limit)
       .skip(limit * (page - 1));
-    res.json(tasks);
+    res.json(tasks.map(sanitizeTaskForResponse));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -281,10 +354,12 @@ async function getTasksByProjectId(req, res) {
       return res.status(404).json({ error: "Project not found" });
     }
 
+    await syncOverdueTasks({ project: project._id });
+    await syncProjectStatus(project._id);
     const tasks = await Task.find({ project: project._id })
       .limit(limit)
       .skip(limit * (page - 1));
-    res.json(tasks);
+    res.json(tasks.map(sanitizeTaskForResponse));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -305,12 +380,13 @@ async function getTaskByUserId(req, res) {
       },
     };
 
-    if (req.user.role !== "admin") {
+    if (!isAdminRole(req.user)) {
       criteria.assigned_to = { $elemMatch: { $eq: userId } };
     }
 
+    await syncOverdueTasks(criteria);
     const tasks = await Task.find(criteria);
-    res.json(tasks);
+    res.json(tasks.map(sanitizeTaskForResponse));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -331,10 +407,11 @@ async function findByName(req, res) {
       criteria.project = new mongoose.Types.ObjectId(project);
     }
 
+    await syncOverdueTasks(criteria);
     const tasks = await Task.find(criteria)
       .limit(limit)
       .skip(limit * (page - 1));
-    res.json(tasks);
+    res.json(tasks.map(sanitizeTaskForResponse));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -352,7 +429,44 @@ async function getTaskById(req, res) {
       return res.status(404).json({ error: "Task not found" });
     }
 
-    res.json(task);
+    const syncedTask = await syncTaskAndProject(task._id);
+    res.json(sanitizeTaskForResponse(syncedTask || task));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function downloadTaskAttachment(req, res) {
+  try {
+    const task = await Task.findById(req.params.id).select("+attachments.content_base64");
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const canAccessTask = await ensureTaskAccess(req.user, task);
+    if (!canAccessTask) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const attachment = (task.attachments || []).find(
+      (item) => item._id?.toString() === String(req.params.attachmentId)
+    );
+
+    if (!attachment) {
+      return res.status(404).json({ error: "Attachment not found" });
+    }
+
+    if (!attachment.content_base64) {
+      return res.status(404).json({ error: "Attachment content not found" });
+    }
+
+    const buffer = Buffer.from(attachment.content_base64, "base64");
+    res.setHeader("Content-Type", attachment.mimetype || "application/octet-stream");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${encodeURIComponent(attachment.original_name || attachment.filename)}"`
+    );
+    res.send(buffer);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -360,7 +474,7 @@ async function getTaskById(req, res) {
 
 async function updateTask(req, res) {
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findById(req.params.id).select("+attachments.content_base64");
     if (!task) {
       return res.status(404).json({ error: "Task not found" });
     }
@@ -380,6 +494,7 @@ async function updateTask(req, res) {
     }
 
     const updates = { ...req.body };
+    delete updates.remove_attachment_ids;
     if (req.body.assigned_to !== undefined) {
       updates.assigned_to = normalizeAssignedTo(req.body.assigned_to).map(
         (id) => new mongoose.Types.ObjectId(id)
@@ -393,12 +508,53 @@ async function updateTask(req, res) {
     if (req.body.stage !== undefined) {
       updates.stage = resolveStageValue(req.body.stage, project);
     }
+    if (req.body.can_parallelize !== undefined) {
+      updates.can_parallelize = normalizeBoolean(req.body.can_parallelize, true);
+    }
+    const removedAttachmentIds = normalizeAssignedTo(req.body.remove_attachment_ids);
+    if (Array.isArray(req.files) && req.files.length > 0) {
+      const newAttachments = normalizeTaskAttachments(req.files);
+      const keptAttachments = (task.attachments || []).filter(
+        (attachment) => !removedAttachmentIds.includes(attachment._id?.toString())
+      );
+      validateAttachmentPayloadSize([...keptAttachments, ...newAttachments]);
+      updates.$push = {
+        ...(updates.$push || {}),
+        attachments: { $each: newAttachments },
+      };
+    }
 
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-      runValidators: true,
-    });
-    res.json(updatedTask);
+    if (removedAttachmentIds.length > 0) {
+      updates.$pull = {
+        ...(updates.$pull || {}),
+        attachments: { _id: { $in: removedAttachmentIds.map((id) => new mongoose.Types.ObjectId(id)) } },
+      };
+    }
+
+    const updateOperation = {};
+    const pushOperation = updates.$push;
+    const pullOperation = updates.$pull;
+    delete updates.$push;
+    delete updates.$pull;
+
+    if (Object.keys(updates).length > 0) {
+      updateOperation.$set = updates;
+    }
+    if (pushOperation) {
+      updateOperation.$push = pushOperation;
+    }
+    if (pullOperation) {
+      updateOperation.$pull = pullOperation;
+    }
+
+    const updatedTask = Object.keys(updateOperation).length > 0
+      ? await Task.findByIdAndUpdate(req.params.id, updateOperation, {
+          new: true,
+          runValidators: true,
+        })
+      : task;
+    const syncedTask = await syncTaskAndProject(updatedTask._id);
+    res.json(sanitizeTaskForResponse(syncedTask || updatedTask));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -427,6 +583,7 @@ async function deleteTask(req, res) {
 
     await Task.findByIdAndDelete(req.params.id);
     await TaskNote.deleteMany({ task: task._id });
+    await syncProjectStatus(project._id);
     res.json({ message: "Task deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -435,6 +592,8 @@ async function deleteTask(req, res) {
 
 async function completedPercentage(req, res) {
   try {
+    await syncOverdueTasks({ project: new mongoose.Types.ObjectId(req.params.id) });
+    await syncProjectStatus(req.params.id);
     const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) });
     let completed = 0;
     tasks.forEach((task) => {
@@ -454,6 +613,8 @@ async function completedPercentage(req, res) {
 
 async function latePercentage(req, res) {
   try {
+    await syncOverdueTasks({ project: new mongoose.Types.ObjectId(req.params.id) });
+    await syncProjectStatus(req.params.id);
     const tasks = await Task.find({ project: new mongoose.Types.ObjectId(req.params.id) });
     let lated = 0;
     tasks.forEach((task) => {
@@ -480,14 +641,14 @@ async function doneCheck(req, res) {
     if (req.user.role === "employee" && !taskAssignedToUser(task, req.user.id)) {
       return res.status(401).json({ error: "You are not assigned to this task" });
     }
-    if (task.status === "completed") {
+    if (deriveTaskStatus(task) === "completed") {
       return res.json({ message: "Task is already completed" });
     }
 
-    const isDone = req.body.isDone;
-    const nextStatus = isDone && task.due_date - Date.now() < 0 ? "late" : "completed";
+    const nextStatus = Number(task.due_date || 0) < Date.now() ? "late" : "completed";
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, { status: nextStatus }, { new: true });
-    res.json(updatedTask);
+    await syncProjectStatus(task.project);
+    res.json(sanitizeTaskForResponse(updatedTask));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -501,14 +662,17 @@ async function completionByTeam(req, res) {
     for (const team of teams) {
       const projects = await Project.find({ teams: team._id }).select("_id");
       const projectIds = projects.map((project) => project._id);
+      await syncOverdueTasks({ project: { $in: projectIds } });
+      await syncProjectStatuses(projectIds);
       const tasks = await Task.find({ project: { $in: projectIds } }).select("status");
 
       let completed = 0;
       let late = 0;
       let inProgress = 0;
       tasks.forEach((task) => {
-        if (task.status === "completed") completed += 1;
-        else if (task.status === "late") late += 1;
+        const status = deriveTaskStatus(task);
+        if (status === "completed") completed += 1;
+        else if (status === "late") late += 1;
         else inProgress += 1;
       });
 
@@ -540,19 +704,23 @@ async function getDashboardOverview(req, res) {
   try {
     const projects = await getAccessibleProjects(req.user);
     const projectIds = projects.map((project) => project._id);
+    await syncOverdueTasks({ project: { $in: projectIds } });
+    await syncProjectStatuses(projectIds);
+    const syncedProjects = await Project.find({ _id: { $in: projectIds } });
+    const visibleProjects = syncedProjects.length > 0 ? syncedProjects : projects;
     const tasks = await Task.find({ project: { $in: projectIds } }).lean();
     const overdueTasks = tasks
-      .filter((task) => Number(task.due_date || 0) < now && task.status !== "completed")
+      .filter((task) => deriveTaskStatus(task) === "late")
       .sort((a, b) => Number(a.due_date || 0) - Number(b.due_date || 0));
 
     const pagedOverdueTasks = overdueTasks.slice(limit * (page - 1), limit * page);
     const overdueWithProject = pagedOverdueTasks.map((task) => {
-      const project = projects.find((item) => String(item._id) === String(task.project));
+      const project = visibleProjects.find((item) => String(item._id) === String(task.project));
       return {
         _id: task._id,
         title: task.title,
         due_date: task.due_date,
-        status: task.status,
+        status: deriveTaskStatus(task),
         stage: task.stage || "backlog",
         priority: task.priority || 3,
         project: project
@@ -563,7 +731,7 @@ async function getDashboardOverview(req, res) {
     });
 
     const statusCounts = getStatusCounts(tasks);
-    const stageCounts = getTaskStageCounts(tasks, projects);
+    const stageCounts = getTaskStageCounts(tasks, visibleProjects);
     const dueToday = tasks.filter(
       (task) => Number(task.due_date || 0) >= now && Number(task.due_date || 0) <= endOfToday.getTime()
     ).length;
@@ -577,7 +745,7 @@ async function getDashboardOverview(req, res) {
         overdue_tasks: overdueTasks.length,
         due_today: dueToday,
         due_this_week: dueThisWeek,
-        active_projects: projects.length,
+        active_projects: visibleProjects.length,
         status_counts: statusCounts,
       },
       stage_counts: stageCounts,
@@ -595,8 +763,9 @@ async function getDashboardOverview(req, res) {
 
 async function getAllTasks(req, res) {
   try {
+    await syncOverdueTasks();
     const tasks = await Task.find();
-    res.json(tasks);
+    res.json(tasks.map(sanitizeTaskForResponse));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -604,10 +773,13 @@ async function getAllTasks(req, res) {
 
 async function getTasksByNameMobile(req, res) {
   try {
+    await syncOverdueTasks({
+      title: { $regex: req.query.name, $options: "i" },
+    });
     const tasks = await Task.find({
       title: { $regex: req.query.name, $options: "i" },
     });
-    res.json(tasks);
+    res.json(tasks.map(sanitizeTaskForResponse));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -680,6 +852,7 @@ module.exports = {
   createTask,
   getTasks,
   getTaskById,
+  downloadTaskAttachment,
   updateTask,
   deleteTask,
   getTasksByProjectId,

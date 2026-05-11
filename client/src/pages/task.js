@@ -205,6 +205,25 @@ const Task = () => {
     }
   };
 
+  const handleDownloadAttachment = async (attachment) => {
+    try {
+      const response = await axios.get(`${apiBase}/tasks/${id}/attachments/${attachment._id}`, {
+        headers,
+        responseType: "blob",
+      });
+      const blobUrl = window.URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = attachment.original_name || attachment.filename || "attachment";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      setMessage(error.response?.data?.error || error.message || "Unable to download attachment.");
+    }
+  };
+
   const overview = useMemo(
     () => [
       { label: "Stage", value: getStageName(stage, projectStages) },
@@ -414,6 +433,38 @@ const Task = () => {
           </Card>
 
           <Card className="sketch-panel sketch-panel-hover overflow-hidden">
+            <CardHeader floated={false} shadow={false} className="m-0 border-b-2 border-dashed border-slate-300 bg-[#dbeafe] p-6">
+              <Typography variant="h4" className="sketch-heading">
+                Attachments
+              </Typography>
+              <Typography className="sketch-subtitle mt-1 text-sm">
+                Click a file to download it from this task.
+              </Typography>
+            </CardHeader>
+            <CardBody className="space-y-3 p-6">
+              {(task?.attachments || []).length === 0 && (
+                <div className="rounded-[18px] border-2 border-dashed border-slate-200 bg-white/75 px-4 py-5 text-sm text-slate-500">
+                  No files attached.
+                </div>
+              )}
+              {(task?.attachments || []).map((attachment) => (
+                <button
+                  key={attachment._id || attachment.filename}
+                  type="button"
+                  className="sketch-note flex w-full items-center justify-between gap-3 p-4 text-left transition hover:-translate-y-0.5"
+                  onClick={() => handleDownloadAttachment(attachment)}
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate font-black text-slate-900">{attachment.original_name || attachment.filename}</span>
+                    <span className="text-sm text-slate-500">{formatFileSize(attachment.size || 0)}</span>
+                  </span>
+                  <span className="sketch-chip bg-white/90 text-xs">Download</span>
+                </button>
+              ))}
+            </CardBody>
+          </Card>
+
+          <Card className="sketch-panel sketch-panel-hover overflow-hidden">
             <CardHeader floated={false} shadow={false} className="m-0 border-b-2 border-dashed border-slate-300 bg-[#d1fae5] p-6">
               <Typography variant="h4" className="sketch-heading">
                 MCMF suggestion
@@ -506,3 +557,11 @@ const Task = () => {
 };
 
 export default Task;
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb >= 100 ? kb.toFixed(0) : kb.toFixed(1)} KB`;
+  const mb = kb / 1024;
+  return `${mb >= 100 ? mb.toFixed(0) : mb.toFixed(1)} MB`;
+}

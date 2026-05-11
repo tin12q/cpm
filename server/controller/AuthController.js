@@ -14,7 +14,7 @@ const register = async (req, res) => {
         const normalizedEmail = String(email || normalizedUsername).trim();
         const normalizedName = String(name || normalizedUsername).trim();
         const normalizedRole = String(role || "employee").trim().toLowerCase();
-        const validRoles = ["admin", "manager", "employee"];
+        const validRoles = ["superadmin", "admin", "manager", "employee"];
 
         if (!normalizedUsername || !password || !normalizedName) {
             return res.status(400).json({ error: 'Name, username, and password are required' });

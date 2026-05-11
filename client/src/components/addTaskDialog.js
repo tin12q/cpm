@@ -30,6 +30,7 @@ export default function AddTask({ id, projectId, stages = [], onSuccess }) {
   const [stage, setStage] = useState(normalizeStages(stages)[0]?.key || "backlog");
   const [availableStages, setAvailableStages] = useState(normalizeStages(stages));
   const [assignedTo, setAssignedTo] = useState([]);
+  const [attachments, setAttachments] = useState([]);
   const [selectedOption, setSelectedOption] = useState([]);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -97,17 +98,21 @@ export default function AddTask({ id, projectId, stages = [], onSuccess }) {
     event.preventDefault();
 
     try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("due_date", String(new Date(dueDate).getTime()));
+      formData.append("status", "in progress");
+      formData.append("stage", stage);
+      formData.append("project", activeProjectId);
+      formData.append("assigned_to", assignedTo.join(","));
+      attachments.forEach((file) => {
+        formData.append("attachments", file);
+      });
+
       await axios.post(
         `${apiBase}/tasks`,
-        {
-          title,
-          description,
-          due_date: new Date(dueDate).getTime(),
-          status: "in progress",
-          stage,
-          project: activeProjectId,
-          assigned_to: assignedTo,
-        },
+        formData,
         { headers }
       );
       setToastMessage("Task added successfully");
@@ -117,6 +122,7 @@ export default function AddTask({ id, projectId, stages = [], onSuccess }) {
       setDescription("");
       setDueDate("");
       setAssignedTo([]);
+      setAttachments([]);
       setSelectedOption([]);
       setStage(availableStages[0]?.key || "backlog");
       if (onSuccess) onSuccess();
@@ -196,6 +202,27 @@ export default function AddTask({ id, projectId, stages = [], onSuccess }) {
                     styles={selectPortalStyles}
                   />
                 </div>
+                <div className="ui-modal__field">
+                  <Typography variant="small" className="font-semibold text-slate-700">
+                    Attachments
+                  </Typography>
+                  <input
+                    className="sketch-input-plain"
+                    type="file"
+                    multiple
+                    onChange={(event) => setAttachments(Array.from(event.target.files || []))}
+                  />
+                  {attachments.length > 0 && (
+                    <div className="mt-3 grid gap-2">
+                      {attachments.map((file) => (
+                        <div key={`${file.name}-${file.size}-${file.lastModified}`} className="sketch-note flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                          <span className="truncate font-semibold text-slate-800">{file.name}</span>
+                          <span className="shrink-0 text-xs text-slate-500">{formatFileSize(file.size)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div className="ui-modal__actions">
                   <Button type="button" variant="text" className="ui-button ui-button--ghost px-5 py-2 text-slate-800 shadow-none" onClick={handleOpen}>
                     Cancel
@@ -214,4 +241,12 @@ export default function AddTask({ id, projectId, stages = [], onSuccess }) {
       </Alert>
     </>
   );
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb >= 100 ? kb.toFixed(0) : kb.toFixed(1)} KB`;
+  const mb = kb / 1024;
+  return `${mb >= 100 ? mb.toFixed(0) : mb.toFixed(1)} MB`;
 }

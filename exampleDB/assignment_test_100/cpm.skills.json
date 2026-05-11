@@ -80,292 +80,320 @@
     "_id": {
       "$oid": "68a100000000000000005012"
     },
+    "name": "Dashboard",
+    "description": "Kỹ năng Dashboard dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000005013"
+    },
     "name": "Data Cleaning",
     "description": "Kỹ năng Data Cleaning dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005013"
+      "$oid": "68a100000000000000005014"
     },
     "name": "Data Modeling",
     "description": "Kỹ năng Data Modeling dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005014"
+      "$oid": "68a100000000000000005015"
     },
     "name": "Deployment",
     "description": "Kỹ năng Deployment dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005015"
+      "$oid": "68a100000000000000005016"
     },
     "name": "Docker",
     "description": "Kỹ năng Docker dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005016"
+      "$oid": "68a100000000000000005017"
     },
     "name": "Documentation",
     "description": "Kỹ năng Documentation dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005017"
+      "$oid": "68a100000000000000005018"
     },
     "name": "Embedding",
     "description": "Kỹ năng Embedding dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005018"
+      "$oid": "68a100000000000000005019"
+    },
+    "name": "Environment Config",
+    "description": "Kỹ năng Environment Config dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000005020"
     },
     "name": "Error Handling",
     "description": "Kỹ năng Error Handling dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005019"
+      "$oid": "68a100000000000000005021"
     },
     "name": "Express",
     "description": "Kỹ năng Express dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005020"
+      "$oid": "68a100000000000000005022"
     },
     "name": "Figma",
     "description": "Kỹ năng Figma dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005021"
+      "$oid": "68a100000000000000005023"
     },
     "name": "File Upload",
     "description": "Kỹ năng File Upload dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005022"
+      "$oid": "68a100000000000000005024"
     },
     "name": "Flutter",
     "description": "Kỹ năng Flutter dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005023"
-    },
-    "name": "Forms",
-    "description": "Kỹ năng Forms dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
-  },
-  {
-    "_id": {
-      "$oid": "68a100000000000000005024"
+      "$oid": "68a100000000000000005025"
     },
     "name": "Gemini API",
     "description": "Kỹ năng Gemini API dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005025"
+      "$oid": "68a100000000000000005026"
     },
     "name": "Image Picker",
     "description": "Kỹ năng Image Picker dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005026"
+      "$oid": "68a100000000000000005027"
     },
     "name": "Indexing",
     "description": "Kỹ năng Indexing dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005027"
+      "$oid": "68a100000000000000005028"
     },
     "name": "JWT",
     "description": "Kỹ năng JWT dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005028"
+      "$oid": "68a100000000000000005029"
     },
     "name": "JavaScript",
     "description": "Kỹ năng JavaScript dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005029"
+      "$oid": "68a100000000000000005030"
     },
     "name": "Linux",
     "description": "Kỹ năng Linux dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005030"
+      "$oid": "68a100000000000000005031"
     },
     "name": "Min-Cost Max-Flow",
     "description": "Kỹ năng Min-Cost Max-Flow dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005031"
+      "$oid": "68a100000000000000005032"
     },
     "name": "MinIO",
     "description": "Kỹ năng MinIO dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005032"
+      "$oid": "68a100000000000000005033"
     },
     "name": "Mobile UI",
     "description": "Kỹ năng Mobile UI dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005033"
+      "$oid": "68a100000000000000005034"
     },
     "name": "MongoDB",
     "description": "Kỹ năng MongoDB dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005034"
+      "$oid": "68a100000000000000005035"
     },
     "name": "Monitoring",
     "description": "Kỹ năng Monitoring dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005035"
+      "$oid": "68a100000000000000005036"
     },
     "name": "NLP",
     "description": "Kỹ năng NLP dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005036"
+      "$oid": "68a100000000000000005037"
     },
     "name": "Node.js",
     "description": "Kỹ năng Node.js dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005037"
+      "$oid": "68a100000000000000005038"
     },
     "name": "Offline Cache",
     "description": "Kỹ năng Offline Cache dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005038"
+      "$oid": "68a100000000000000005039"
+    },
+    "name": "PDF Preview",
+    "description": "Kỹ năng PDF Preview dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000005040"
     },
     "name": "Performance",
     "description": "Kỹ năng Performance dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005039"
+      "$oid": "68a100000000000000005041"
     },
     "name": "Postman",
     "description": "Kỹ năng Postman dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005040"
+      "$oid": "68a100000000000000005042"
     },
     "name": "Project Management",
     "description": "Kỹ năng Project Management dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005041"
+      "$oid": "68a100000000000000005043"
+    },
+    "name": "Prompt Engineering",
+    "description": "Kỹ năng Prompt Engineering dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000005044"
     },
     "name": "Python",
     "description": "Kỹ năng Python dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005042"
+      "$oid": "68a100000000000000005045"
     },
     "name": "REST API",
     "description": "Kỹ năng REST API dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005043"
+      "$oid": "68a100000000000000005046"
     },
     "name": "React",
     "description": "Kỹ năng React dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005044"
+      "$oid": "68a100000000000000005047"
     },
     "name": "Regression",
     "description": "Kỹ năng Regression dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005045"
+      "$oid": "68a100000000000000005048"
     },
     "name": "Reporting",
     "description": "Kỹ năng Reporting dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005046"
+      "$oid": "68a100000000000000005049"
     },
     "name": "Responsive Design",
     "description": "Kỹ năng Responsive Design dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005047"
+      "$oid": "68a100000000000000005050"
     },
     "name": "Security",
     "description": "Kỹ năng Security dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005048"
+      "$oid": "68a100000000000000005051"
+    },
+    "name": "Smoke Test",
+    "description": "Kỹ năng Smoke Test dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000005052"
     },
     "name": "State Management",
     "description": "Kỹ năng State Management dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005049"
+      "$oid": "68a100000000000000005053"
     },
     "name": "TF-IDF",
     "description": "Kỹ năng TF-IDF dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005050"
+      "$oid": "68a100000000000000005054"
     },
     "name": "Tailwind CSS",
     "description": "Kỹ năng Tailwind CSS dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005051"
+      "$oid": "68a100000000000000005055"
     },
     "name": "Testing",
     "description": "Kỹ năng Testing dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005052"
+      "$oid": "68a100000000000000005056"
     },
     "name": "UI/UX",
     "description": "Kỹ năng UI/UX dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."
   },
   {
     "_id": {
-      "$oid": "68a100000000000000005053"
+      "$oid": "68a100000000000000005057"
     },
     "name": "Validation",
     "description": "Kỹ năng Validation dùng để test so khớp người phù hợp với task trong đồ án nhóm sinh viên."

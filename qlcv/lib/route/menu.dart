@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:qlcv/model/db_helper.dart';
 import 'package:qlcv/model/color_picker.dart';
 import 'package:qlcv/route/auto_assignment_page.dart';
+import 'package:qlcv/route/user_management_page.dart';
 
 class Menu extends StatefulWidget {
   const Menu({Key? key}) : super(key: key);
@@ -31,8 +32,10 @@ class _MenuState extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
-    final canAutoAssign =
-        DBHelper.mainUser.role == 'admin' || DBHelper.mainUser.role == 'manager';
+    final canAutoAssign = DBHelper.mainUser.role == 'admin' ||
+        DBHelper.mainUser.role == 'manager';
+    final canManageUsers = DBHelper.mainUser.role == 'admin' ||
+        DBHelper.mainUser.role == 'superadmin';
 
     return Scaffold(
       backgroundColor: ColorPicker.backgroundLight,
@@ -135,6 +138,21 @@ class _MenuState extends State<Menu> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const AutoAssignmentPage(),
+                    ),
+                  );
+                },
+              ),
+            if (canManageUsers)
+              _MenuActionTile(
+                icon: Icons.manage_accounts_outlined,
+                title: 'Manage Users',
+                subtitle: 'Edit roles, skills and account information',
+                iconColor: ColorPicker.buttonSecondary,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UserManagementPage(),
                     ),
                   );
                 },

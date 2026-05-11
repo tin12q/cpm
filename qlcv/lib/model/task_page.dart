@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:qlcv/model/db_helper.dart';
 import 'package:qlcv/model/projects_page.dart';
 
@@ -25,6 +32,11 @@ class _TaskPageState extends State<TaskPage> {
   late final TextEditingController _descriptionController;
   late String _selectedStatus;
   List<String> selectedEmployeeIds = [];
+  late List<TaskAttachment> _attachments;
+  final List<PlatformFile> _pendingAttachments = [];
+  final Set<String> _removedAttachmentIds = {};
+  String? _downloadingAttachmentId;
+  bool _isSavingAttachments = false;
 
   bool get _canEdit =>
       DBHelper.mainUser.role == 'admin' || DBHelper.mainUser.role == 'manager';
@@ -33,9 +45,11 @@ class _TaskPageState extends State<TaskPage> {
   void initState() {
     super.initState();
     task = widget.task;
-    selectedEmployeeIds = task.emp.toSet().toList();
+    selectedEmployeeIds =
+        DBHelper.resolveEmployeeIds(task.emp).toSet().toList();
     _titleController = TextEditingController(text: task.title);
     _descriptionController = TextEditingController(text: task.description);
+    _attachments = List<TaskAttachment>.from(task.attachments);
     _selectedStatus = StatusHelper.normalizeStatus(task.status);
     if (!StatusHelper.taskStatuses.contains(_selectedStatus)) {
       _selectedStatus = 'in_progress';
@@ -49,9 +63,18 @@ class _TaskPageState extends State<TaskPage> {
     super.dispose();
   }
 
-  Future<void> updateTask(Task task, String title, String description,
-      DateTime endDate, String status, List<String> employeeIds,
-      {int? difficulty, int? priority, bool? canParallelize}) async {
+  Future<List<TaskAttachment>> updateTask(
+      Task task,
+      String title,
+      String description,
+      DateTime endDate,
+      String status,
+      List<String> employeeIds,
+      {int? difficulty,
+      int? priority,
+      bool? canParallelize,
+      List<PlatformFile> newAttachments = const [],
+      List<String> removeAttachmentIds = const []}) async {
     task.title = title.trim();
     task.description = description.trim();
     task.endDate = endDate;
@@ -61,10 +84,11 @@ class _TaskPageState extends State<TaskPage> {
     if (priority != null) task.priority = priority;
     if (canParallelize != null) task.canParallelize = canParallelize;
 
-    await DBHelper.updateTask(task);
-    DBHelper.tasks.clear();
-    DBHelper.projectTasks.clear();
-    await DBHelper.taskUpdate();
+    return DBHelper.updateTask(
+      task,
+      attachments: newAttachments,
+      removeAttachmentIds: removeAttachmentIds,
+    );
   }
 
   Future<void> _confirmUpdate() async {
@@ -88,25 +112,44 @@ class _TaskPageState extends State<TaskPage> {
 
     if (shouldUpdate != true) return;
 
-    await updateTask(
-      task,
-      _titleController.text,
-      _descriptionController.text,
-      task.endDate,
-      _selectedStatus,
-      selectedEmployeeIds,
-      difficulty: task.difficulty,
-      priority: task.priority,
-      canParallelize: task.canParallelize,
-    );
+    try {
+      final updatedAttachments = await updateTask(
+        task,
+        _titleController.text,
+        _descriptionController.text,
+        task.endDate,
+        _selectedStatus,
+        selectedEmployeeIds,
+        difficulty: task.difficulty,
+        priority: task.priority,
+        canParallelize: task.canParallelize,
+        newAttachments: _pendingAttachments,
+        removeAttachmentIds: _removedAttachmentIds.toList(),
+      );
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Task updated successfully'),
-        backgroundColor: ColorPicker.buttonSuccess,
-      ),
-    );
+      if (!mounted) return;
+      setState(() {
+        _attachments = updatedAttachments;
+        task.attachments = updatedAttachments;
+        _pendingAttachments.clear();
+        _removedAttachmentIds.clear();
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Task updated successfully'),
+          backgroundColor: ColorPicker.buttonSuccess,
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.toString()),
+          backgroundColor: ColorPicker.buttonDanger,
+        ),
+      );
+    }
   }
 
   Future<void> _openProject() async {
@@ -130,6 +173,194 @@ class _TaskPageState extends State<TaskPage> {
       context,
       MaterialPageRoute(builder: (context) => ProjectPage(project: project)),
     );
+  }
+
+  Future<void> _pickAttachments() async {
+    if (_isSavingAttachments) return;
+
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      withData: true,
+      withReadStream: true,
+    );
+
+    if (result == null || result.files.isEmpty) return;
+
+    final filesToUpload = <PlatformFile>[];
+    setState(() {
+      final existingKeys = _pendingAttachments
+          .map((file) => '${file.name}:${file.size}:${file.path ?? ''}')
+          .toSet();
+      for (final file in result.files) {
+        final key = '${file.name}:${file.size}:${file.path ?? ''}';
+        if (!existingKeys.contains(key)) {
+          _pendingAttachments.add(file);
+          filesToUpload.add(file);
+          existingKeys.add(key);
+        }
+      }
+    });
+
+    if (filesToUpload.isEmpty) return;
+
+    await _saveAttachmentChanges(newAttachments: filesToUpload);
+  }
+
+  Future<void> _removeExistingAttachment(TaskAttachment attachment) async {
+    if (attachment.id.isEmpty) return;
+    final previousAttachments = List<TaskAttachment>.from(_attachments);
+    setState(() {
+      _removedAttachmentIds.add(attachment.id);
+      _attachments.removeWhere((item) => item.id == attachment.id);
+    });
+
+    try {
+      await _saveAttachmentChanges(removeAttachmentIds: [attachment.id]);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _attachments = previousAttachments;
+        _removedAttachmentIds.remove(attachment.id);
+      });
+    }
+  }
+
+  void _removePendingAttachment(PlatformFile file) {
+    setState(() {
+      _pendingAttachments.remove(file);
+    });
+  }
+
+  Future<void> _downloadAttachment(TaskAttachment attachment) async {
+    if (attachment.id.isEmpty || _downloadingAttachmentId != null) return;
+
+    setState(() {
+      _downloadingAttachmentId = attachment.id;
+    });
+
+    try {
+      final file = await DBHelper.downloadTaskAttachment(task.id, attachment);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Downloaded to ${file.path}'),
+          backgroundColor: ColorPicker.buttonSuccess,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not download attachment'),
+          backgroundColor: ColorPicker.buttonDanger,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _downloadingAttachmentId = null;
+        });
+      }
+    }
+  }
+
+  Future<void> _previewAttachment(TaskAttachment attachment) async {
+    if (attachment.id.isEmpty) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => _SavedAttachmentPreviewDialog(
+        taskId: task.id,
+        attachment: attachment,
+        onDownload: () => _downloadAttachment(attachment),
+      ),
+    );
+  }
+
+  Future<void> _previewPendingAttachment(PlatformFile file) async {
+    Uint8List? bytes = file.bytes;
+    if (bytes == null && file.path != null) {
+      bytes = await File(file.path!).readAsBytes();
+    }
+    if (bytes == null && file.readStream != null) {
+      final chunks = <int>[];
+      await for (final chunk in file.readStream!) {
+        chunks.addAll(chunk);
+      }
+      bytes = Uint8List.fromList(chunks);
+    }
+
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => _AttachmentPreviewDialog(
+        name: file.name,
+        size: file.size,
+        mimetype: null,
+        bytes: bytes,
+      ),
+    );
+  }
+
+  Future<void> _saveAttachmentChanges({
+    List<PlatformFile> newAttachments = const [],
+    List<String> removeAttachmentIds = const [],
+  }) async {
+    if (_isSavingAttachments) return;
+
+    setState(() {
+      _isSavingAttachments = true;
+    });
+
+    try {
+      final updatedAttachments = await updateTask(
+        task,
+        _titleController.text,
+        _descriptionController.text,
+        task.endDate,
+        _selectedStatus,
+        selectedEmployeeIds,
+        difficulty: task.difficulty,
+        priority: task.priority,
+        canParallelize: task.canParallelize,
+        newAttachments: newAttachments,
+        removeAttachmentIds: removeAttachmentIds,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _attachments = updatedAttachments;
+        task.attachments = updatedAttachments;
+        _pendingAttachments.removeWhere(newAttachments.contains);
+        for (final id in removeAttachmentIds) {
+          _removedAttachmentIds.remove(id);
+        }
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Attachments saved'),
+          backgroundColor: ColorPicker.buttonSuccess,
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _pendingAttachments.removeWhere(newAttachments.contains);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.toString()),
+          backgroundColor: ColorPicker.buttonDanger,
+        ),
+      );
+      rethrow;
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSavingAttachments = false;
+        });
+      }
+    }
   }
 
   Future<void> _pickDueDate() async {
@@ -203,6 +434,26 @@ class _TaskPageState extends State<TaskPage> {
                     readOnly: !_canEdit,
                     minLines: 3,
                     maxLines: 5,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _DetailSection(
+                title: 'Attachments',
+                icon: Icons.attach_file_outlined,
+                children: [
+                  _AttachmentList(
+                    attachments: _attachments,
+                    pendingAttachments: _pendingAttachments,
+                    canEdit: _canEdit,
+                    isSaving: _isSavingAttachments,
+                    downloadingAttachmentId: _downloadingAttachmentId,
+                    onPick: _pickAttachments,
+                    onRemoveExisting: _removeExistingAttachment,
+                    onRemovePending: _removePendingAttachment,
+                    onDownload: _downloadAttachment,
+                    onPreview: _previewAttachment,
+                    onPreviewPending: _previewPendingAttachment,
                   ),
                 ],
               ),
@@ -796,6 +1047,485 @@ class _EmployeeChips extends StatelessWidget {
   }
 }
 
+class _AttachmentList extends StatelessWidget {
+  final List<TaskAttachment> attachments;
+  final List<PlatformFile> pendingAttachments;
+  final bool canEdit;
+  final bool isSaving;
+  final String? downloadingAttachmentId;
+  final VoidCallback onPick;
+  final ValueChanged<TaskAttachment> onRemoveExisting;
+  final ValueChanged<PlatformFile> onRemovePending;
+  final ValueChanged<TaskAttachment> onDownload;
+  final ValueChanged<TaskAttachment> onPreview;
+  final ValueChanged<PlatformFile> onPreviewPending;
+
+  const _AttachmentList({
+    required this.attachments,
+    required this.pendingAttachments,
+    required this.canEdit,
+    required this.isSaving,
+    required this.downloadingAttachmentId,
+    required this.onPick,
+    required this.onRemoveExisting,
+    required this.onRemovePending,
+    required this.onDownload,
+    required this.onPreview,
+    required this.onPreviewPending,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (canEdit) ...[
+          OutlinedButton.icon(
+            onPressed: isSaving ? null : onPick,
+            icon: isSaving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.upload_file_outlined, size: 18),
+            label: Text(isSaving ? 'Saving files' : 'Add files'),
+          ),
+          const SizedBox(height: 10),
+        ],
+        if (attachments.isEmpty && pendingAttachments.isEmpty)
+          const Text(
+            'No files attached',
+            style: TextStyle(color: ColorPicker.fontMedium),
+          )
+        else ...[
+          ...attachments.map((attachment) {
+            final isDownloading = downloadingAttachmentId == attachment.id;
+            return _AttachmentTile(
+              name: attachment.originalName,
+              size: attachment.size,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isDownloading)
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else
+                    IconButton(
+                      onPressed: () => onDownload(attachment),
+                      icon: const Icon(Icons.download_outlined, size: 18),
+                      tooltip: 'Download file',
+                    ),
+                  if (canEdit)
+                    IconButton(
+                      onPressed: () => onRemoveExisting(attachment),
+                      icon: const Icon(Icons.close_outlined, size: 18),
+                      tooltip: 'Remove file',
+                    ),
+                ],
+              ),
+              onTap: () => onPreview(attachment),
+            );
+          }),
+          ...pendingAttachments.map((file) {
+            return _AttachmentTile(
+              name: file.name,
+              size: file.size,
+              subtitle: 'Saving to task',
+              trailing: IconButton(
+                onPressed: () => onRemovePending(file),
+                icon: const Icon(Icons.close_outlined, size: 18),
+                tooltip: 'Remove file',
+              ),
+              onTap: () => onPreviewPending(file),
+            );
+          }),
+        ],
+      ],
+    );
+  }
+}
+
+class _AttachmentTile extends StatelessWidget {
+  final String name;
+  final int size;
+  final String? subtitle;
+  final Widget trailing;
+  final VoidCallback? onTap;
+
+  const _AttachmentTile({
+    required this.name,
+    required this.size,
+    required this.trailing,
+    this.subtitle,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: ColorPicker.backgroundLight,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: ColorPicker.cardBorder),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.insert_drive_file_outlined,
+              color: ColorPicker.fontMedium,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: ColorPicker.fontDark,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle ?? _formatFileSize(size),
+                    style: const TextStyle(
+                      color: ColorPicker.fontMedium,
+                      fontSize: 12,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatFileSize(size),
+                      style: const TextStyle(
+                        color: ColorPicker.fontLight,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            trailing,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SavedAttachmentPreviewDialog extends StatelessWidget {
+  final String taskId;
+  final TaskAttachment attachment;
+  final VoidCallback onDownload;
+
+  const _SavedAttachmentPreviewDialog({
+    required this.taskId,
+    required this.attachment,
+    required this.onDownload,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: DBHelper.fetchTaskAttachmentBytes(taskId, attachment),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const AlertDialog(
+            content: SizedBox(
+              height: 90,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return AlertDialog(
+            title: const Text('Preview unavailable'),
+            content: Text(snapshot.error?.toString() ??
+                'Could not load attachment preview.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        }
+
+        return _AttachmentPreviewDialog(
+          name: attachment.originalName,
+          size: attachment.size,
+          mimetype: attachment.mimetype,
+          bytes: snapshot.data,
+          onDownload: onDownload,
+        );
+      },
+    );
+  }
+}
+
+class _AttachmentPreviewDialog extends StatelessWidget {
+  final String name;
+  final int size;
+  final String? mimetype;
+  final Uint8List? bytes;
+  final VoidCallback? onDownload;
+
+  const _AttachmentPreviewDialog({
+    required this.name,
+    required this.size,
+    required this.bytes,
+    this.mimetype,
+    this.onDownload,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final preview = _buildPreview();
+
+    return Dialog(
+      insetPadding: const EdgeInsets.all(18),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560, maxHeight: 720),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 8, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.insert_drive_file_outlined,
+                      color: ColorPicker.fontMedium),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: ColorPicker.fontDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          _formatFileSize(size),
+                          style: const TextStyle(
+                            color: ColorPicker.fontMedium,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close_outlined),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: preview,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Close'),
+                  ),
+                  if (onDownload != null) ...[
+                    const SizedBox(width: 8),
+                    FilledButton.icon(
+                      onPressed: onDownload,
+                      icon: const Icon(Icons.download_outlined, size: 18),
+                      label: const Text('Download'),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreview() {
+    if (bytes == null) {
+      return const _PreviewFallback(
+        message: 'This file cannot be previewed before saving.',
+      );
+    }
+
+    if (_isImageFile(name, mimetype)) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: InteractiveViewer(
+          minScale: 0.6,
+          maxScale: 4,
+          child: Image.memory(
+            bytes!,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => const _PreviewFallback(
+              message: 'Image preview failed.',
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_isTextFile(name, mimetype)) {
+      final text = _decodeText(bytes!);
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: ColorPicker.backgroundLight,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: ColorPicker.cardBorder),
+        ),
+        child: SingleChildScrollView(
+          child: SelectableText(
+            text,
+            style: const TextStyle(
+              color: ColorPicker.fontDark,
+              fontSize: 13,
+              height: 1.35,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_isPdfFile(name, mimetype)) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          height: 520,
+          decoration: BoxDecoration(
+            color: ColorPicker.backgroundLight,
+            border: Border.all(color: ColorPicker.cardBorder),
+          ),
+          child: _PdfPreview(bytes: bytes!, name: name),
+        ),
+      );
+    }
+
+    return const _PreviewFallback(
+      message: 'Preview is not available for this file type.',
+    );
+  }
+}
+
+class _PdfPreview extends StatefulWidget {
+  final Uint8List bytes;
+  final String name;
+
+  const _PdfPreview({
+    required this.bytes,
+    required this.name,
+  });
+
+  @override
+  State<_PdfPreview> createState() => _PdfPreviewState();
+}
+
+class _PdfPreviewState extends State<_PdfPreview> {
+  late final Future<File> _pdfFileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfFileFuture = _writePdfPreviewFile(widget.bytes, widget.name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<File>(
+      future: _pdfFileFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const _PreviewFallback(message: 'PDF preview failed.');
+        }
+
+        return PDFView(
+          filePath: snapshot.data!.path,
+          enableSwipe: true,
+          swipeHorizontal: false,
+          autoSpacing: true,
+          pageFling: true,
+          onError: (_) {},
+          onPageError: (_, __) {},
+        );
+      },
+    );
+  }
+}
+
+class _PreviewFallback extends StatelessWidget {
+  final String message;
+
+  const _PreviewFallback({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ColorPicker.backgroundLight,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.preview_outlined,
+            size: 36,
+            color: ColorPicker.fontMedium,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: ColorPicker.fontMedium),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ReadOnlyNotice extends StatelessWidget {
   final String text;
 
@@ -900,5 +1630,63 @@ class _MetaChip extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String _formatFileSize(int bytes) {
+  if (bytes < 1024) return '$bytes B';
+  final kb = bytes / 1024;
+  if (kb < 1024) return '${kb.toStringAsFixed(kb >= 100 ? 0 : 1)} KB';
+  final mb = kb / 1024;
+  return '${mb.toStringAsFixed(mb >= 100 ? 0 : 1)} MB';
+}
+
+bool _isImageFile(String name, String? mimetype) {
+  final lowerName = name.toLowerCase();
+  final lowerType = mimetype?.toLowerCase() ?? '';
+  return lowerType.startsWith('image/') ||
+      lowerName.endsWith('.png') ||
+      lowerName.endsWith('.jpg') ||
+      lowerName.endsWith('.jpeg') ||
+      lowerName.endsWith('.gif') ||
+      lowerName.endsWith('.webp') ||
+      lowerName.endsWith('.bmp');
+}
+
+bool _isTextFile(String name, String? mimetype) {
+  final lowerName = name.toLowerCase();
+  final lowerType = mimetype?.toLowerCase() ?? '';
+  return lowerType.startsWith('text/') ||
+      lowerType.contains('json') ||
+      lowerName.endsWith('.txt') ||
+      lowerName.endsWith('.md') ||
+      lowerName.endsWith('.json') ||
+      lowerName.endsWith('.csv') ||
+      lowerName.endsWith('.log') ||
+      lowerName.endsWith('.yaml') ||
+      lowerName.endsWith('.yml');
+}
+
+bool _isPdfFile(String name, String? mimetype) {
+  final lowerName = name.toLowerCase();
+  final lowerType = mimetype?.toLowerCase() ?? '';
+  return lowerType == 'application/pdf' || lowerName.endsWith('.pdf');
+}
+
+Future<File> _writePdfPreviewFile(Uint8List bytes, String name) async {
+  final directory = await getTemporaryDirectory();
+  final safeName = name.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+  final pdfName =
+      safeName.toLowerCase().endsWith('.pdf') ? safeName : '$safeName.pdf';
+  final file = File(
+      '${directory.path}/attachment_preview_${DateTime.now().microsecondsSinceEpoch}_$pdfName');
+  return file.writeAsBytes(bytes, flush: true);
+}
+
+String _decodeText(Uint8List bytes) {
+  try {
+    return const Utf8Decoder(allowMalformed: true).convert(bytes);
+  } catch (_) {
+    return String.fromCharCodes(bytes);
   }
 }

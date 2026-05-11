@@ -12,9 +12,60 @@ const {
 	isOpenAICompatibleConfigured,
 	getOpenAICompatibleConfig,
 } = require("../helpers/openAICompatibleClient");
+const {
+	deriveTaskStatus,
+	syncOverdueTasks,
+	syncProjectStatus,
+	syncProjectStatuses,
+} = require("../helpers/statusLifecycle");
 
 const pendingSelections = new Map();
 const PENDING_SELECTION_TTL_MS = 10 * 60 * 1000;
+const ALLOWED_INTENT_ACTIONS = new Set([
+	"answer_only",
+	"list_projects",
+	"list_tasks",
+	"list_project_members",
+	"create_task",
+	"update_task",
+	"delete_task",
+	"mark_task_done",
+	"add_task_note",
+	"create_project",
+	"update_project",
+	"delete_project",
+	"list_teams",
+	"list_users",
+	"list_skills",
+	"create_skill",
+	"preview_assignment",
+	"apply_assignment",
+	"reassign_project",
+	"smart_query",
+	"project_report",
+	"project_task_ranking",
+	"overdue_task_ranking",
+	"daily_report",
+	"overdue_report",
+	"personnel_stats",
+	"personal_report",
+]);
+const AI_COMPOSE_ACTIONS = new Set([
+	"list_projects",
+	"list_tasks",
+	"list_project_members",
+	"list_teams",
+	"list_users",
+	"list_skills",
+	"smart_query",
+	"project_report",
+	"project_task_ranking",
+	"overdue_task_ranking",
+	"daily_report",
+	"overdue_report",
+	"personnel_stats",
+	"personal_report",
+]);
 
 const API_CONTEXT = `
 You are CPM Agent, an AI assistant inside a project/task management app for small projects and student teams.
@@ -87,6 +138,7 @@ Executable backend tools in this chatbot route:
 - preview_assignment without applying database changes
 - apply_assignment for admin/manager with confirmation
 - reassign_project for admin/manager with confirmation
+- project_report for per-project progress, overdue, unassigned, and assignee summary
 - daily_report for today's project/task summary
 - overdue_report for late tasks and late assignees
 - personnel_stats for workload, overdue, due-today, and skill summary
@@ -97,6 +149,7 @@ Do not say you have already applied, deleted, overridden, reassigned, or bulk-up
 
 function rolePolicy(role) {
 	switch (String(role || "").toLowerCase()) {
+		case "superadmin":
 		case "admin":
 			return "Current role: admin. Full guidance allowed. Executable chatbot tools cover project/task CRUD, notes, assignment preview/apply/reassign, reports, team/user/skill listing, and skill creation.";
 		case "manager":
@@ -208,18 +261,86 @@ function extractJson(text = "") {
 	}
 }
 
-async function classifyIntent(model, message, role) {
+function normalizeAiIntent(intent) {
+	const action = ALLOWED_INTENT_ACTIONS.has(intent?.action) ? intent.action : "answer_only";
+	const confidence = Number(intent?.confidence);
+	return {
+		action,
+		language: intent?.language === "en" ? "en" : "vi",
+		confidence: Number.isFinite(confidence) ? Math.min(Math.max(confidence, 0), 1) : 0,
+		needs_confirmation: Boolean(intent?.needs_confirmation),
+		route_reason: typeof intent?.route_reason === "string" ? intent.route_reason.slice(0, 240) : "",
+		missing_fields: Array.isArray(intent?.missing_fields)
+			? intent.missing_fields.map((item) => String(item)).slice(0, 8)
+			: [],
+		params: getEmptyParams(intent?.params || {}),
+	};
+}
+
+function compactItems(items, formatter) {
+	return (items || []).map(formatter).filter(Boolean).slice(0, 12).join("\n");
+}
+
+async function buildIntentContextSnapshot(user) {
+	try {
+		const projects = (await getAccessibleProjects(user)).slice(0, 12);
+		const projectIds = projects.map((project) => project._id);
+		const tasks = projectIds.length
+			? await Task.find({ project: { $in: projectIds } })
+					.select("title status due_date project assigned_to priority difficulty")
+					.populate("assigned_to", "name email role")
+					.sort({ due_date: 1 })
+					.limit(20)
+			: [];
+		const teams = await getAccessibleTeams(user);
+		const members = [];
+		for (const team of teams.slice(0, 6)) {
+			for (const member of team.members || []) {
+				if (members.some((item) => normalizeId(item) === normalizeId(member))) continue;
+				members.push(member);
+			}
+		}
+
+		return [
+			"Accessible projects:",
+			compactItems(projects, (project) => `- ${project.title} | id=${project._id} | status=${project.status || "in progress"} | due=${formatDate(project.due_date)}`) || "- none",
+			"",
+			"Visible tasks:",
+			compactItems(tasks, (task) => {
+				const project = projects.find((item) => String(item._id) === String(task.project));
+				const assignees = (task.assigned_to || []).map((item) => item.name || item.email).filter(Boolean).join(", ") || "unassigned";
+				return `- ${task.title} | id=${task._id} | project=${project?.title || task.project} | status=${taskStatus(task)} | due=${formatDate(task.due_date)} | assignees=${assignees}`;
+			}) || "- none",
+			"",
+			"Accessible members:",
+			compactItems(members, (member) => `- ${member.name || member.email} | id=${member._id} | role=${member.role || "member"}`) || "- none",
+		].join("\n");
+	} catch (error) {
+		return `Context snapshot unavailable: ${error.message}`;
+	}
+}
+
+async function classifyIntent(model, message, user) {
 	const today = new Date().toISOString().slice(0, 10);
+	const contextSnapshot = await buildIntentContextSnapshot(user);
 	const prompt = `
-Classify the CPM user's request into one executable intent.
+You are the intent planner for CPM, a project/task management chatbot.
+Analyze the user's message against available app context and return one backend intent.
 Current date: ${today}
-Current role: ${role || "unknown"}
+Current role: ${user?.role || "unknown"}
+
+Available app context:
+${contextSnapshot}
 
 Return STRICT JSON only. Do not use markdown.
 Schema:
 {
-  "action": "answer_only" | "list_projects" | "list_tasks" | "list_project_members" | "create_task" | "update_task" | "delete_task" | "mark_task_done" | "add_task_note" | "create_project" | "update_project" | "delete_project" | "list_teams" | "list_users" | "list_skills" | "create_skill" | "preview_assignment" | "apply_assignment" | "reassign_project" | "daily_report" | "overdue_report" | "personnel_stats" | "personal_report",
+  "action": "answer_only" | "list_projects" | "list_tasks" | "list_project_members" | "create_task" | "update_task" | "delete_task" | "mark_task_done" | "add_task_note" | "create_project" | "update_project" | "delete_project" | "list_teams" | "list_users" | "list_skills" | "create_skill" | "preview_assignment" | "apply_assignment" | "reassign_project" | "smart_query" | "project_report" | "project_task_ranking" | "overdue_task_ranking" | "daily_report" | "overdue_report" | "personnel_stats" | "personal_report",
   "language": "vi" | "en",
+  "confidence": number,
+  "needs_confirmation": boolean,
+  "missing_fields": string[],
+  "route_reason": string,
   "params": {
     "project_name": string | null,
     "project_id": string | null,
@@ -241,7 +362,22 @@ Schema:
     "difficulty": number | null,
     "required_skills": string[] | null,
     "status": string | null,
-    "limit": number | null
+    "limit": number | null,
+    "smart_query": {
+      "entity": "project" | "task" | "member" | null,
+      "metric": "total_task_count" | "open_task_count" | "completed_task_count" | "late_task_count" | "unassigned_task_count" | "completion_rate" | "risk_score" | "due_soon_count" | "overdue_days" | "due_date" | "priority" | "difficulty" | null,
+      "sort": "asc" | "desc" | null,
+      "filters": {
+        "status": string | null,
+        "project_name": string | null,
+        "project_id": string | null,
+        "only_open": boolean | null,
+        "only_overdue": boolean | null,
+        "unassigned": boolean | null,
+        "date_from_iso": "YYYY-MM-DD" | null,
+        "date_to_iso": "YYYY-MM-DD" | null
+      }
+    } | null
   }
 Rules:
 - If the user asks what the agent can do, asks about API paths, or asks conceptual questions, use "answer_only".
@@ -261,6 +397,11 @@ Rules:
 - If the user asks to preview/auto assign/recommend assignees, use "preview_assignment".
 - If the user asks to apply/save assignment results, use "apply_assignment".
 - If the user asks to reassign a project, use "reassign_project".
+- Use "smart_query" for flexible analytical questions about project/task/member data, rankings, counts, comparisons, risk, workload, due soon, unassigned work, completion rate, or "which X has most/least Y".
+- If the user asks which project is most overdue/late, "du an nao tre han nhat", "project nao qua han nhat", use "smart_query" with entity "project", metric "late_task_count", sort "desc", limit 1 unless the user asks for a top list.
+- If the user asks which project has the most remaining/open tasks, task backlog, "ton nhieu task nhat", use "project_task_ranking".
+- If the user asks which task is most overdue/late, "tre han nhat", "qua han nhat", use "overdue_task_ranking".
+- If the user asks for a report/summary/overview/status of one project or per project, use "project_report".
 - If the user asks for today's summary, daily report, project status today, or "tong hop du an hom nay", use "daily_report".
 - If the user asks whether anything is late/overdue, "tre han", or who is late, use "overdue_report".
 - If the user asks for personnel/human-resource/member workload/statistics, "thong ke nhan su", use "personnel_stats".
@@ -269,11 +410,52 @@ Rules:
 - For Vietnamese "mai/ngày mai", convert to tomorrow based on Current date.
 - Keep missing fields null. Do not invent project or assignee names.
 
+- Prefer exact ids from Available app context when a project/task/member is clearly referenced.
+- If a request can be executed through backend tools, choose that tool instead of "answer_only".
+- If the user asks broadly, e.g. "bao cao tu day den 1 tuan", infer a report intent and set the date range.
+- For destructive or database-changing operations, set needs_confirmation true only when the backend tool should ask before applying. Still classify the requested action.
+
 User request:
 ${message}
 `;
 	const result = await model.generateContent(prompt);
-	return extractJson(result.response.text());
+	return normalizeAiIntent(extractJson(result.response.text()));
+}
+
+async function composeToolAnswer(model, { message, user, intent, toolResponse }) {
+	if (!model || !AI_COMPOSE_ACTIONS.has(intent?.action)) return toolResponse;
+	const today = new Date().toISOString().slice(0, 10);
+	const prompt = `
+You are CPM Agent inside a project/task management app.
+The planner already selected and executed a backend tool. Your job is to turn the tool result into a helpful Vietnamese chatbot answer.
+
+Current date: ${today}
+Current role: ${user?.role || "unknown"}
+User message:
+${message}
+
+Executed action:
+${intent?.action || "unknown"}
+
+Planner params:
+${JSON.stringify(intent?.params || {}, null, 2)}
+
+Backend tool result:
+${toolResponse}
+
+Rules:
+- Answer in Vietnamese, conversational but concise.
+- Use ONLY facts from Backend tool result and Planner params. Do not invent projects, tasks, members, dates, counts, or recommendations.
+- Start with the direct answer. If the user asks "dự án nào/task nào/ai ... nhất", name the item first.
+- For overdue/late project questions, include the project name and the late tasks shown by the tool, with deadline and assignee when available.
+- For reports, group the answer into short sections with the most important numbers first.
+- If the backend result asks the user to choose a numbered option, preserve the numbers and clearly ask the user to reply with a number.
+- If the backend result says there is no data, say that plainly and do not add speculation.
+- Do not mention internal action names, tools, JSON, prompts, or that you are an AI model.
+`;
+	const result = await model.generateContent(prompt);
+	const response = String(result.response.text() || "").trim();
+	return response || toolResponse;
 }
 
 function getEmptyParams(overrides = {}) {
@@ -299,6 +481,7 @@ function getEmptyParams(overrides = {}) {
 		required_skills: null,
 		status: null,
 		limit: null,
+		smart_query: null,
 		...overrides,
 	};
 }
@@ -319,7 +502,12 @@ function clearPendingSelection(user) {
 }
 
 function shouldReplacePendingSelection(message) {
-	return Boolean(getStaticAnswer(message) || classifyIntentHeuristic(message));
+	const text = normalizeText(message);
+	const wordCount = text.split(/\s+/).filter(Boolean).length;
+	const looksLikeNewRequest =
+		wordCount >= 3 &&
+		/\b(bao cao|tong hop|thong ke|tao|them|xoa|sua|cap nhat|doi|xem|liet ke|tim|hoi|deadline|project|du an|task|cong viec|nhan su|thanh vien|team|skill|phan cong|assign)\b/.test(text);
+	return Boolean(getStaticAnswer(message) || classifyIntentHeuristic(message) || looksLikeNewRequest);
 }
 
 function isAutoSuggestMessage(message) {
@@ -404,6 +592,69 @@ function inferDueDateIso(text) {
 	return isoMatch ? isoMatch[1] : null;
 }
 
+function inferSmartQueryIntent(message) {
+	const text = normalizeText(message);
+	const explicitLimit = inferLimitFromMessage(message);
+	const limit = explicitLimit || (/\b(nao|cai nao|du an nao|task nao|ai)\b/.test(text) && /\b(nhat|cao nhat|thap nhat|it nhat|nhieu nhat)\b/.test(text) ? 1 : null);
+	const hasAnalyticalWord =
+		/\b(nhieu nhat|it nhat|cao nhat|thap nhat|top|xep hang|ranking|thong ke|so lieu|dem|bao nhieu|ton dong|ton nhieu|backlog|qua tai|tai viec|rui ro|risk|gan deadline|sap deadline|tre han|qua han|chua gan|unassigned|completion|hoan thanh|ti le|ty le)\b/.test(text);
+	if (!hasAnalyticalWord) return null;
+
+	const entity = /\b(nhan su|thanh vien|member|members|nguoi|user|employee|ai)\b/.test(text)
+		? "member"
+		: /\b(task|cong viec|viec)\b/.test(text)
+			? "task"
+			: "project";
+	let metric = "open_task_count";
+	let sort = "desc";
+	const filters = {};
+
+	if (/\b(tre han|qua han|late|overdue|cham deadline)\b/.test(text)) {
+		metric = entity === "task" ? "overdue_days" : "late_task_count";
+		filters.only_overdue = entity === "task";
+	}
+	if (/\b(chua gan|unassigned|chua co nguoi)\b/.test(text)) {
+		metric = entity === "task" ? "due_date" : "unassigned_task_count";
+		filters.unassigned = true;
+		sort = entity === "task" ? "asc" : "desc";
+	}
+	if (/\b(gan deadline|sap deadline|den han|deadline gan)\b/.test(text)) {
+		metric = entity === "task" ? "due_date" : "due_soon_count";
+		sort = entity === "task" ? "asc" : "desc";
+		filters.only_open = true;
+	}
+	if (/\b(rui ro|risk|nguy co)\b/.test(text)) {
+		metric = "risk_score";
+		sort = "desc";
+	}
+	if (/\b(hoan thanh|completion|ti le|ty le|phan tram)\b/.test(text)) {
+		metric = entity === "task" ? "due_date" : "completion_rate";
+		sort = /\b(thap nhat|it nhat|kem nhat)\b/.test(text) ? "asc" : "desc";
+	}
+	if (/\b(nhieu task|nhieu viec|ton nhieu|ton dong|backlog|qua tai|tai viec)\b/.test(text)) {
+		metric = entity === "member" ? "open_task_count" : "open_task_count";
+		sort = "desc";
+		filters.only_open = true;
+	}
+	if (/\b(it nhat|thap nhat|least)\b/.test(text)) {
+		sort = "asc";
+	}
+
+	return {
+		action: "smart_query",
+		language: "vi",
+		params: getEmptyParams({
+			limit,
+			smart_query: {
+				entity,
+				metric,
+				sort,
+				filters,
+			},
+		}),
+	};
+}
+
 function parseCreateTaskIntent(message) {
 	const patterns = [
 		new RegExp(
@@ -455,6 +706,8 @@ function classifyIntentHeuristic(message) {
 	const limit = inferLimitFromMessage(message);
 	const createIntent = parseCreateTaskIntent(message);
 	if (createIntent) return createIntent;
+	const smartIntent = inferSmartQueryIntent(message);
+	if (smartIntent) return smartIntent;
 
 	const asksList = /\b(liet ke|danh sach|xem|show|list|gan deadline|deadline)\b/.test(text);
 	const mentionsTask = /\b(task|cong viec|viec)\b/.test(text);
@@ -478,6 +731,17 @@ function classifyIntentHeuristic(message) {
 			text.includes("cong viec") ||
 			/\b(tong quan|overview|khoang|tu|den|tuan|thang|sap toi|toi day|ke tiep)\b/.test(text)
 		);
+	const asksProjectReport =
+		asksReport &&
+		mentionsProject &&
+		/\b(bao cao|report|tong hop|summary|tong quan|overview|tinh hinh|tien do|status|trang thai)\b/.test(text);
+	const asksProjectTaskRanking =
+		mentionsProject &&
+		mentionsTask &&
+		/\b(nhieu nhat|ton nhieu|ton dong|backlog|con nhieu|dang ton|most)\b/.test(text);
+	const asksOverdueTaskRanking =
+		mentionsTask &&
+		/\b(tre han nhat|qua han nhat|late nhat|overdue nhat|tre nhieu nhat|cham nhat)\b/.test(text);
 	const asksPersonalReport =
 		/\b(bao cao|report|tong hop|thong ke)\b/.test(text) &&
 		/\b(ca nhan|mot nguoi|member|thanh vien|nhan vien|cua|cho)\b/.test(text) &&
@@ -516,6 +780,8 @@ function classifyIntentHeuristic(message) {
 
 	if (asksApplyAssignment) return { action: "apply_assignment", language: "vi", params: getEmptyParams({ limit }) };
 	if (asksReassignProject) return { action: "reassign_project", language: "vi", params: getEmptyParams({ limit }) };
+	if (asksProjectTaskRanking) return { action: "project_task_ranking", language: "vi", params: getEmptyParams({ limit }) };
+	if (asksOverdueTaskRanking) return { action: "overdue_task_ranking", language: "vi", params: getEmptyParams({ limit }) };
 	if (asksCreateSkill) return { action: "create_skill", language: "vi", params: getEmptyParams({ limit }) };
 	if (asksSkills) return { action: "list_skills", language: "vi", params: getEmptyParams({ limit }) };
 	if (asksTeams) return { action: "list_teams", language: "vi", params: getEmptyParams({ limit }) };
@@ -547,6 +813,14 @@ function classifyIntentHeuristic(message) {
 	if (asksPersonnelStats) {
 		return {
 			action: "personnel_stats",
+			language: "vi",
+			params: getEmptyParams({ limit }),
+		};
+	}
+
+	if (asksProjectReport) {
+		return {
+			action: "project_report",
 			language: "vi",
 			params: getEmptyParams({ limit }),
 		};
@@ -653,7 +927,7 @@ function getProjectTeamIds(project) {
 }
 
 async function getAccessibleProjects(user) {
-	if (user?.role === "admin") {
+	if (["superadmin", "admin"].includes(user?.role)) {
 		return Project.find().sort({ due_date: 1 });
 	}
 	const teamIds = await getUserTeamIds(user?.id);
@@ -737,7 +1011,7 @@ async function getProjectMembers(project) {
 }
 
 function canManage(user) {
-	return ["admin", "manager"].includes(String(user?.role || "").toLowerCase());
+	return ["superadmin", "admin", "manager"].includes(String(user?.role || "").toLowerCase());
 }
 
 function normalizeId(value) {
@@ -745,7 +1019,7 @@ function normalizeId(value) {
 }
 
 async function getAccessibleTeams(user) {
-	if (user?.role === "admin") {
+	if (["superadmin", "admin"].includes(user?.role)) {
 		return Team.find().populate("members", "name email role skills");
 	}
 	const teamIds = await getUserTeamIds(user?.id);
@@ -867,7 +1141,7 @@ function formatDateMillis(dateIso, fallbackMillis) {
 }
 
 function taskStatus(task) {
-	return String(task.status || "in progress");
+	return deriveTaskStatus(task);
 }
 
 function getTodayBounds() {
@@ -882,6 +1156,9 @@ function getTodayBounds() {
 }
 
 function isCompletedTask(task) {
+	if (deriveTaskStatus(task) === "completed") {
+		return true;
+	}
 	const status = normalizeText(task?.status || "");
 	return ["completed", "done", "finished", "complete", "hoan thanh", "da xong"].some((item) =>
 		status.includes(item)
@@ -889,6 +1166,9 @@ function isCompletedTask(task) {
 }
 
 function isTaskOverdue(task, todayStart = getTodayBounds().start) {
+	if (deriveTaskStatus(task, todayStart) === "late") {
+		return true;
+	}
 	const due = Number(task?.due_date);
 	return Number.isFinite(due) && due < todayStart && !isCompletedTask(task);
 }
@@ -987,6 +1267,19 @@ function parseDateRangeFromMessage(message, params = {}) {
 	return { start, end };
 }
 
+function hasExplicitReportRange(message, params = {}) {
+	const text = normalizeText(message);
+	return Boolean(
+		params?.date_from_iso ||
+		params?.date_to_iso ||
+		params?.from_date ||
+		params?.to_date ||
+		/\b(20\d{2}-\d{2}-\d{2})\b/.test(text) ||
+		/\b(\d{1,2})[/-](\d{1,2})(?:[/-](20\d{2}))?\b/.test(text) ||
+		/\b(hom nay|today|tuan nay|tuan sau|thang nay|thang sau|tu|den|khoang|sap toi|toi day|ke tiep|next|upcoming|7 ngay|30 ngay|ngay qua|week|month)\b/.test(text)
+	);
+}
+
 function formatAssignees(task) {
 	const assignees = (task?.assigned_to || [])
 		.map((user) => user?.name || user?.email)
@@ -1002,14 +1295,19 @@ async function getReportScope({ user, params, message }) {
 		projectName: params?.project_name,
 		message,
 	});
-	const scopedProjects = project ? [project] : projects;
+	let scopedProjects = project ? [project] : projects;
 	const projectIds = scopedProjects.map((item) => item._id);
 	const query = { project: { $in: projectIds } };
 	if (user?.role === "employee") {
 		query.assigned_to = { $elemMatch: { $eq: new mongoose.Types.ObjectId(user.id) } };
 	}
+	await syncOverdueTasks({ project: { $in: projectIds } });
+	await syncProjectStatuses(projectIds);
+	const refreshedProjects = await Project.find({ _id: { $in: projectIds } });
+	const refreshedMap = new Map(refreshedProjects.map((item) => [String(item._id), item]));
+	scopedProjects = projectIds.map((projectId) => refreshedMap.get(String(projectId))).filter(Boolean);
 	return {
-		project,
+		project: project ? refreshedMap.get(String(project._id)) || project : null,
 		projects: scopedProjects,
 		projectIds,
 		query,
@@ -1037,7 +1335,11 @@ function groupOverdueByAssignee(tasks) {
 
 async function listProjectsTool({ user, params }) {
 	const limit = Math.min(Number(params?.limit) || 5, 10);
-	const projects = (await getAccessibleProjects(user)).slice(0, limit);
+	let projects = (await getAccessibleProjects(user)).slice(0, limit);
+	const projectIds = projects.map((project) => project._id);
+	await syncOverdueTasks({ project: { $in: projectIds } });
+	await syncProjectStatuses(projectIds);
+	projects = await Project.find({ _id: { $in: projectIds } }).sort({ due_date: 1 });
 	if (projects.length === 0) {
 		return "Không tìm thấy project nào bạn có quyền xem.";
 	}
@@ -1070,6 +1372,8 @@ async function listTasksTool({ user, params, message }) {
 	if (params?.status) {
 		query.status = new RegExp(escapeRegex(params.status), "i");
 	}
+	await syncOverdueTasks({ project: { $in: projectIds } });
+	await syncProjectStatuses(projectIds);
 	const tasks = await Task.find(query)
 		.populate("assigned_to", "name email")
 		.sort({ due_date: 1 })
@@ -1093,7 +1397,7 @@ async function listTasksTool({ user, params, message }) {
 }
 
 async function createTaskTool({ user, params, message }) {
-	if (!["admin", "manager"].includes(user?.role)) {
+	if (!["superadmin", "admin", "manager"].includes(user?.role)) {
 		return "Tài khoản của bạn chỉ có quyền xem. Mình không thể tạo task bằng role hiện tại.";
 	}
 
@@ -1161,13 +1465,14 @@ async function createTaskTool({ user, params, message }) {
 	const skills = Array.isArray(params.required_skills)
 		? params.required_skills.map((skill) => String(skill).trim()).filter(Boolean)
 		: [];
+	const dueDate = formatDateMillis(params.due_date_iso, project.due_date);
 	const task = new Task({
 		title: params.task_title,
 		description: params.description || params.task_title,
 		project: project._id,
 		assigned_to: [assignee._id],
-		due_date: formatDateMillis(params.due_date_iso, project.due_date),
-		status: "in progress",
+		due_date: dueDate,
+		status: deriveTaskStatus({ status: "in progress", due_date: dueDate }),
 		stage: Project.normalizeStages(project.stages)[0]?.key || "backlog",
 		priority: Math.min(Math.max(Number(params.priority) || 3, 1), 5),
 		difficulty: Math.min(Math.max(Number(params.difficulty) || 2, 1), 4),
@@ -1176,6 +1481,7 @@ async function createTaskTool({ user, params, message }) {
 		skills_required: skills,
 	});
 	await task.save();
+	await syncProjectStatus(project._id);
 
 	await User.findByIdAndUpdate(assignee._id, {
 		$inc: { current_task_count: 1 },
@@ -1245,7 +1551,7 @@ async function listTeamsTool({ user, params }) {
 async function listUsersTool({ user, params }) {
 	const limit = Math.min(Number(params?.limit) || 10, 15);
 	let users = [];
-	if (user?.role === "admin") {
+	if (["superadmin", "admin"].includes(user?.role)) {
 		users = await User.find().select("name email role skills current_task_count productivity_score on_time_rate").limit(limit);
 	} else {
 		const teams = await getAccessibleTeams(user);
@@ -1366,7 +1672,9 @@ async function updateProjectTool({ user, params, message }) {
 		return `Bạn muốn cập nhật gì cho project "${project.title}"? Có thể đổi title, description, status hoặc deadline.`;
 	}
 	const updated = await Project.findByIdAndUpdate(project._id, updates, { new: true, runValidators: true });
-	return `Đã cập nhật project "${updated.title}" (${updated.status || "in progress"}, deadline ${formatDate(updated.due_date)}).`;
+	await syncProjectStatus(updated._id);
+	const synced = await Project.findById(updated._id);
+	return `Đã cập nhật project "${updated.title}" (${synced?.status || updated.status || "in progress"}, deadline ${formatDate(updated.due_date)}).`;
 }
 
 async function deleteProjectTool({ user, params, message, confirmed = false }) {
@@ -1415,7 +1723,8 @@ async function updateTaskTool({ user, params, message }) {
 
 	const updated = await Task.findByIdAndUpdate(task._id, updates, { new: true, runValidators: true })
 		.populate("assigned_to", "name email");
-	return `Đã cập nhật task "${updated.title}" (${updated.status || "in progress"}, deadline ${formatDate(updated.due_date)}, người làm: ${formatAssignees(updated)}).`;
+	await syncProjectStatus(updated.project);
+	return `Đã cập nhật task "${updated.title}" (${taskStatus(updated)}, deadline ${formatDate(updated.due_date)}, người làm: ${formatAssignees(updated)}).`;
 }
 
 async function deleteTaskTool({ user, params, message, confirmed = false }) {
@@ -1437,6 +1746,7 @@ async function deleteTaskTool({ user, params, message, confirmed = false }) {
 	}
 	await Task.findByIdAndDelete(task._id);
 	await TaskNote.deleteMany({ task: task._id });
+	await syncProjectStatus(task.project);
 	return `Đã xóa task "${task.title}".`;
 }
 
@@ -1455,6 +1765,7 @@ async function markTaskDoneTool({ user, params, message }) {
 	}
 	const nextStatus = Number(task.due_date || 0) < Date.now() ? "late" : "completed";
 	const updated = await Task.findByIdAndUpdate(task._id, { status: nextStatus }, { new: true });
+	await syncProjectStatus(updated.project);
 	return `Đã đánh dấu task "${updated.title}" là ${updated.status}.`;
 }
 
@@ -1476,6 +1787,139 @@ async function addTaskNoteTool({ user, params, message }) {
 		mentions: [],
 	});
 	return `Đã thêm ghi chú cho task "${task.title}": ${note.content}`;
+}
+
+function summarizeTaskList(tasks) {
+	const active = tasks.filter((task) => !isCompletedTask(task));
+	const completed = tasks.filter(isCompletedTask);
+	const overdue = active.filter((task) => isTaskOverdue(task));
+	const unassigned = active.filter((task) => !task.assigned_to || task.assigned_to.length === 0);
+	const dueSoonEnd = Date.now() + 7 * 24 * 60 * 60 * 1000;
+	const dueSoon = active.filter((task) => Number(task.due_date || 0) >= Date.now() && Number(task.due_date || 0) <= dueSoonEnd);
+	return { active, completed, overdue, unassigned, dueSoon };
+}
+
+function topAssigneesForTasks(tasks, limit = 4) {
+	const map = new Map();
+	for (const task of tasks) {
+		for (const assignee of task.assigned_to || []) {
+			const key = String(assignee?._id || assignee?.id || assignee?.name || assignee?.email || "unknown");
+			const item = map.get(key) || {
+				name: assignee?.name || assignee?.email || "Chưa rõ người làm",
+				total: 0,
+				overdue: 0,
+				completed: 0,
+			};
+			item.total += 1;
+			if (isCompletedTask(task)) item.completed += 1;
+			if (!isCompletedTask(task) && isTaskOverdue(task)) item.overdue += 1;
+			map.set(key, item);
+		}
+	}
+	return [...map.values()]
+		.sort((a, b) => b.overdue - a.overdue || b.total - a.total || a.name.localeCompare(b.name))
+		.slice(0, limit);
+}
+
+function asksForSingleProjectReport(message) {
+	const text = normalizeText(message);
+	return (
+		/\b(bao cao|report|tong hop|summary|tong quan|overview|tinh hinh)\b/.test(text) &&
+		/\b(1|mot|one)\s*(project|du an)\b/.test(text)
+	);
+}
+
+async function projectReportTool({ user, params, message }) {
+	const scope = await getReportScope({ user, params, message });
+	if (scope.projects.length === 0) {
+		return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem để lập báo cáo.";
+	}
+	if (!scope.project && asksForSingleProjectReport(message)) {
+		const choices = scope.projects.slice(0, Math.min(Number(params?.limit) || 8, 10));
+		setPendingSelection(user, {
+			type: "project_report_project",
+			params: params || {},
+			choices: choices.map((project) => ({
+				id: project._id.toString(),
+				label: project.title,
+			})),
+		});
+		return [
+			"Bạn muốn xem báo cáo cho dự án nào? Chọn số giúp mình:",
+			formatNumberedChoices(choices, (project) => {
+				const due = project.due_date ? formatDate(project.due_date) : "chưa có deadline";
+				return `${project.title} (${project.status || "in progress"}, deadline: ${due})`;
+			}),
+		].join("\n");
+	}
+
+	const query = { ...scope.query };
+	const hasRange = hasExplicitReportRange(message, params);
+	if (hasRange) {
+		const range = parseDateRangeFromMessage(message, params);
+		query.due_date = { $gte: range.start, $lte: range.end };
+	}
+
+	const tasks = await Task.find(query)
+		.populate("assigned_to", "name email role")
+		.populate("project", "title status due_date")
+		.sort({ due_date: 1 });
+	const tasksByProject = new Map();
+	for (const task of tasks) {
+		const projectId = normalizeId(task.project);
+		if (!tasksByProject.has(projectId)) tasksByProject.set(projectId, []);
+		tasksByProject.get(projectId).push(task);
+	}
+
+	const title = scope.project
+		? `Báo cáo project "${scope.project.title}"`
+		: `Báo cáo theo project (${scope.projects.length} project)`;
+	const lines = [
+		hasRange
+			? `${title} trong khoảng ${formatDate(query.due_date.$gte)} - ${formatDate(query.due_date.$lte)}:`
+			: `${title}:`,
+	];
+
+	for (const project of scope.projects.slice(0, Math.min(Number(params?.limit) || 6, 10))) {
+		const projectTasks = tasksByProject.get(project._id.toString()) || [];
+		const summary = summarizeTaskList(projectTasks);
+		const completionRate = projectTasks.length
+			? Math.round((summary.completed.length / projectTasks.length) * 100)
+			: 0;
+		lines.push(
+			"",
+			`• ${project.title}`,
+			`  - Tổng task: ${projectTasks.length}; đang mở: ${summary.active.length}; hoàn thành: ${summary.completed.length} (${completionRate}%); trễ hạn: ${summary.overdue.length}; chưa gán: ${summary.unassigned.length}.`,
+			`  - Deadline project: ${formatDate(project.due_date)}; trạng thái: ${project.status || "in progress"}.`
+		);
+
+		const topAssignees = topAssigneesForTasks(projectTasks, 3);
+		if (topAssignees.length > 0) {
+			lines.push(
+				`  - Nhân sự nổi bật: ${topAssignees
+					.map((item) => `${item.name} ${item.total} task${item.overdue ? `, trễ ${item.overdue}` : ""}`)
+					.join("; ")}.`
+			);
+		}
+
+		const watchTasks = [
+			...summary.overdue,
+			...summary.dueSoon.filter((task) => !summary.overdue.some((late) => normalizeId(late) === normalizeId(task))),
+			...summary.unassigned.filter((task) => !summary.overdue.some((late) => normalizeId(late) === normalizeId(task))),
+		].slice(0, 4);
+		if (watchTasks.length > 0) {
+			lines.push("  - Task cần chú ý:");
+			watchTasks.forEach((task) => {
+				lines.push(`    + ${task.title} (${taskStatus(task)}, deadline ${formatDate(task.due_date)}, người làm: ${formatAssignees(task)})`);
+			});
+		}
+	}
+
+	if (tasks.length === 0) {
+		lines.push("", "Không có task nào khớp bộ lọc/khoảng thời gian này.");
+	}
+
+	return lines.join("\n");
 }
 
 async function dailyReportTool({ user, params, message }) {
@@ -1560,6 +2004,406 @@ async function overdueReportTool({ user, params, message }) {
 	});
 
 	return lines.join("\n");
+}
+
+function normalizeSmartQuery(params = {}, message = "") {
+	const raw = params.smart_query || {};
+	const inferred = inferSmartQueryIntent(message)?.params?.smart_query || {};
+	const query = {
+		...inferred,
+		...raw,
+		filters: {
+			...(inferred.filters || {}),
+			...(raw.filters || {}),
+		},
+	};
+	if (!["project", "task", "member"].includes(query.entity)) {
+		const text = normalizeText(message);
+		query.entity = /\b(nhan su|thanh vien|member|nguoi|user|ai)\b/.test(text)
+			? "member"
+			: /\b(task|cong viec|viec)\b/.test(text)
+				? "task"
+				: "project";
+	}
+	query.metric = query.metric || (query.entity === "task" ? "due_date" : "open_task_count");
+	query.sort = ["asc", "desc"].includes(query.sort)
+		? query.sort
+		: (query.metric === "due_date" ? "asc" : "desc");
+	query.limit = Math.min(Math.max(Number(params.limit || query.limit) || 5, 1), 12);
+	query.filters = query.filters || {};
+	query.filters.project_id = query.filters.project_id || params.project_id || null;
+	query.filters.project_name = query.filters.project_name || params.project_name || null;
+	query.filters.status = query.filters.status || params.status || null;
+	query.filters.date_from_iso = query.filters.date_from_iso || params.date_from_iso || null;
+	query.filters.date_to_iso = query.filters.date_to_iso || params.date_to_iso || null;
+	return query;
+}
+
+async function getSmartQueryScope({ user, query, message }) {
+	const { project, projects } = await resolveProject({
+		user,
+		projectId: query.filters.project_id,
+		projectName: query.filters.project_name,
+		message,
+	});
+	const scopedProjects = project ? [project] : projects;
+	const projectIds = scopedProjects.map((item) => item._id);
+	await syncOverdueTasks({ project: { $in: projectIds } });
+	await syncProjectStatuses(projectIds);
+	const taskQuery = { project: { $in: projectIds } };
+	if (user?.role === "employee") {
+		taskQuery.assigned_to = { $elemMatch: { $eq: new mongoose.Types.ObjectId(user.id) } };
+	}
+	if (query.filters.status) {
+		taskQuery.status = new RegExp(escapeRegex(query.filters.status), "i");
+	}
+	if (query.filters.date_from_iso || query.filters.date_to_iso || hasExplicitReportRange(message, query.filters)) {
+		const range = parseDateRangeFromMessage(message, query.filters);
+		taskQuery.due_date = { $gte: range.start, $lte: range.end };
+	}
+	return { project, projects: scopedProjects, projectIds, taskQuery };
+}
+
+function taskMatchesSmartFilters(task, query, now = Date.now()) {
+	const status = taskStatus(task);
+	if (query.filters.only_open && status === "completed") return false;
+	if (query.filters.only_overdue && !isTaskOverdue(task, now)) return false;
+	if (query.filters.unassigned && Array.isArray(task.assigned_to) && task.assigned_to.length > 0) return false;
+	return true;
+}
+
+function smartMetricLabel(metric) {
+	const labels = {
+		total_task_count: "tổng task",
+		open_task_count: "task đang mở",
+		completed_task_count: "task hoàn thành",
+		late_task_count: "task trễ hạn",
+		unassigned_task_count: "task chưa gán",
+		completion_rate: "tỉ lệ hoàn thành",
+		risk_score: "điểm rủi ro",
+		due_soon_count: "task sắp đến hạn",
+		overdue_days: "số ngày trễ",
+		due_date: "deadline",
+		priority: "độ ưu tiên",
+		difficulty: "độ khó",
+	};
+	return labels[metric] || metric;
+}
+
+function compareSmartRows(metric, direction) {
+	return (a, b) => {
+		const aValue = Number(a.metricValue ?? 0);
+		const bValue = Number(b.metricValue ?? 0);
+		const metricCompare = direction === "asc" ? aValue - bValue : bValue - aValue;
+		if (metricCompare !== 0) return metricCompare;
+		return String(a.name || "").localeCompare(String(b.name || ""));
+	};
+}
+
+function compareProjectSmartRows(metric, direction) {
+	return (a, b) => {
+		const aValue = Number(a.metricValue ?? 0);
+		const bValue = Number(b.metricValue ?? 0);
+		const metricCompare = direction === "asc" ? aValue - bValue : bValue - aValue;
+		if (metricCompare !== 0) return metricCompare;
+		if (metric === "late_task_count") {
+			const maxLateCompare = Number(b.maxOverdueDays || 0) - Number(a.maxOverdueDays || 0);
+			if (maxLateCompare !== 0) return maxLateCompare;
+			const totalLateCompare = Number(b.totalOverdueDays || 0) - Number(a.totalOverdueDays || 0);
+			if (totalLateCompare !== 0) return totalLateCompare;
+		}
+		return String(a.name || "").localeCompare(String(b.name || ""));
+	};
+}
+
+function formatLateTaskSummary(task, now = Date.now()) {
+	const overdueDays = Math.max(0, Math.floor((now - Number(task?.due_date || 0)) / 86400000));
+	return `- ${task.title}: trễ ${overdueDays} ngày, deadline ${formatDate(task.due_date)}, người làm: ${formatAssignees(task)}`;
+}
+
+async function smartQueryProjects({ user, query, message }) {
+	const scope = await getSmartQueryScope({ user, query, message });
+	if (scope.projects.length === 0) return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem.";
+	const now = Date.now();
+	const weekEnd = now + 7 * 86400000;
+	const tasks = await Task.find(scope.taskQuery)
+		.select("title project status due_date assigned_to")
+		.populate("assigned_to", "name email")
+		.lean();
+	const rowsByProject = new Map(scope.projects.map((project) => [
+		project._id.toString(),
+		{
+			name: project.title,
+			project,
+			total: 0,
+			open: 0,
+			completed: 0,
+			late: 0,
+			unassigned: 0,
+			dueSoon: 0,
+			risk: 0,
+			lateTasks: [],
+			maxOverdueDays: 0,
+			totalOverdueDays: 0,
+			metricValue: 0,
+		},
+	]));
+	for (const task of tasks) {
+		const row = rowsByProject.get(String(task.project));
+		if (!row) continue;
+		const status = taskStatus(task);
+		row.total += 1;
+		if (status === "completed") row.completed += 1;
+		else row.open += 1;
+		if (status === "late") {
+			const overdueDays = Math.max(0, Math.floor((now - Number(task.due_date || 0)) / 86400000));
+			row.late += 1;
+			row.lateTasks.push({ ...task, overdueDays });
+			row.maxOverdueDays = Math.max(row.maxOverdueDays, overdueDays);
+			row.totalOverdueDays += overdueDays;
+		}
+		if (!Array.isArray(task.assigned_to) || task.assigned_to.length === 0) row.unassigned += 1;
+		if (status !== "completed" && Number(task.due_date || 0) >= now && Number(task.due_date || 0) <= weekEnd) row.dueSoon += 1;
+	}
+	const rows = [...rowsByProject.values()].map((row) => {
+		const completionRate = row.total ? Math.round((row.completed / row.total) * 100) : 0;
+		row.risk = row.late * 3 + row.dueSoon * 1.5 + row.unassigned + row.open * 0.2;
+		const metrics = {
+			total_task_count: row.total,
+			open_task_count: row.open,
+			completed_task_count: row.completed,
+			late_task_count: row.late,
+			unassigned_task_count: row.unassigned,
+			completion_rate: completionRate,
+			risk_score: row.risk,
+			due_soon_count: row.dueSoon,
+		};
+		row.metricValue = metrics[query.metric] ?? row.open;
+		row.completionRate = completionRate;
+		row.lateTasks.sort((a, b) => Number(b.overdueDays || 0) - Number(a.overdueDays || 0));
+		return row;
+	}).filter((row) => row.total > 0 || ["completion_rate", "risk_score"].includes(query.metric));
+	rows.sort(compareProjectSmartRows(query.metric, query.sort));
+	const selected = rows.slice(0, query.limit);
+	if (query.metric === "late_task_count" && selected.length > 0) {
+		if (Number(selected[0].late || 0) <= 0) {
+			return "Hiện chưa có project nào có task đang trễ hạn trong phạm vi bạn có quyền xem.";
+		}
+		const lines = ["Kết quả theo project bị trễ hạn nhất:"];
+		selected.forEach((row, index) => {
+			lines.push(
+				`${index + 1}. ${row.name}: ${row.late} task trễ hạn, trễ nặng nhất ${row.maxOverdueDays} ngày; mở ${row.open}/${row.total}, hoàn thành ${row.completionRate}%.`
+			);
+			if (row.lateTasks.length > 0) {
+				lines.push("Task trễ tiêu biểu:");
+				row.lateTasks.slice(0, 5).forEach((task) => {
+					lines.push(formatLateTaskSummary(task, now));
+				});
+			} else {
+				lines.push("Không có task nào đang trễ hạn trong project này.");
+			}
+		});
+		return lines.join("\n");
+	}
+	if (selected.length === 0) return "Không có dữ liệu project phù hợp với câu hỏi này.";
+	return [
+		`Kết quả theo project (${smartMetricLabel(query.metric)}):`,
+		...selected.map((row, index) =>
+			`${index + 1}. ${row.name}: ${smartMetricLabel(query.metric)} ${formatSmartValue(row.metricValue, query.metric)}; mở ${row.open}/${row.total}, trễ ${row.late}, chưa gán ${row.unassigned}, hoàn thành ${row.completionRate}%.`
+		),
+	].join("\n");
+}
+
+async function smartQueryTasks({ user, query, message }) {
+	const scope = await getSmartQueryScope({ user, query, message });
+	if (scope.projects.length === 0) return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem.";
+	const now = Date.now();
+	const tasks = (await Task.find(scope.taskQuery)
+		.populate("assigned_to", "name email")
+		.populate("project", "title")
+		.sort({ due_date: 1 }))
+		.filter((task) => taskMatchesSmartFilters(task, query, now));
+	const rows = tasks.map((task) => {
+		const due = Number(task.due_date || 0);
+		const overdueDays = Math.max(0, Math.floor((now - due) / 86400000));
+		const metrics = {
+			overdue_days: overdueDays,
+			due_date: due || now,
+			priority: Number(task.priority || 0),
+			difficulty: Number(task.difficulty || 0),
+			assignee_count: Array.isArray(task.assigned_to) ? task.assigned_to.length : 0,
+		};
+		return {
+			task,
+			name: task.title,
+			metricValue: metrics[query.metric] ?? metrics.due_date,
+		};
+	});
+	rows.sort(compareSmartRows(query.metric, query.sort));
+	const selected = rows.slice(0, query.limit);
+	if (selected.length === 0) return "Không có task phù hợp với câu hỏi này.";
+	return [
+		`Kết quả theo task (${smartMetricLabel(query.metric)}):`,
+		...selected.map((row, index) => {
+			const task = row.task;
+			const projectTitle = task.project?.title ? `, project: ${task.project.title}` : "";
+			return `${index + 1}. ${task.title}: ${smartMetricLabel(query.metric)} ${formatSmartValue(row.metricValue, query.metric)}, trạng thái ${taskStatus(task)}, deadline ${formatDate(task.due_date)}, người làm: ${formatAssignees(task)}${projectTitle}.`;
+		}),
+	].join("\n");
+}
+
+async function smartQueryMembers({ user, query, message }) {
+	const scope = await getSmartQueryScope({ user, query, message });
+	if (scope.projects.length === 0) return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem.";
+	const teamIds = [...new Set(scope.projects.flatMap((project) => getProjectTeamIds(project)))];
+	const teams = await Team.find({ _id: { $in: teamIds } }).select("members");
+	const memberIds = [...new Set(teams.flatMap((team) => (team.members || []).map((member) => member.toString())))];
+	let members = await User.find({ _id: { $in: memberIds } }).select("name email role skills current_task_count");
+	if (user?.role === "employee") members = members.filter((member) => member._id.toString() === String(user.id));
+	const now = Date.now();
+	const weekEnd = now + 7 * 86400000;
+	const tasks = await Task.find(scope.taskQuery).populate("assigned_to", "name email");
+	const rowsByMember = new Map(members.map((member) => [
+		member._id.toString(),
+		{ member, name: member.name || member.email, total: 0, open: 0, completed: 0, late: 0, dueSoon: 0, metricValue: 0 },
+	]));
+	for (const task of tasks) {
+		const status = taskStatus(task);
+		for (const assignee of task.assigned_to || []) {
+			const row = rowsByMember.get(String(assignee?._id || assignee));
+			if (!row) continue;
+			row.total += 1;
+			if (status === "completed") row.completed += 1;
+			else row.open += 1;
+			if (status === "late") row.late += 1;
+			if (status !== "completed" && Number(task.due_date || 0) >= now && Number(task.due_date || 0) <= weekEnd) row.dueSoon += 1;
+		}
+	}
+	const rows = [...rowsByMember.values()].map((row) => {
+		const completionRate = row.total ? Math.round((row.completed / row.total) * 100) : 0;
+		const metrics = {
+			total_task_count: row.total,
+			open_task_count: row.open,
+			completed_task_count: row.completed,
+			late_task_count: row.late,
+			completion_rate: completionRate,
+			due_soon_count: row.dueSoon,
+		};
+		row.metricValue = metrics[query.metric] ?? row.open;
+		row.completionRate = completionRate;
+		return row;
+	}).filter((row) => row.total > 0 || query.metric === "open_task_count");
+	rows.sort(compareSmartRows(query.metric, query.sort));
+	const selected = rows.slice(0, query.limit);
+	if (selected.length === 0) return "Không có dữ liệu nhân sự phù hợp với câu hỏi này.";
+	return [
+		`Kết quả theo nhân sự (${smartMetricLabel(query.metric)}):`,
+		...selected.map((row, index) =>
+			`${index + 1}. ${row.name}: ${smartMetricLabel(query.metric)} ${formatSmartValue(row.metricValue, query.metric)}; mở ${row.open}/${row.total}, trễ ${row.late}, sắp đến hạn ${row.dueSoon}, hoàn thành ${row.completionRate}%.`
+		),
+	].join("\n");
+}
+
+function formatSmartValue(value, metric) {
+	if (metric === "completion_rate") return `${Math.round(Number(value || 0))}%`;
+	if (metric === "risk_score") return Number(value || 0).toFixed(1);
+	if (metric === "due_date") return formatDate(Number(value || 0));
+	if (metric === "overdue_days") return `${Math.max(0, Math.round(Number(value || 0)))} ngày`;
+	return String(Math.round(Number(value || 0)));
+}
+
+async function smartQueryTool({ user, params, message }) {
+	const query = normalizeSmartQuery(params, message);
+	if (query.entity === "project") return smartQueryProjects({ user, query, message });
+	if (query.entity === "task") return smartQueryTasks({ user, query, message });
+	if (query.entity === "member") return smartQueryMembers({ user, query, message });
+	return "Mình chưa xác định được bạn muốn phân tích project, task hay nhân sự.";
+}
+
+async function projectTaskRankingTool({ user, params }) {
+	const projects = await getAccessibleProjects(user);
+	if (projects.length === 0) {
+		return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem.";
+	}
+
+	const projectIds = projects.map((project) => project._id);
+	await syncOverdueTasks({ project: { $in: projectIds } });
+	await syncProjectStatuses(projectIds);
+
+	const query = { project: { $in: projectIds } };
+	if (user?.role === "employee") {
+		query.assigned_to = { $elemMatch: { $eq: new mongoose.Types.ObjectId(user.id) } };
+	}
+
+	const tasks = await Task.find(query).select("project status due_date").lean();
+	const rowsByProject = new Map();
+	for (const project of projects) {
+		rowsByProject.set(project._id.toString(), {
+			project,
+			total: 0,
+			active: 0,
+			completed: 0,
+			late: 0,
+		});
+	}
+
+	for (const task of tasks) {
+		const projectId = String(task.project);
+		const row = rowsByProject.get(projectId);
+		if (!row) continue;
+		const status = taskStatus(task);
+		row.total += 1;
+		if (status === "completed") row.completed += 1;
+		else row.active += 1;
+		if (status === "late") row.late += 1;
+	}
+
+	const rows = [...rowsByProject.values()]
+		.filter((row) => row.total > 0)
+		.sort((a, b) => b.active - a.active || b.late - a.late || b.total - a.total)
+		.slice(0, Math.min(Number(params?.limit) || 5, 10));
+
+	if (rows.length === 0) {
+		return "Hiện chưa có task nào trong các project bạn có quyền xem.";
+	}
+
+	return [
+		"Những dự án đang tồn nhiều task nhất:",
+		...rows.map((row, index) => {
+			const rate = row.total ? Math.round((row.completed / row.total) * 100) : 0;
+			return `${index + 1}. ${row.project.title}: còn mở ${row.active}/${row.total} task, trễ ${row.late}, hoàn thành ${rate}%.`;
+		}),
+	].join("\n");
+}
+
+async function overdueTaskRankingTool({ user, params }) {
+	const scope = await getReportScope({ user, params, message: "" });
+	if (scope.projects.length === 0) {
+		return "Mình chưa tìm thấy project nào trong phạm vi bạn có quyền xem để kiểm tra task trễ hạn.";
+	}
+
+	const now = Date.now();
+	const tasks = await Task.find(scope.query)
+		.populate("assigned_to", "name email")
+		.populate("project", "title")
+		.sort({ due_date: 1 });
+	const overdue = tasks
+		.filter((task) => isTaskOverdue(task, now))
+		.sort((a, b) => Number(a.due_date || 0) - Number(b.due_date || 0))
+		.slice(0, Math.min(Number(params?.limit) || 5, 10));
+
+	if (overdue.length === 0) {
+		return "Hiện chưa có task trễ hạn trong phạm vi bạn có quyền xem.";
+	}
+
+	return [
+		"Những task đang trễ hạn nặng nhất:",
+		...overdue.map((task, index) => {
+			const daysLate = Math.max(1, Math.floor((now - Number(task.due_date || now)) / 86400000));
+			const projectTitle = task.project?.title ? `, project: ${task.project.title}` : "";
+			return `${index + 1}. ${task.title}: trễ ${daysLate} ngày, deadline ${formatDate(task.due_date)}, người làm: ${formatAssignees(task)}${projectTitle}.`;
+		}),
+	].join("\n");
 }
 
 async function personnelStatsTool({ user, params, message }) {
@@ -1754,7 +2598,7 @@ async function personalReportTool({ user, params, message }) {
 }
 
 async function previewAssignmentTool({ user, params, message }) {
-	if (!["admin", "manager"].includes(user?.role)) {
+	if (!["superadmin", "admin", "manager"].includes(user?.role)) {
 		return "Role hiện tại chỉ có quyền xem, không thể preview phân công tự động.";
 	}
 
@@ -2078,6 +2922,18 @@ async function handlePendingSelection({ user, message }) {
 		});
 	}
 
+	if (pending.type === "project_report_project") {
+		clearPendingSelection(user);
+		return projectReportTool({
+			user,
+			params: {
+				...(pending.params || {}),
+				project_id: choice.id,
+			},
+			message: "",
+		});
+	}
+
 	if (pending.type === "update_project_project") {
 		clearPendingSelection(user);
 		return updateProjectTool({
@@ -2143,6 +2999,14 @@ async function executeTool({ intent, user, message }) {
 			return applyAssignmentTool({ user, params: intent.params || {}, message });
 		case "reassign_project":
 			return reassignProjectTool({ user, params: intent.params || {}, message });
+		case "smart_query":
+			return smartQueryTool({ user, params: intent.params || {}, message });
+		case "project_report":
+			return projectReportTool({ user, params: intent.params || {}, message });
+		case "project_task_ranking":
+			return projectTaskRankingTool({ user, params: intent.params || {}, message });
+		case "overdue_task_ranking":
+			return overdueTaskRankingTool({ user, params: intent.params || {}, message });
 		case "daily_report":
 			return dailyReportTool({ user, params: intent.params || {}, message });
 		case "overdue_report":
@@ -2185,36 +3049,83 @@ const sendMessage = async (req, res) => {
 			});
 		}
 
-		const heuristicIntent = classifyIntentHeuristic(message);
-		if (heuristicIntent) {
-			const toolResponse = await executeTool({
-				intent: heuristicIntent,
-				user: req.user,
-				message,
-			});
-			if (toolResponse) {
-				return res.json({
-					success: true,
-					response: toolResponse,
-					provider: "local",
-					model: "cpm-agent-tools",
-					action: heuristicIntent.action,
-					timestamp: new Date().toISOString(),
+		let aiModelBundle = null;
+		try {
+			aiModelBundle = getAIModel();
+		} catch (modelError) {
+			console.warn("AI model unavailable, falling back to heuristic:", modelError.message);
+		}
+		const { provider, modelName, model } = aiModelBundle || {
+			provider: "local",
+			modelName: "cpm-agent-heuristic-fallback",
+			model: null,
+		};
+		let intent = null;
+		let toolResponse = null;
+		let plannerProvider = provider;
+		let plannerModel = modelName;
+
+		if (model) {
+			try {
+				intent = await classifyIntent(model, message, req.user);
+				toolResponse = await executeTool({ intent, user: req.user, message });
+			} catch (plannerError) {
+				console.warn("AI intent planner failed, falling back to heuristic:", plannerError.message);
+			}
+		}
+
+		if (!toolResponse) {
+			const heuristicIntent = classifyIntentHeuristic(message);
+			if (heuristicIntent) {
+				intent = heuristicIntent;
+				plannerProvider = "local";
+				plannerModel = "cpm-agent-heuristic-fallback";
+				toolResponse = await executeTool({
+					intent: heuristicIntent,
+					user: req.user,
+					message,
 				});
 			}
 		}
 
-		const { provider, modelName, model } = getAIModel();
-		const intent = await classifyIntent(model, message, req.user?.role);
-		const toolResponse = await executeTool({ intent, user: req.user, message });
-
 		if (toolResponse) {
+			let response = toolResponse;
+			let answerProvider = "local";
+			let answerModel = "cpm-agent-tool";
+			if (model) {
+				try {
+					response = await composeToolAnswer(model, {
+						message,
+						user: req.user,
+						intent,
+						toolResponse,
+					});
+					answerProvider = provider;
+					answerModel = modelName;
+				} catch (composeError) {
+					console.warn("AI answer composer failed, returning tool response:", composeError.message);
+				}
+			}
 			return res.json({
 				success: true,
-				response: toolResponse,
-				provider,
-				model: modelName,
+				response,
+				provider: plannerProvider,
+				model: plannerModel,
+				answer_provider: answerProvider,
+				answer_model: answerModel,
 				action: intent.action,
+				intent_confidence: intent.confidence,
+				intent_reason: intent.route_reason,
+				timestamp: new Date().toISOString(),
+			});
+		}
+
+		if (!model) {
+			return res.json({
+				success: true,
+				response: "Mình chưa nối được LLM, và câu này chưa khớp tool nội bộ nào. Bạn nói rõ hơn theo kiểu: liệt kê project, báo cáo hôm nay, tạo task, hoặc preview phân công nhé.",
+				provider: "local",
+				model: "cpm-agent-heuristic-fallback",
 				timestamp: new Date().toISOString(),
 			});
 		}

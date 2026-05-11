@@ -4,11 +4,11 @@
       "$oid": "68a100000000000000000201"
     },
     "title": "Hệ thống quản lý đồ án môn học",
-    "description": "Web dashboard cho sinh viên lập kế hoạch dự án, chia task, xem lịch và theo dõi tiến độ.",
+    "description": "Web dashboard cho sinh viên lập kế hoạch, chia việc, theo dõi deadline và báo cáo tiến độ.",
     "due_date": {
-      "$numberLong": "1781517600000"
+      "$numberLong": "1777975200000"
     },
-    "status": "in progress",
+    "status": "late",
     "team": {
       "$oid": "68a100000000000000000101"
     },
@@ -46,20 +46,29 @@
         "order": 3
       }
     ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
     "customer": {
       "name": "Bộ môn Công nghệ phần mềm",
-      "code": "CPM-STUDENT",
-      "description": "Bộ môn Công nghệ phần mềm."
+      "code": "CPM-COURSE",
+      "description": "Dữ liệu demo cho Hệ thống quản lý đồ án môn học."
     },
-    "contacts": [],
-    "primary_contact": null
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
   },
   {
     "_id": {
       "$oid": "68a100000000000000000202"
     },
     "title": "Ứng dụng mobile theo dõi tiến độ nhóm",
-    "description": "Ứng dụng Flutter giúp sinh viên tạo task, xem người phụ trách và theo dõi deadline.",
+    "description": "Ứng dụng Flutter cho manager và thành viên xem task, nộp file, báo cáo tiến độ và nhận thông báo deadline.",
     "due_date": {
       "$numberLong": "1781949600000"
     },
@@ -101,20 +110,29 @@
         "order": 3
       }
     ],
-    "customer": {
-      "name": "Bộ môn Công nghệ phần mềm",
-      "code": "CPM-STUDENT",
-      "description": "Bộ môn Công nghệ phần mềm."
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
     },
-    "contacts": [],
-    "primary_contact": null
+    "customer": {
+      "name": "Nhóm sinh viên dùng thử",
+      "code": "CPM-MOBILE",
+      "description": "Dữ liệu demo cho Ứng dụng mobile theo dõi tiến độ nhóm."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
   },
   {
     "_id": {
       "$oid": "68a100000000000000000203"
     },
     "title": "Module gợi ý phân công thông minh",
-    "description": "Module AI và MCMF gợi ý người phù hợp dựa trên kỹ năng và tải công việc.",
+    "description": "Module AI kết hợp embedding, TF-IDF và Min-Cost Max-Flow để đề xuất người làm phù hợp.",
     "due_date": {
       "$numberLong": "1782381600000"
     },
@@ -156,20 +174,29 @@
         "order": 3
       }
     ],
-    "customer": {
-      "name": "Bộ môn Công nghệ phần mềm",
-      "code": "CPM-STUDENT",
-      "description": "Bộ môn Công nghệ phần mềm."
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
     },
-    "contacts": [],
-    "primary_contact": null
+    "customer": {
+      "name": "Hội đồng chấm đồ án",
+      "code": "CPM-AI",
+      "description": "Dữ liệu demo cho Module gợi ý phân công thông minh."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
   },
   {
     "_id": {
       "$oid": "68a100000000000000000204"
     },
     "title": "Cổng thông tin làm việc nhóm sinh viên",
-    "description": "Chức năng ghi chú, mention, mẫu giai đoạn và bàn giao công việc trong nhóm.",
+    "description": "Không gian cộng tác gồm ghi chú, bình luận, lịch họp, file đính kèm và lịch sử bàn giao.",
     "due_date": {
       "$numberLong": "1782900000000"
     },
@@ -211,24 +238,33 @@
         "order": 3
       }
     ],
-    "customer": {
-      "name": "Bộ môn Công nghệ phần mềm",
-      "code": "CPM-STUDENT",
-      "description": "Bộ môn Công nghệ phần mềm."
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
     },
-    "contacts": [],
-    "primary_contact": null
+    "customer": {
+      "name": "Câu lạc bộ học thuật",
+      "code": "CPM-PORTAL",
+      "description": "Dữ liệu demo cho Cổng thông tin làm việc nhóm sinh viên."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
   },
   {
     "_id": {
       "$oid": "68a100000000000000000205"
     },
     "title": "Kiểm thử và triển khai hệ thống quản lý",
-    "description": "Kiểm thử, triển khai, dữ liệu mẫu và theo dõi chất lượng cho hệ thống.",
+    "description": "Chuẩn bị dữ liệu mẫu, checklist kiểm thử, hướng dẫn cài đặt và môi trường demo cho hội đồng.",
     "due_date": {
-      "$numberLong": "1783245600000"
+      "$numberLong": "1778234400000"
     },
-    "status": "in progress",
+    "status": "completed",
     "team": {
       "$oid": "68a100000000000000000104"
     },
@@ -269,12 +305,475 @@
         "order": 3
       }
     ],
-    "customer": {
-      "name": "Bộ môn Công nghệ phần mềm",
-      "code": "CPM-STUDENT",
-      "description": "Bộ môn Công nghệ phần mềm."
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
     },
-    "contacts": [],
-    "primary_contact": null
+    "customer": {
+      "name": "Nhóm bảo vệ đồ án",
+      "code": "CPM-RELEASE",
+      "description": "Dữ liệu demo cho Kiểm thử và triển khai hệ thống quản lý."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000206"
+    },
+    "title": "Báo cáo tự động cho từng dự án",
+    "description": "Tổng hợp tiến độ theo khoảng thời gian, phát hiện task trễ, thống kê nhân sự và xuất nội dung cho báo cáo.",
+    "due_date": {
+      "$numberLong": "1779098400000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000104"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000104"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "customer": {
+      "name": "Ban quản lý lớp học phần",
+      "code": "CPM-REPORT",
+      "description": "Dữ liệu demo cho Báo cáo tự động cho từng dự án."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000207"
+    },
+    "title": "Quản lý người dùng và phân quyền",
+    "description": "Cho admin quản lý tài khoản, role, team, kỹ năng và quyền chỉnh sửa task/project.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000101"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000101"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "customer": {
+      "name": "Admin hệ thống demo",
+      "code": "CPM-ADMIN",
+      "description": "Dữ liệu demo cho Quản lý người dùng và phân quyền."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000208"
+    },
+    "title": "Kho học liệu và file đính kèm task",
+    "description": "Cho phép upload, preview và tải xuống tài liệu, hình ảnh, PDF trong từng task.",
+    "due_date": {
+      "$numberLong": "1781085600000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000103"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000103"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "customer": {
+      "name": "Nhóm nộp minh chứng",
+      "code": "CPM-FILES",
+      "description": "Dữ liệu demo cho Kho học liệu và file đính kèm task."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000209"
+    },
+    "title": "Onboarding thành viên mới vào nhóm đồ án",
+    "description": "Chuẩn bị tài khoản, phân quyền, tài liệu hướng dẫn và checklist để sinh viên mới tham gia nhóm nhanh hơn.",
+    "due_date": {
+      "$numberLong": "1777629600000"
+    },
+    "status": "completed",
+    "team": {
+      "$oid": "68a100000000000000000101"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000101"
+      },
+      {
+        "$oid": "68a100000000000000000104"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "customer": {
+      "name": "Lớp trưởng nhóm đồ án",
+      "code": "CPM-ONBOARD",
+      "description": "Dữ liệu demo cho Onboarding thành viên mới vào nhóm đồ án."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000210"
+    },
+    "title": "Hệ thống nhắc deadline và cảnh báo rủi ro",
+    "description": "Phát hiện task sát hạn, task trễ, người đang quá tải và gửi gợi ý hành động cho manager.",
+    "due_date": {
+      "$numberLong": "1778925600000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000104"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000104"
+      },
+      {
+        "$oid": "68a100000000000000000103"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "customer": {
+      "name": "Manager nhóm sinh viên",
+      "code": "CPM-RISK",
+      "description": "Dữ liệu demo cho Hệ thống nhắc deadline và cảnh báo rủi ro."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000211"
+    },
+    "title": "Không gian demo cho hội đồng nghiệm thu",
+    "description": "Chuẩn bị dữ liệu trình diễn, kịch bản hỏi chatbot, project mẫu và ảnh minh chứng trước buổi báo cáo.",
+    "due_date": {
+      "$numberLong": "1778580000000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000101"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000101"
+      },
+      {
+        "$oid": "68a100000000000000000104"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "customer": {
+      "name": "Hội đồng nghiệm thu",
+      "code": "CPM-DEMO",
+      "description": "Dữ liệu demo cho Không gian demo cho hội đồng nghiệm thu."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000000212"
+    },
+    "title": "Nghiên cứu mở rộng tích hợp LLM",
+    "description": "Thử nghiệm OpenAI-compatible API, Claude/Gemini fallback, prompt routing và cơ chế agent trả lời theo dữ liệu thật.",
+    "due_date": {
+      "$numberLong": "1784541600000"
+    },
+    "status": "in progress",
+    "team": {
+      "$oid": "68a100000000000000000104"
+    },
+    "teams": [
+      {
+        "$oid": "68a100000000000000000104"
+      },
+      {
+        "$oid": "68a100000000000000000102"
+      }
+    ],
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "stage_template_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "customer": {
+      "name": "Nhóm nghiên cứu mở rộng",
+      "code": "CPM-LLM",
+      "description": "Dữ liệu demo cho Nghiên cứu mở rộng tích hợp LLM."
+    },
+    "contacts": [
+      {
+        "$oid": "68a100000000000000007001"
+      }
+    ],
+    "primary_contact": {
+      "$oid": "68a100000000000000007001"
+    }
   }
 ]

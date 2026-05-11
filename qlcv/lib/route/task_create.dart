@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:qlcv/model/color_picker.dart';
 import 'package:qlcv/model/task.dart';
 import 'package:qlcv/utils/logger.dart';
@@ -31,6 +38,7 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
   bool _isSuggesting = false;
   bool _autoSuggestReady = false;
   List<_AssigneeSuggestion> _suggestions = [];
+  final List<PlatformFile> _attachments = [];
   Timer? _suggestionDebounce;
   int _suggestionRequestId = 0;
 
@@ -134,7 +142,7 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
         canParallelize: _canParallelize,
       );
 
-      await DBHelper.addTask(task);
+      await DBHelper.addTask(task, attachments: _attachments);
       if (!mounted) return;
       Navigator.pop(context, true);
     } on Exception catch (error) {
@@ -233,6 +241,60 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
     });
   }
 
+  Future<void> _pickAttachments() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      withData: true,
+      withReadStream: true,
+    );
+
+    if (result == null || result.files.isEmpty) return;
+
+    setState(() {
+      final existingKeys = _attachments
+          .map((file) => '${file.name}:${file.size}:${file.path ?? ''}')
+          .toSet();
+
+      for (final file in result.files) {
+        final key = '${file.name}:${file.size}:${file.path ?? ''}';
+        if (!existingKeys.contains(key)) {
+          _attachments.add(file);
+          existingKeys.add(key);
+        }
+      }
+    });
+  }
+
+  void _removeAttachment(PlatformFile file) {
+    setState(() {
+      _attachments.remove(file);
+    });
+  }
+
+  Future<void> _previewAttachment(PlatformFile file) async {
+    Uint8List? bytes = file.bytes;
+    if (bytes == null && file.path != null) {
+      bytes = await File(file.path!).readAsBytes();
+    }
+    if (bytes == null && file.readStream != null) {
+      final chunks = <int>[];
+      await for (final chunk in file.readStream!) {
+        chunks.addAll(chunk);
+      }
+      bytes = Uint8List.fromList(chunks);
+    }
+
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => _AttachmentPreviewDialog(
+        name: file.name,
+        size: file.size,
+        bytes: bytes,
+      ),
+    );
+  }
+
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -292,6 +354,19 @@ class _TaskCreateRouteState extends State<TaskCreateRoute> {
                     icon: Icons.notes_outlined,
                     minLines: 4,
                     maxLines: 6,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _FormSection(
+                title: 'Attachments',
+                icon: Icons.attach_file_outlined,
+                children: [
+                  _AttachmentPicker(
+                    attachments: _attachments,
+                    onPick: _pickAttachments,
+                    onRemove: _removeAttachment,
+                    onPreview: _previewAttachment,
                   ),
                 ],
               ),
@@ -848,6 +923,331 @@ class _StyledTextField extends StatelessWidget {
   }
 }
 
+class _AttachmentPicker extends StatelessWidget {
+  final List<PlatformFile> attachments;
+  final VoidCallback onPick;
+  final ValueChanged<PlatformFile> onRemove;
+  final ValueChanged<PlatformFile> onPreview;
+
+  const _AttachmentPicker({
+    required this.attachments,
+    required this.onPick,
+    required this.onRemove,
+    required this.onPreview,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        OutlinedButton.icon(
+          onPressed: onPick,
+          icon: const Icon(Icons.upload_file_outlined, size: 18),
+          label: const Text('Add files'),
+        ),
+        const SizedBox(height: 10),
+        if (attachments.isEmpty)
+          const Text(
+            'No files attached',
+            style: TextStyle(color: ColorPicker.fontMedium),
+          )
+        else
+          Column(
+            children: attachments.map((file) {
+              return InkWell(
+                onTap: () => onPreview(file),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: ColorPicker.backgroundLight,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: ColorPicker.cardBorder),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.insert_drive_file_outlined,
+                        color: ColorPicker.fontMedium,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              file.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: ColorPicker.fontDark,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _formatFileSize(file.size),
+                              style: const TextStyle(
+                                color: ColorPicker.fontMedium,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => onRemove(file),
+                        icon: const Icon(Icons.close_outlined, size: 18),
+                        tooltip: 'Remove file',
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+      ],
+    );
+  }
+}
+
+class _AttachmentPreviewDialog extends StatelessWidget {
+  final String name;
+  final int size;
+  final Uint8List? bytes;
+
+  const _AttachmentPreviewDialog({
+    required this.name,
+    required this.size,
+    required this.bytes,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final preview = _buildPreview();
+
+    return Dialog(
+      insetPadding: const EdgeInsets.all(18),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560, maxHeight: 720),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 8, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.insert_drive_file_outlined,
+                      color: ColorPicker.fontMedium),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: ColorPicker.fontDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          _formatFileSize(size),
+                          style: const TextStyle(
+                            color: ColorPicker.fontMedium,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close_outlined),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: preview,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Close'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreview() {
+    if (bytes == null) {
+      return const _PreviewFallback(
+        message: 'This file cannot be previewed.',
+      );
+    }
+
+    if (_isImageFile(name)) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: InteractiveViewer(
+          minScale: 0.6,
+          maxScale: 4,
+          child: Image.memory(
+            bytes!,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => const _PreviewFallback(
+              message: 'Image preview failed.',
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_isTextFile(name)) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: ColorPicker.backgroundLight,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: ColorPicker.cardBorder),
+        ),
+        child: SingleChildScrollView(
+          child: SelectableText(
+            _decodeText(bytes!),
+            style: const TextStyle(
+              color: ColorPicker.fontDark,
+              fontSize: 13,
+              height: 1.35,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_isPdfFile(name)) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          height: 520,
+          decoration: BoxDecoration(
+            color: ColorPicker.backgroundLight,
+            border: Border.all(color: ColorPicker.cardBorder),
+          ),
+          child: _PdfPreview(bytes: bytes!, name: name),
+        ),
+      );
+    }
+
+    return const _PreviewFallback(
+      message: 'Preview is not available for this file type.',
+    );
+  }
+}
+
+class _PdfPreview extends StatefulWidget {
+  final Uint8List bytes;
+  final String name;
+
+  const _PdfPreview({
+    required this.bytes,
+    required this.name,
+  });
+
+  @override
+  State<_PdfPreview> createState() => _PdfPreviewState();
+}
+
+class _PdfPreviewState extends State<_PdfPreview> {
+  late final Future<File> _pdfFileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfFileFuture = _writePdfPreviewFile(widget.bytes, widget.name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<File>(
+      future: _pdfFileFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const _PreviewFallback(message: 'PDF preview failed.');
+        }
+
+        return PDFView(
+          filePath: snapshot.data!.path,
+          enableSwipe: true,
+          swipeHorizontal: false,
+          autoSpacing: true,
+          pageFling: true,
+          onError: (_) {},
+          onPageError: (_, __) {},
+        );
+      },
+    );
+  }
+}
+
+class _PreviewFallback extends StatelessWidget {
+  final String message;
+
+  const _PreviewFallback({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ColorPicker.backgroundLight,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: ColorPicker.cardBorder),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.preview_outlined,
+            size: 36,
+            color: ColorPicker.fontMedium,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: ColorPicker.fontMedium),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 InputDecoration _fieldDecoration({
   required String label,
   required IconData icon,
@@ -1155,4 +1555,55 @@ Color _scoreColor(double? value) {
   if (score >= 0.75) return Colors.green.shade700;
   if (score >= 0.45) return Colors.orange.shade800;
   return ColorPicker.fontMedium;
+}
+
+String _formatFileSize(int bytes) {
+  if (bytes < 1024) return '$bytes B';
+  final kb = bytes / 1024;
+  if (kb < 1024) return '${kb.toStringAsFixed(kb >= 100 ? 0 : 1)} KB';
+  final mb = kb / 1024;
+  return '${mb.toStringAsFixed(mb >= 100 ? 0 : 1)} MB';
+}
+
+bool _isImageFile(String name) {
+  final lowerName = name.toLowerCase();
+  return lowerName.endsWith('.png') ||
+      lowerName.endsWith('.jpg') ||
+      lowerName.endsWith('.jpeg') ||
+      lowerName.endsWith('.gif') ||
+      lowerName.endsWith('.webp') ||
+      lowerName.endsWith('.bmp');
+}
+
+bool _isTextFile(String name) {
+  final lowerName = name.toLowerCase();
+  return lowerName.endsWith('.txt') ||
+      lowerName.endsWith('.md') ||
+      lowerName.endsWith('.json') ||
+      lowerName.endsWith('.csv') ||
+      lowerName.endsWith('.log') ||
+      lowerName.endsWith('.yaml') ||
+      lowerName.endsWith('.yml');
+}
+
+bool _isPdfFile(String name) {
+  return name.toLowerCase().endsWith('.pdf');
+}
+
+Future<File> _writePdfPreviewFile(Uint8List bytes, String name) async {
+  final directory = await getTemporaryDirectory();
+  final safeName = name.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+  final pdfName =
+      safeName.toLowerCase().endsWith('.pdf') ? safeName : '$safeName.pdf';
+  final file = File(
+      '${directory.path}/attachment_preview_${DateTime.now().microsecondsSinceEpoch}_$pdfName');
+  return file.writeAsBytes(bytes, flush: true);
+}
+
+String _decodeText(Uint8List bytes) {
+  try {
+    return const Utf8Decoder(allowMalformed: true).convert(bytes);
+  } catch (_) {
+    return String.fromCharCodes(bytes);
+  }
 }

@@ -31,7 +31,7 @@ function sanitizeUserDoc(userDoc) {
 }
 
 async function ensureCanManageUser(req, targetUserId) {
-	if (req.user.role === "admin") return true;
+	if (["superadmin", "admin"].includes(req.user.role)) return true;
 	if (req.user.role === "manager") {
 		const sharedTeam = await Team.findOne({
 			members: {

@@ -9,6 +9,7 @@ const role = [
 
 function roleNum(role) {
 	switch (role) {
+		case "superadmin":
 		case "admin":
 			return 1;
 		case "manager":

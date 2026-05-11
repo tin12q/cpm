@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter/services.dart';
@@ -31,6 +33,105 @@ class DBHelper {
 
   static List<Project> resProjects = [];
   static List<Task> resTasks = [];
+
+  static List<TaskAttachment> _parseAttachments(dynamic value) {
+    if (value is! List) return const [];
+    return value
+        .whereType<Map>()
+        .map((item) => TaskAttachment.fromJson(
+              item.map((key, val) => MapEntry(key.toString(), val)),
+            ))
+        .toList();
+  }
+
+  static Future<http.MultipartFile> _attachmentMultipartFile(
+    PlatformFile file,
+  ) async {
+    if (file.bytes != null) {
+      return http.MultipartFile.fromBytes(
+        'attachments',
+        file.bytes!,
+        filename: file.name,
+      );
+    }
+
+    if (file.path != null) {
+      return http.MultipartFile.fromPath(
+        'attachments',
+        file.path!,
+        filename: file.name,
+      );
+    }
+
+    if (file.readStream != null) {
+      return http.MultipartFile(
+        'attachments',
+        http.ByteStream(file.readStream!),
+        file.size,
+        filename: file.name,
+      );
+    }
+
+    throw Exception('Cannot read selected file: ${file.name}');
+  }
+
+  static final RegExp _objectIdPattern = RegExp(r'^[a-fA-F0-9]{24}$');
+
+  static String resolveEmployeeId(String value) {
+    final normalized = value.trim();
+    if (normalized.isEmpty) return '';
+    if (_objectIdPattern.hasMatch(normalized)) return normalized;
+    if (empMap.containsKey(normalized)) return normalized;
+
+    final candidates = <Employee>[
+      ...empProject,
+      ...employees,
+      ...empMap.values.whereType<Employee>(),
+    ];
+
+    for (final employee in candidates) {
+      if (employee.id == normalized || employee.name == normalized) {
+        return employee.id;
+      }
+    }
+
+    return normalized;
+  }
+
+  static List<String> resolveEmployeeIds(List<String> values) {
+    final resolved = <String>[];
+    final seen = <String>{};
+    for (final value in values) {
+      final id = resolveEmployeeId(value);
+      if (id.isEmpty || seen.contains(id)) continue;
+      resolved.add(id);
+      seen.add(id);
+    }
+    return resolved;
+  }
+
+  static List<String> _parseSkillNames(dynamic value) {
+    if (value is! List) return const [];
+    return value
+        .map((skill) {
+          if (skill is String) return skill.trim();
+          if (skill is Map) return skill['name']?.toString().trim() ?? '';
+          return '';
+        })
+        .where((skill) => skill.isNotEmpty)
+        .toList();
+  }
+
+  static List<Map<String, String>> _skillPayload(List<String> skills) {
+    return skills
+        .map((skill) => skill.trim())
+        .where((skill) => skill.isNotEmpty)
+        .map((skill) => {
+              'name': skill,
+              'description': '',
+            })
+        .toList();
+  }
 
   // mainUser file image
   static File? imageFile;
@@ -89,6 +190,7 @@ class DBHelper {
 
   static Future<void> getEmp() async {
     try {
+      employees.clear();
       var url = Uri.parse('${ApiConfig.baseUrl}/api/users/getAll');
       var response = await http.get(
         url,
@@ -99,8 +201,20 @@ class DBHelper {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         for (var emp in data) {
-          employees.add(
-              Employee(name: emp['name'], role: emp['role'], id: emp['_id']));
+          employees.add(Employee(
+            name: emp['name'] ?? '',
+            role: emp['role'] ?? '',
+            id: emp['_id'] ?? '',
+            email: emp['email'] ?? '',
+            skills: _parseSkillNames(emp['skills']),
+            productivityScore:
+                double.tryParse(emp['productivity_score']?.toString() ?? '') ??
+                    0.8,
+            onTimeRate:
+                double.tryParse(emp['on_time_rate']?.toString() ?? '') ?? 85.0,
+            currentTaskCount:
+                int.tryParse(emp['current_task_count']?.toString() ?? '') ?? 0,
+          ));
         }
       } else {
         throw Exception('Failed to get employees.');
@@ -108,6 +222,70 @@ class DBHelper {
     } catch (e) {
       AppLogger.error('Failed to get employees in getEmp', e, null, 'DBHelper');
     }
+  }
+
+  static Future<List<Employee>> reloadUsers() async {
+    await getEmp();
+    return List<Employee>.from(employees);
+  }
+
+  static Future<void> updateUserProfile({
+    required String id,
+    required String name,
+    required String email,
+    required String role,
+    String? password,
+    List<String> skills = const [],
+  }) async {
+    final body = <String, dynamic>{
+      'name': name.trim(),
+      'email': email.trim(),
+      'role': role.trim().toLowerCase(),
+      'skills': _skillPayload(skills),
+    };
+    if (password != null && password.trim().isNotEmpty) {
+      body['password'] = password.trim();
+    }
+
+    final response = await http.put(
+      Uri.parse('${ApiConfig.usersEndpoint}/$id'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      String message = 'Failed to update user.';
+      try {
+        final data = jsonDecode(response.body);
+        message = data['error']?.toString() ?? message;
+      } catch (_) {}
+      throw Exception(message);
+    }
+
+    await getEmp();
+  }
+
+  static Future<void> deleteUserById(String id) async {
+    final response = await http.delete(
+      Uri.parse('${ApiConfig.usersEndpoint}/$id'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      String message = 'Failed to delete user.';
+      try {
+        final data = jsonDecode(response.body);
+        message = data['error']?.toString() ?? message;
+      } catch (_) {}
+      throw Exception(message);
+    }
+
+    employees.removeWhere((employee) => employee.id == id);
   }
 
   static Future<void> getDep() async {
@@ -440,7 +618,8 @@ class DBHelper {
                 emp: members,
                 difficulty: task['difficulty'] ?? 2,
                 priority: task['priority'] ?? 3,
-                canParallelize: task['can_parallelize'] ?? true));
+                canParallelize: task['can_parallelize'] ?? true,
+                attachments: _parseAttachments(task['attachments'])));
             resTasks.add(Task(
                 id: task['_id'],
                 title: task['title'],
@@ -453,7 +632,8 @@ class DBHelper {
                 emp: members,
                 difficulty: task['difficulty'] ?? 2,
                 priority: task['priority'] ?? 3,
-                canParallelize: task['can_parallelize'] ?? true));
+                canParallelize: task['can_parallelize'] ?? true,
+                attachments: _parseAttachments(task['attachments'])));
           } else {
             if (members.contains(mainUser.id)) {
               tasks.add(Task(
@@ -468,7 +648,8 @@ class DBHelper {
                   emp: members,
                   difficulty: task['difficulty'] ?? 2,
                   priority: task['priority'] ?? 3,
-                  canParallelize: task['can_parallelize'] ?? true));
+                  canParallelize: task['can_parallelize'] ?? true,
+                  attachments: _parseAttachments(task['attachments'])));
               resTasks.add(Task(
                   id: task['_id'],
                   title: task['title'],
@@ -481,7 +662,8 @@ class DBHelper {
                   emp: members,
                   difficulty: task['difficulty'] ?? 2,
                   priority: task['priority'] ?? 3,
-                  canParallelize: task['can_parallelize'] ?? true));
+                  canParallelize: task['can_parallelize'] ?? true,
+                  attachments: _parseAttachments(task['attachments'])));
             }
           }
         }
@@ -580,6 +762,7 @@ class DBHelper {
             difficulty: task['difficulty'] ?? 2,
             priority: task['priority'] ?? 3,
             canParallelize: task['can_parallelize'] ?? true,
+            attachments: _parseAttachments(task['attachments']),
           );
 
           projectTasks.add(parsedTask);
@@ -841,39 +1024,45 @@ class DBHelper {
     }
   }
 
-  static Future<void> addTask(Task task) async {
+  static Future<void> addTask(
+    Task task, {
+    List<PlatformFile> attachments = const [],
+  }) async {
     try {
       var url = Uri.parse('${ApiConfig.baseUrl}/api/tasks/');
       AppLogger.debug('Adding task: ${task.title}', 'DBHelper');
       var dateToMiliseconds = task.endDate.millisecondsSinceEpoch;
-      var response = await http.post(
-        url,
-        headers: <String, String>{
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Bearer $token',
-        },
-        body: <String, String>{
+      final request = http.MultipartRequest('POST', url)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields.addAll(<String, String>{
           'title': task.title,
           'description': task.description,
           'status': StatusHelper.normalizeStatus(task.status),
-          'assigned_to': task.emp.join(','),
+          'assigned_to': resolveEmployeeIds(task.emp).join(','),
           'project': currentProjectId,
           'due_date': dateToMiliseconds.toString(),
           'difficulty': task.difficulty.toString(),
           'priority': task.priority.toString(),
           'can_parallelize': task.canParallelize.toString(),
-        },
-      );
+        });
+
+      for (final file in attachments) {
+        request.files.add(await _attachmentMultipartFile(file));
+      }
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
       AppLogger.debug(
           'Response status code: ${response.statusCode}', 'DBHelper');
       if (response.statusCode == 201) {
         projectTasks.clear();
         AppLogger.info('Task added successfully', 'DBHelper');
       } else {
-        throw Exception('Failed to add task.');
+        throw Exception('Failed to add task: ${response.body}');
       }
     } catch (e) {
       AppLogger.error('Failed to add task', e, null, 'DBHelper');
+      rethrow;
     }
   }
 
@@ -891,37 +1080,91 @@ class DBHelper {
   //update Uid of all Employees in firebase to match their Uid in firebase auth
   static updateUID() async {}
 
-  static Future<void> updateTask(Task task) async {
+  static Future<List<TaskAttachment>> updateTask(
+    Task task, {
+    List<PlatformFile> attachments = const [],
+    List<String> removeAttachmentIds = const [],
+  }) async {
     try {
       var url = Uri.parse('${ApiConfig.baseUrl}/api/tasks/${task.id}');
-      var response = await http.put(
-        url,
-        headers: <String, String>{
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Bearer $token',
-        },
-        body: <String, String>{
+      final request = http.MultipartRequest('PUT', url)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields.addAll(<String, String>{
           'title': task.title,
           'description': task.description,
           'status': StatusHelper.normalizeStatus(task.status),
           'due_date': task.endDate.millisecondsSinceEpoch.toString(),
-          'assigned_to': task.emp.join(','),
+          'assigned_to': resolveEmployeeIds(task.emp).join(','),
           'difficulty': task.difficulty.toString(),
           'priority': task.priority.toString(),
           'can_parallelize': task.canParallelize.toString(),
-        },
-      );
+          'remove_attachment_ids': removeAttachmentIds.join(','),
+        });
+
+      for (final file in attachments) {
+        request.files.add(await _attachmentMultipartFile(file));
+      }
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
         tasks.clear();
         projectTasks.clear();
         AppLogger.info('Task updated successfully', 'DBHelper');
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic>) {
+          return _parseAttachments(data['attachments']);
+        }
+        return task.attachments;
       } else {
-        throw Exception('Failed to update task.');
+        throw Exception('Failed to update task: ${response.body}');
       }
     } catch (e) {
       AppLogger.error('Failed to update task', e, null, 'DBHelper');
+      rethrow;
     }
+  }
+
+  static Future<File> downloadTaskAttachment(
+    String taskId,
+    TaskAttachment attachment,
+  ) async {
+    final safeName = attachment.originalName
+        .replaceAll(RegExp(r'[\\/:*?"<>|]+'), '_')
+        .trim();
+    final fileName = safeName.isEmpty ? attachment.filename : safeName;
+    final directory = await getApplicationDocumentsDirectory();
+    final attachmentDirectory = Directory('${directory.path}/task_attachments');
+    if (!await attachmentDirectory.exists()) {
+      await attachmentDirectory.create(recursive: true);
+    }
+
+    final bytes = await fetchTaskAttachmentBytes(taskId, attachment);
+
+    final file = File('${attachmentDirectory.path}/$fileName');
+    await file.writeAsBytes(bytes);
+    return file;
+  }
+
+  static Future<Uint8List> fetchTaskAttachmentBytes(
+    String taskId,
+    TaskAttachment attachment,
+  ) async {
+    final url = Uri.parse(
+        '${ApiConfig.baseUrl}/api/tasks/$taskId/attachments/${attachment.id}');
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load attachment preview.');
+    }
+
+    return response.bodyBytes;
   }
 
   //update emp list of task from uid to name
@@ -1161,7 +1404,8 @@ class DBHelper {
                 emp: members,
                 difficulty: task['difficulty'] ?? 2,
                 priority: task['priority'] ?? 3,
-                canParallelize: task['can_parallelize'] ?? true));
+                canParallelize: task['can_parallelize'] ?? true,
+                attachments: _parseAttachments(task['attachments'])));
             resTasks.add(Task(
                 id: task['_id'],
                 title: task['title'],
@@ -1174,7 +1418,8 @@ class DBHelper {
                 emp: members,
                 difficulty: task['difficulty'] ?? 2,
                 priority: task['priority'] ?? 3,
-                canParallelize: task['can_parallelize'] ?? true));
+                canParallelize: task['can_parallelize'] ?? true,
+                attachments: _parseAttachments(task['attachments'])));
           }
         }
         updateTaskEMP();
@@ -1227,7 +1472,8 @@ class DBHelper {
                 emp: members,
                 difficulty: task['difficulty'] ?? 2,
                 priority: task['priority'] ?? 3,
-                canParallelize: task['can_parallelize'] ?? true));
+                canParallelize: task['can_parallelize'] ?? true,
+                attachments: _parseAttachments(task['attachments'])));
           }
         }
         updateTaskEMP();

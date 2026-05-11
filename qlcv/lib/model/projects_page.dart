@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:qlcv/model/db_helper.dart';
 import 'package:qlcv/model/project.dart';
 import 'package:qlcv/route/project_assignment_page.dart';
+import 'package:qlcv/route/project_overview_page.dart';
 import 'package:qlcv/route/project_tasks.dart';
 
 import '../utils/status_helper.dart';
@@ -114,6 +115,15 @@ class _ProjectPageState extends State<ProjectPage> {
     );
   }
 
+  void _openOverview() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProjectOverviewPage(project: project),
+      ),
+    );
+  }
+
   Future<void> _pickDueDate() async {
     final selectedDate = await showDatePicker(
       context: context,
@@ -170,6 +180,7 @@ class _ProjectPageState extends State<ProjectPage> {
                 canEdit: _canEdit,
                 onSave: _confirmUpdate,
                 onOpenTasks: _openTasks,
+                onOpenOverview: _openOverview,
               ),
               const SizedBox(height: 14),
               if (_canEdit)
@@ -285,6 +296,7 @@ class _HeroPanel extends StatelessWidget {
   final bool canEdit;
   final VoidCallback onSave;
   final VoidCallback onOpenTasks;
+  final VoidCallback onOpenOverview;
 
   const _HeroPanel({
     required this.title,
@@ -295,6 +307,7 @@ class _HeroPanel extends StatelessWidget {
     required this.canEdit,
     required this.onSave,
     required this.onOpenTasks,
+    required this.onOpenOverview,
   });
 
   @override
@@ -363,6 +376,12 @@ class _HeroPanel extends StatelessWidget {
                 icon: const Icon(Icons.task_alt_outlined, size: 18),
                 label: const Text('Tasks'),
               ),
+              if (canEdit)
+                FilledButton.tonalIcon(
+                  onPressed: onOpenOverview,
+                  icon: const Icon(Icons.insights_outlined, size: 18),
+                  label: const Text('Overview'),
+                ),
               if (canEdit)
                 OutlinedButton.icon(
                   onPressed: onSave,

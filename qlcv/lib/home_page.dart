@@ -132,6 +132,7 @@ class _HomePageState extends State<HomePage> {
       : const [
           GButton(
             icon: Icons.dashboard_outlined,
+            text: 'Dashboard',
           ),
           GButton(
             icon: Icons.home_outlined,

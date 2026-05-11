@@ -4,6 +4,15 @@ const Team = require("../models/team.model");
 const Task = require("../models/task.model");
 const StageTemplate = require("../models/stageTemplate.model");
 const Contact = require("../models/contact.model");
+const {
+  syncOverdueTasks,
+  syncProjectStatus,
+  syncProjectStatuses,
+} = require("../helpers/statusLifecycle");
+
+function isAdminRole(user) {
+  return ["superadmin", "admin"].includes(user?.role);
+}
 
 function normalizeIdList(value) {
   if (!value) {
@@ -185,6 +194,20 @@ async function serializeProject(projectDoc) {
   };
 }
 
+async function syncAndReloadProjects(projects) {
+  const projectIds = (projects || []).map((project) => project._id).filter(Boolean);
+  if (projectIds.length === 0) {
+    return [];
+  }
+
+  await syncOverdueTasks({ project: { $in: projectIds } });
+  await syncProjectStatuses(projectIds);
+
+  const refreshed = await Project.find({ _id: { $in: projectIds } });
+  const refreshedMap = new Map(refreshed.map((project) => [String(project._id), project]));
+  return projectIds.map((projectId) => refreshedMap.get(String(projectId))).filter(Boolean);
+}
+
 async function getUserTeamIds(userId) {
   const teams = await Team.find({
     members: { $elemMatch: { $eq: userId } },
@@ -290,16 +313,18 @@ async function getProjects(req, res) {
   const limit = parseInt(req.query.limit, 10) || 10;
 
   try {
-    if (req.user.role === "admin") {
+    if (isAdminRole(req.user)) {
       const projects = await Project.find().limit(limit).skip(limit * (page - 1));
-      return res.json(await Promise.all(projects.map(serializeProject)));
+      const syncedProjects = await syncAndReloadProjects(projects);
+      return res.json(await Promise.all(syncedProjects.map(serializeProject)));
     }
 
     const teamIds = await getUserTeamIds(req.user.id);
     const projects = await Project.find({ teams: { $in: teamIds } })
       .limit(limit)
       .skip(limit * (page - 1));
-    return res.json(await Promise.all(projects.map(serializeProject)));
+    const syncedProjects = await syncAndReloadProjects(projects);
+    return res.json(await Promise.all(syncedProjects.map(serializeProject)));
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -312,14 +337,17 @@ async function getProjectById(req, res) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    if (req.user.role !== "admin") {
+    if (!isAdminRole(req.user)) {
       const teamIds = await getUserTeamIds(req.user.id);
       if (!projectHasAccess(project, teamIds)) {
         return res.status(404).json({ error: "Project not found" });
       }
     }
 
-    res.json(await serializeProject(project));
+    await syncOverdueTasks({ project: project._id });
+    await syncProjectStatus(project._id);
+    const syncedProject = await Project.findById(project._id);
+    res.json(await serializeProject(syncedProject || project));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -374,7 +402,9 @@ async function updateProject(req, res) {
       new: true,
       runValidators: true,
     });
-    res.json(await serializeProject(updatedProject));
+    await syncProjectStatus(updatedProject._id);
+    const syncedProject = await Project.findById(updatedProject._id);
+    res.json(await serializeProject(syncedProject || updatedProject));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -419,7 +449,7 @@ async function findProject(req, res) {
       ],
     };
 
-    if (req.user.role !== "admin") {
+    if (!isAdminRole(req.user)) {
       const teamIds = await getUserTeamIds(req.user.id);
       criteria.teams = { $in: teamIds };
     }
@@ -427,7 +457,8 @@ async function findProject(req, res) {
     const projects = await Project.find(criteria)
       .limit(limit)
       .skip(limit * (page - 1));
-    res.json(await Promise.all(projects.map(serializeProject)));
+    const syncedProjects = await syncAndReloadProjects(projects);
+    res.json(await Promise.all(syncedProjects.map(serializeProject)));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -436,7 +467,8 @@ async function findProject(req, res) {
 async function getAllProjects(req, res) {
   try {
     const projects = await Project.find();
-    res.json(await Promise.all(projects.map(serializeProject)));
+    const syncedProjects = await syncAndReloadProjects(projects);
+    res.json(await Promise.all(syncedProjects.map(serializeProject)));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -448,7 +480,10 @@ async function getProjectByName(req, res) {
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
     }
-    res.json(await serializeProject(project));
+    await syncOverdueTasks({ project: project._id });
+    await syncProjectStatus(project._id);
+    const syncedProject = await Project.findById(project._id);
+    res.json(await serializeProject(syncedProject || project));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

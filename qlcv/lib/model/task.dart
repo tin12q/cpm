@@ -12,6 +12,7 @@ class Task {
   String _project = '';
   DateTime _endDate = DateTime.now();
   List<String> _emp = [];
+  List<TaskAttachment> _attachments = [];
 
   // MCMF fields
   int _difficulty = 2; // 1=Basic, 2=Easy, 3=Medium, 4=Hard
@@ -27,6 +28,7 @@ class Task {
   String get endDateString =>
       '${_endDate.day.toString()}/${_endDate.month.toString()}/${_endDate.year.toString()}';
   List<String> get emp => _emp;
+  List<TaskAttachment> get attachments => _attachments;
 
   // MCMF getters
   int get difficulty => _difficulty;
@@ -49,6 +51,8 @@ class Task {
   set status(String status) => _status = status;
   set endDate(DateTime edate) => _endDate = edate;
   set emp(List<String> emp) => _emp = emp;
+  set attachments(List<TaskAttachment> attachments) =>
+      _attachments = attachments;
   set project(String project) => _project = project;
 
   // MCMF setters
@@ -66,6 +70,7 @@ class Task {
     int difficulty = 2,
     int priority = 3,
     bool canParallelize = true,
+    List<TaskAttachment> attachments = const [],
   }) {
     if (id != null) _id = id;
     _title = title;
@@ -77,10 +82,39 @@ class Task {
     _difficulty = difficulty;
     _priority = priority;
     _canParallelize = canParallelize;
+    _attachments = attachments;
   }
 
   @override
   String toString() {
     return 'task{_title: $_title, _description: $_description, _status: $_status, _startDate: _endDate: $_endDate}, _emp: $_emp}';
+  }
+}
+
+class TaskAttachment {
+  final String id;
+  final String originalName;
+  final String filename;
+  final String mimetype;
+  final int size;
+
+  const TaskAttachment({
+    required this.id,
+    required this.originalName,
+    required this.filename,
+    required this.mimetype,
+    required this.size,
+  });
+
+  factory TaskAttachment.fromJson(Map<String, dynamic> json) {
+    return TaskAttachment(
+      id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
+      originalName: json['original_name']?.toString() ??
+          json['filename']?.toString() ??
+          '',
+      filename: json['filename']?.toString() ?? '',
+      mimetype: json['mimetype']?.toString() ?? '',
+      size: int.tryParse(json['size']?.toString() ?? '') ?? 0,
+    );
   }
 }
