@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: "mongo:latest"
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - 'mongo-data:/data/db'
+      - './init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro'
+      - './init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro'
+      - './exampleDB:/docker-entrypoint-initdb.d/exampleDB:ro'
+    healthcheck:
+      test:
+        - CMD
+        - mongo
+        - '--eval'
+        - "db.adminCommand('ping')"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: "backend:latest"
+    container_name: backend
+    ports:
+      - '1337:1337'
+    environment:
+      PORT: 1337
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      PHOBERT_SERVICE_URL: http://embedding:5001
+      MONGODB_URI: 'mongodb://root:example@mongo:27017/cpm?authSource=admin'
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: "frontend:latest"
+    container_name: frontend
+    ports:
+      - "8004:80"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://backend:1337/api}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  embedding:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.embedding
+    image: "embedding:latest"
+    container_name: embedding
+    environment:
+      PHOBERT_PORT: 5001
+    ports:
+      - "5001:5001"
+    volumes:
+      - phobert-cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+  phobert-cache:

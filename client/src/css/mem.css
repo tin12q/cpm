@@ -1,32 +1,82 @@
-.mem-group12 {
-  width: 282.58251953125px;
-  height: 210px;
-  display: flex;
-  position: relative;
-  box-shadow: 5px 5px 10px 0px #d4d4d4;
-  align-items: flex-start;
-  flex-shrink: 1;
-  border-radius: var(--dl-radius-radius-radius8);
-  background-color: rgba(251, 250, 245, 0.6666666865348816);
+.member-shell {
+  border: 2px dashed rgba(148, 163, 184, 0.7);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(239, 246, 255, 0.95));
+  box-shadow: 8px 8px 0 rgba(31, 41, 55, 0.12);
 }
-.mem-text {
-  top: 15px;
-  left: 24.58251953125px;
-  color: rgba(33, 33, 33, 1);
-  width: 131px;
-  height: auto;
-  position: absolute;
-  font-size: 24px;
-  font-style: Regular;
-  text-align: left;
-  font-family: Roboto;
-  font-weight: 400;
-  line-height: normal;
-  font-stretch: normal;
-  text-decoration: none;
+
+.member-note {
+  border: 1px dashed rgba(148, 163, 184, 0.65);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
 }
-.mem-root-class-name {
-  right: 19px;
-  bottom: -149px;
-  position: absolute;
+
+.member-note--lift {
+  box-shadow: 4px 4px 0 rgba(17, 24, 39, 0.06);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.member-note--lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0 rgba(17, 24, 39, 0.1);
+}
+
+.member-panel {
+  width: 100%;
+  min-width: 0;
+}
+
+.member-panel__body {
+  min-width: 0;
+}
+
+.member-panel__footer {
+  flex-wrap: wrap;
+}
+
+.member-note--compact {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.member-text-truncate {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 2px dashed rgba(148, 163, 184, 0.55);
+  background: rgba(254, 249, 195, 0.8);
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.member-empty {
+  border: 2px dashed rgba(203, 213, 225, 0.9);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 1280px) {
+  .member-panel__footer {
+    align-items: stretch;
+  }
+
+  .member-panel__footer > div {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

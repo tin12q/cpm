@@ -1,0 +1,1058 @@
+[
+  {
+    "_id": {
+      "$oid": "68a100000000000000000001"
+    },
+    "name": "Jane Smith",
+    "dob": {
+      "$numberLong": "1013706000000"
+    },
+    "email": "janesmith@example.com",
+    "role": "admin",
+    "skills": [
+      {
+        "name": "Project Management",
+        "description": "Đã dùng Project Management trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Data Modeling",
+        "description": "Đã dùng Data Modeling trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã dùng Documentation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Reporting",
+        "description": "Đã dùng Reporting trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.92,
+    "on_time_rate": 95,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010101"
+    },
+    "name": "Mai Trần",
+    "dob": {
+      "$numberLong": "1024074000000"
+    },
+    "email": "maitran@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã dùng React trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "UI/UX",
+        "description": "Đã dùng UI/UX trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Figma",
+        "description": "Đã dùng Figma trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Dashboard",
+        "description": "Đã dùng Dashboard trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010102"
+    },
+    "name": "An Nguyễn",
+    "dob": {
+      "$numberLong": "1058202000000"
+    },
+    "email": "annguyen@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã dùng React trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "JavaScript",
+        "description": "Đã dùng JavaScript trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Tailwind CSS",
+        "description": "Đã dùng Tailwind CSS trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "UI/UX",
+        "description": "Đã dùng UI/UX trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 86,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010103"
+    },
+    "name": "Bảo Phạm",
+    "dob": {
+      "$numberLong": "1092502800000"
+    },
+    "email": "baopham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã dùng React trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Figma",
+        "description": "Đã dùng Figma trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Accessibility",
+        "description": "Đã dùng Accessibility trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 91,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010104"
+    },
+    "name": "Chi Lê",
+    "dob": {
+      "$numberLong": "1105722000000"
+    },
+    "email": "chile@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "JavaScript",
+        "description": "Đã dùng JavaScript trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Dashboard",
+        "description": "Đã dùng Dashboard trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Analytics",
+        "description": "Đã dùng Analytics trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã dùng API Integration trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.78,
+    "on_time_rate": 73,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010105"
+    },
+    "name": "Đức Hoàng",
+    "dob": {
+      "$numberLong": "982170000000"
+    },
+    "email": "duchoang@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã dùng React trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "State Management",
+        "description": "Đã dùng State Management trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Responsive Design",
+        "description": "Đã dùng Responsive Design trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.83,
+    "on_time_rate": 78,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010106"
+    },
+    "name": "Hạnh Võ",
+    "dob": {
+      "$numberLong": "1016125200000"
+    },
+    "email": "hanhvo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Figma",
+        "description": "Đã dùng Figma trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "UI/UX",
+        "description": "Đã dùng UI/UX trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã dùng Documentation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.89,
+    "on_time_rate": 83,
+    "current_task_count": 5
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010107"
+    },
+    "name": "Khoa Bùi",
+    "dob": {
+      "$numberLong": "1050339600000"
+    },
+    "email": "khoabui@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "React",
+        "description": "Đã dùng React trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Calendar UI",
+        "description": "Đã dùng Calendar UI trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "JavaScript",
+        "description": "Đã dùng JavaScript trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Bug Fixing",
+        "description": "Đã dùng Bug Fixing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.61,
+    "on_time_rate": 88,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010108"
+    },
+    "name": "Linh Đỗ",
+    "dob": {
+      "$numberLong": "1084554000000"
+    },
+    "email": "linhdo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Tailwind CSS",
+        "description": "Đã dùng Tailwind CSS trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Forms",
+        "description": "Đã dùng Forms trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã dùng API Integration trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Accessibility",
+        "description": "Đã dùng Accessibility trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 93,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010201"
+    },
+    "name": "Quang Nguyễn",
+    "dob": {
+      "$numberLong": "1013706000000"
+    },
+    "email": "quangnguyen@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "Node.js",
+        "description": "Đã dùng Node.js trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "MongoDB",
+        "description": "Đã dùng MongoDB trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "REST API",
+        "description": "Đã dùng REST API trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Authentication",
+        "description": "Đã dùng Authentication trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010202"
+    },
+    "name": "Nam Trần",
+    "dob": {
+      "$numberLong": "1047661200000"
+    },
+    "email": "namtran@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Node.js",
+        "description": "Đã dùng Node.js trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Express",
+        "description": "Đã dùng Express trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "REST API",
+        "description": "Đã dùng REST API trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "MongoDB",
+        "description": "Đã dùng MongoDB trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 87,
+    "current_task_count": 8
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010203"
+    },
+    "name": "Oanh Phạm",
+    "dob": {
+      "$numberLong": "1081962000000"
+    },
+    "email": "oanhpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Authentication",
+        "description": "Đã dùng Authentication trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "JWT",
+        "description": "Đã dùng JWT trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Node.js",
+        "description": "Đã dùng Node.js trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Security",
+        "description": "Đã dùng Security trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 92,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010204"
+    },
+    "name": "Phúc Lê",
+    "dob": {
+      "$numberLong": "1116090000000"
+    },
+    "email": "phucle@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "MongoDB",
+        "description": "Đã dùng MongoDB trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Data Modeling",
+        "description": "Đã dùng Data Modeling trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Aggregation",
+        "description": "Đã dùng Aggregation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Reporting",
+        "description": "Đã dùng Reporting trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.78,
+    "on_time_rate": 74,
+    "current_task_count": 6
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010205"
+    },
+    "name": "Thảo Vũ",
+    "dob": {
+      "$numberLong": "992538000000"
+    },
+    "email": "thaovu@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Express",
+        "description": "Đã dùng Express trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Validation",
+        "description": "Đã dùng Validation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Error Handling",
+        "description": "Đã dùng Error Handling trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Postman",
+        "description": "Đã dùng Postman trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.83,
+    "on_time_rate": 79,
+    "current_task_count": 4
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010206"
+    },
+    "name": "Việt Đặng",
+    "dob": {
+      "$numberLong": "1026666000000"
+    },
+    "email": "vietdang@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Node.js",
+        "description": "Đã dùng Node.js trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "File Upload",
+        "description": "Đã dùng File Upload trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "MinIO",
+        "description": "Đã dùng MinIO trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Docker",
+        "description": "Đã dùng Docker trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.89,
+    "on_time_rate": 84,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010207"
+    },
+    "name": "Yến Hồ",
+    "dob": {
+      "$numberLong": "1060880400000"
+    },
+    "email": "yenho@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "REST API",
+        "description": "Đã dùng REST API trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã dùng Documentation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Bug Fixing",
+        "description": "Đã dùng Bug Fixing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.61,
+    "on_time_rate": 89,
+    "current_task_count": 4
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010208"
+    },
+    "name": "Sơn Bùi",
+    "dob": {
+      "$numberLong": "1074099600000"
+    },
+    "email": "sonbui@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "MongoDB",
+        "description": "Đã dùng MongoDB trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Performance",
+        "description": "Đã dùng Performance trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Indexing",
+        "description": "Đã dùng Indexing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Analytics",
+        "description": "Đã dùng Analytics trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 94,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010301"
+    },
+    "name": "Trang Lê",
+    "dob": {
+      "$numberLong": "1024074000000"
+    },
+    "email": "trangle@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã dùng Flutter trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Dart",
+        "description": "Đã dùng Dart trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Mobile UI",
+        "description": "Đã dùng Mobile UI trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã dùng API Integration trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010302"
+    },
+    "name": "Anh Võ",
+    "dob": {
+      "$numberLong": "1058202000000"
+    },
+    "email": "anhvo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã dùng Flutter trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Dart",
+        "description": "Đã dùng Dart trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Mobile UI",
+        "description": "Đã dùng Mobile UI trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "State Management",
+        "description": "Đã dùng State Management trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 88,
+    "current_task_count": 3
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010303"
+    },
+    "name": "Bình Ngô",
+    "dob": {
+      "$numberLong": "1092502800000"
+    },
+    "email": "binhngo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã dùng Flutter trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã dùng API Integration trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Authentication",
+        "description": "Đã dùng Authentication trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Forms",
+        "description": "Đã dùng Forms trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 93,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010304"
+    },
+    "name": "Cường Lý",
+    "dob": {
+      "$numberLong": "1105722000000"
+    },
+    "email": "cuongly@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Dart",
+        "description": "Đã dùng Dart trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Charts",
+        "description": "Đã dùng Charts trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Calendar UI",
+        "description": "Đã dùng Calendar UI trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.78,
+    "on_time_rate": 75,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010305"
+    },
+    "name": "Diệp Trần",
+    "dob": {
+      "$numberLong": "982170000000"
+    },
+    "email": "dieptran@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã dùng Flutter trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Offline Cache",
+        "description": "Đã dùng Offline Cache trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "State Management",
+        "description": "Đã dùng State Management trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Bug Fixing",
+        "description": "Đã dùng Bug Fixing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.83,
+    "on_time_rate": 80,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010306"
+    },
+    "name": "Giang Phạm",
+    "dob": {
+      "$numberLong": "1016125200000"
+    },
+    "email": "giangpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Mobile UI",
+        "description": "Đã dùng Mobile UI trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Accessibility",
+        "description": "Đã dùng Accessibility trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Responsive Design",
+        "description": "Đã dùng Responsive Design trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Figma",
+        "description": "Đã dùng Figma trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.89,
+    "on_time_rate": 85,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010307"
+    },
+    "name": "Hải Nguyễn",
+    "dob": {
+      "$numberLong": "1050339600000"
+    },
+    "email": "hainguyen@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Flutter",
+        "description": "Đã dùng Flutter trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "File Upload",
+        "description": "Đã dùng File Upload trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Image Picker",
+        "description": "Đã dùng Image Picker trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "API Integration",
+        "description": "Đã dùng API Integration trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.61,
+    "on_time_rate": 90,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010308"
+    },
+    "name": "Lan Phạm",
+    "dob": {
+      "$numberLong": "1084554000000"
+    },
+    "email": "lanpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Dart",
+        "description": "Đã dùng Dart trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Regression",
+        "description": "Đã dùng Regression trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã dùng Documentation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 72,
+    "current_task_count": 5
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010401"
+    },
+    "name": "Minh Đặng",
+    "dob": {
+      "$numberLong": "1013706000000"
+    },
+    "email": "minhdang@student.cpm.edu.vn",
+    "role": "manager",
+    "skills": [
+      {
+        "name": "Python",
+        "description": "Đã dùng Python trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Embedding",
+        "description": "Đã dùng Embedding trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Min-Cost Max-Flow",
+        "description": "Đã dùng Min-Cost Max-Flow trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.9,
+    "on_time_rate": 91,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010402"
+    },
+    "name": "Nhi Lê",
+    "dob": {
+      "$numberLong": "1047661200000"
+    },
+    "email": "nhile@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Python",
+        "description": "Đã dùng Python trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "NLP",
+        "description": "Đã dùng NLP trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Embedding",
+        "description": "Đã dùng Embedding trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "TF-IDF",
+        "description": "Đã dùng TF-IDF trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 89,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010403"
+    },
+    "name": "Phong Trần",
+    "dob": {
+      "$numberLong": "1081962000000"
+    },
+    "email": "phongtran@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Min-Cost Max-Flow",
+        "description": "Đã dùng Min-Cost Max-Flow trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Algorithms",
+        "description": "Đã dùng Algorithms trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Data Modeling",
+        "description": "Đã dùng Data Modeling trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Node.js",
+        "description": "Đã dùng Node.js trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.72,
+    "on_time_rate": 94,
+    "current_task_count": 4
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010404"
+    },
+    "name": "Quyên Hồ",
+    "dob": {
+      "$numberLong": "1116090000000"
+    },
+    "email": "quyenho@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Postman",
+        "description": "Đã dùng Postman trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Regression",
+        "description": "Đã dùng Regression trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Bug Report",
+        "description": "Đã dùng Bug Report trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.78,
+    "on_time_rate": 76,
+    "current_task_count": 1
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010405"
+    },
+    "name": "Tuấn Bùi",
+    "dob": {
+      "$numberLong": "992538000000"
+    },
+    "email": "tuanbui@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Docker",
+        "description": "Đã dùng Docker trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Deployment",
+        "description": "Đã dùng Deployment trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Monitoring",
+        "description": "Đã dùng Monitoring trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Linux",
+        "description": "Đã dùng Linux trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.83,
+    "on_time_rate": 81,
+    "current_task_count": 0
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010406"
+    },
+    "name": "Uyên Võ",
+    "dob": {
+      "$numberLong": "1026666000000"
+    },
+    "email": "uyenvo@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Data Cleaning",
+        "description": "Đã dùng Data Cleaning trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Analytics",
+        "description": "Đã dùng Analytics trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Reporting",
+        "description": "Đã dùng Reporting trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "MongoDB",
+        "description": "Đã dùng MongoDB trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.89,
+    "on_time_rate": 86,
+    "current_task_count": 2
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010407"
+    },
+    "name": "Vy Nguyễn",
+    "dob": {
+      "$numberLong": "1060880400000"
+    },
+    "email": "vynguyen@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "Python",
+        "description": "Đã dùng Python trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Gemini API",
+        "description": "Đã dùng Gemini API trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Embedding",
+        "description": "Đã dùng Embedding trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Documentation",
+        "description": "Đã dùng Documentation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.61,
+    "on_time_rate": 91,
+    "current_task_count": 8
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000010408"
+    },
+    "name": "Long Phạm",
+    "dob": {
+      "$numberLong": "1074099600000"
+    },
+    "email": "longpham@student.cpm.edu.vn",
+    "role": "employee",
+    "skills": [
+      {
+        "name": "CI/CD",
+        "description": "Đã dùng CI/CD trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Docker",
+        "description": "Đã dùng Docker trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Testing",
+        "description": "Đã dùng Testing trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      },
+      {
+        "name": "Automation",
+        "description": "Đã dùng Automation trong bài tập lớn, đồ án nhóm hoặc module CPM liên quan."
+      }
+    ],
+    "productivity_score": 0.67,
+    "on_time_rate": 73,
+    "current_task_count": 2
+  }
+]

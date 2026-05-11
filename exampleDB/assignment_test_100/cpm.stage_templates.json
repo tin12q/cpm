@@ -1,0 +1,42 @@
+[
+  {
+    "_id": {
+      "$oid": "68a100000000000000006001"
+    },
+    "name": "Quy trình đồ án sinh viên",
+    "description": "Mẫu giai đoạn mặc định cho bài tập lớn và đồ án môn học.",
+    "is_default": true,
+    "stages": [
+      {
+        "key": "backlog",
+        "name": "Cần làm",
+        "color": "amber",
+        "order": 0
+      },
+      {
+        "key": "in-progress",
+        "name": "Đang làm",
+        "color": "blue",
+        "order": 1
+      },
+      {
+        "key": "review",
+        "name": "Đang kiểm tra",
+        "color": "violet",
+        "order": 2
+      },
+      {
+        "key": "done",
+        "name": "Hoàn thành",
+        "color": "green",
+        "order": 3
+      }
+    ],
+    "createdAt": {
+      "$date": "2026-05-11T00:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-11T00:00:00.000Z"
+    }
+  }
+]

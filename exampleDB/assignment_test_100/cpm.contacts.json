@@ -1,0 +1,22 @@
+[
+  {
+    "_id": {
+      "$oid": "68a100000000000000007001"
+    },
+    "name": "Cố vấn học tập",
+    "email": "covan@cpm.edu.vn",
+    "phone": "0900000001",
+    "type": "customer",
+    "customer_name": "Bộ môn Công nghệ phần mềm",
+    "company_name": "Khoa Công nghệ thông tin",
+    "position": "Giảng viên hướng dẫn",
+    "notes": "Liên hệ khi cần xác nhận yêu cầu đồ án hoặc lịch demo.",
+    "linked_user": null,
+    "createdAt": {
+      "$date": "2026-05-11T00:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-11T00:00:00.000Z"
+    }
+  }
+]

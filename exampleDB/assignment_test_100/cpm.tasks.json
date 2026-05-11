@@ -1,0 +1,3358 @@
+[
+  {
+    "_id": {
+      "$oid": "68a100000000000000003001"
+    },
+    "title": "Làm bộ lọc task theo trạng thái và deadline",
+    "description": "Cho phép lọc task trễ hạn, sắp đến hạn, chưa gán người và đang review. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng React, UI/UX, Node.js. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777543200000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003002"
+    },
+    "title": "Bổ sung API upload nhiều file cho task",
+    "description": "Lưu metadata, base64 và endpoint tải xuống theo file id. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Express, REST API, Node.js. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777197600000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003003"
+    },
+    "title": "Thêm dữ liệu task hoàn thành đúng hạn",
+    "description": "Cần đủ completed task để chart completion rate không bị toàn 0. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng Data Cleaning, Reporting, Node.js. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1776679200000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003004"
+    },
+    "title": "Làm biểu đồ tiến độ theo dự án",
+    "description": "Thêm chart hoàn thành, trễ hạn, đang làm và chưa gán người cho overview. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng Tailwind CSS, Responsive Design, Flutter. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780308000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "Responsive Design",
+      "Flutter"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "Responsive Design",
+      "Flutter"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003005"
+    },
+    "title": "Viết script reset database demo",
+    "description": "Xóa sạch database local và nạp lại bộ dữ liệu test trong một lệnh. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Linux, Docker, Docker. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1778148000000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010408"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "Docker",
+      "Docker"
+    ],
+    "skills_required": [
+      "Linux",
+      "Docker",
+      "Docker"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003006"
+    },
+    "title": "Bổ sung API upload nhiều file cho task - Báo cáo tự 2",
+    "description": "Lưu metadata, base64 và endpoint tải xuống theo file id. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng File Upload, Express, Data Modeling. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777888800000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "File Upload",
+      "Express",
+      "Data Modeling"
+    ],
+    "skills_required": [
+      "File Upload",
+      "Express",
+      "Data Modeling"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003007"
+    },
+    "title": "Sửa trạng thái rỗng cho trang tìm kiếm",
+    "description": "Khi không có kết quả phải có text rõ ràng và gợi ý cách tìm lại. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng React, UI/UX, Node.js. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777543200000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010103"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003008"
+    },
+    "title": "Tối ưu chatbot tool cho báo cáo dự án",
+    "description": "Query đúng project, lọc khoảng thời gian và trả đủ task trễ cho AI diễn giải. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng Express, REST API, Node.js. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777197600000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003009"
+    },
+    "title": "Tạo dữ liệu task chưa gán cho MCMF",
+    "description": "Giữ một phần task chưa có assignee để test auto assignment. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng Data Cleaning, Reporting, React. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1778148000000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "React"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "React"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003010"
+    },
+    "title": "Giải thích lý do gợi ý assignee",
+    "description": "Mỗi đề xuất cần có điểm kỹ năng, điểm tải, deadline pressure và ghi chú ngắn. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng TF-IDF, Prompt Engineering, Flutter. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "TF-IDF",
+      "Prompt Engineering",
+      "Flutter"
+    ],
+    "skills_required": [
+      "TF-IDF",
+      "Prompt Engineering",
+      "Flutter"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003011"
+    },
+    "title": "Sửa trạng thái rỗng cho trang tìm kiếm - Không gian demo 2",
+    "description": "Khi không có kết quả phải có text rõ ràng và gợi ý cách tìm lại. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Figma, React, Docker. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778148000000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010105"
+      },
+      {
+        "$oid": "68a100000000000000010107"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Figma",
+      "React",
+      "Docker"
+    ],
+    "skills_required": [
+      "Figma",
+      "React",
+      "Docker"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003012"
+    },
+    "title": "Tạo runbook demo cho hội đồng",
+    "description": "Liệt kê thứ tự thao tác: đăng nhập, xem dashboard, tạo task, hỏi chatbot, phân công AI. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng Environment Config, CI/CD, Node.js. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780308000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Environment Config",
+      "CI/CD",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Environment Config",
+      "CI/CD",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003013"
+    },
+    "title": "Viết kiểm tra dữ liệu đầu vào khi tạo task",
+    "description": "Validate title, description, deadline, priority, difficulty và required skills. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng Node.js, MongoDB, Regression. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777197600000"
+    },
+    "status": "late",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010208"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Regression"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003014"
+    },
+    "title": "Viết checklist test tạo task và upload file",
+    "description": "Kiểm tra thêm task, sửa task, attach file, preview PDF và tải xuống. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Regression, Bug Report, Regression. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1776679200000"
+    },
+    "status": "late",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010308"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Regression"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003015"
+    },
+    "title": "So khớp kỹ năng bằng embedding và TF-IDF",
+    "description": "Kết hợp exact match, embedding similarity và keyword score để chấm ứng viên. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng Embedding, Min-Cost Max-Flow, MongoDB. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "late",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003016"
+    },
+    "title": "Tối ưu thanh trượt trọng số phân công",
+    "description": "Slider phải mượt, không rebuild cả danh sách task khi kéo. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng State Management, PDF Preview, Regression. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010308"
+      },
+      {
+        "$oid": "68a100000000000000010105"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "State Management",
+      "PDF Preview",
+      "Regression"
+    ],
+    "skills_required": [
+      "State Management",
+      "PDF Preview",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003017"
+    },
+    "title": "Tạo task trễ nhiều mức độ",
+    "description": "Có task trễ 1-3 ngày, 7 ngày và hơn 14 ngày để test ranking. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Reporting, Data Modeling, MongoDB. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1778061600000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "Data Modeling",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Reporting",
+      "Data Modeling",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003018"
+    },
+    "title": "Thiết kế pipeline AI phân tích yêu cầu chatbot",
+    "description": "AI phải hiểu câu hỏi, chọn tool, đọc kết quả database và trả lời tự nhiên. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng Prompt Engineering, NLP, Express. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Prompt Engineering",
+      "NLP",
+      "Express"
+    ],
+    "skills_required": [
+      "Prompt Engineering",
+      "NLP",
+      "Express"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003019"
+    },
+    "title": "Tối ưu query danh sách project cho mobile",
+    "description": "Populate team, đếm task và giữ response đủ nhẹ cho thiết bị thật. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng Node.js, MongoDB, Regression. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010204"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Regression"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003020"
+    },
+    "title": "Chuẩn hóa skill profile người dùng",
+    "description": "Mỗi user có kỹ năng sát với nhóm việc nhưng vẫn có vài kỹ năng phụ để test matching. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng MongoDB, Analytics, MongoDB. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1776679200000"
+    },
+    "status": "late",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010204"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Analytics",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Analytics",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003021"
+    },
+    "title": "Test phân quyền employee",
+    "description": "Employee chỉ xem dữ liệu được giao, không sửa deadline hoặc trạng thái tuỳ tiện. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng Postman, Documentation, MongoDB. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1778061600000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010408"
+      },
+      {
+        "$oid": "68a100000000000000010106"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Postman",
+      "Documentation",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Postman",
+      "Documentation",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003022"
+    },
+    "title": "Làm màn hình thêm task có đính kèm file",
+    "description": "Cho phép chọn nhiều file, xem trước tên file, preview ảnh/PDF và gửi lên server. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng State Management, PDF Preview, Express. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010302"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "State Management",
+      "PDF Preview",
+      "Express"
+    ],
+    "skills_required": [
+      "State Management",
+      "PDF Preview",
+      "Express"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003023"
+    },
+    "title": "Phân tích workload theo thành viên",
+    "description": "Tạo chênh lệch tải công việc để thuật toán tránh giao quá nhiều cho một người. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Reporting, Data Modeling, JavaScript. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010403"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "Data Modeling",
+      "JavaScript"
+    ],
+    "skills_required": [
+      "Reporting",
+      "Data Modeling",
+      "JavaScript"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003024"
+    },
+    "title": "Tạo fallback khi model AI lỗi",
+    "description": "Nếu LLM không sẵn sàng, hệ thống vẫn dùng heuristic và MCMF nội bộ. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng Prompt Engineering, NLP, CI/CD. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Prompt Engineering",
+      "NLP",
+      "CI/CD"
+    ],
+    "skills_required": [
+      "Prompt Engineering",
+      "NLP",
+      "CI/CD"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003025"
+    },
+    "title": "Lập bộ regression cho API chính",
+    "description": "Bao phủ auth, project, task, team, user, skill, attachment và assignment. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng Testing, Postman, Data Cleaning. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1776679200000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010106"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "Data Cleaning"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003026"
+    },
+    "title": "Thêm tải file từ task detail",
+    "description": "Nhấn vào attachment phải mở preview hoặc tải file về máy. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Dart, State Management, Mobile UI. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010306"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Mobile UI"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Mobile UI"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003027"
+    },
+    "title": "Tối ưu chatbot tool cho báo cáo dự án - Module gợi ý 2",
+    "description": "Query đúng project, lọc khoảng thời gian và trả đủ task trễ cho AI diễn giải. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng MongoDB, Authentication, Embedding. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778148000000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Embedding"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Embedding"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003028"
+    },
+    "title": "Test chatbot với câu hỏi báo cáo dự án",
+    "description": "Hỏi dự án nào trễ nhất, ai trễ, task nào cần xử lý trước và báo cáo 7 ngày tới. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng Bug Report, Smoke Test, UI/UX. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780221600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Smoke Test",
+      "UI/UX"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Smoke Test",
+      "UI/UX"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003029"
+    },
+    "title": "Lập bộ regression cho API chính - Kiểm thử và 2",
+    "description": "Bao phủ auth, project, task, team, user, skill, attachment và assignment. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Documentation, Testing, Postman. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777975200000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010408"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Testing",
+      "Postman"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Testing",
+      "Postman"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003030"
+    },
+    "title": "Thêm dữ liệu task hoàn thành đúng hạn - Báo cáo tự 2",
+    "description": "Cần đủ completed task để chart completion rate không bị toàn 0. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng Dashboard, MongoDB, Embedding. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777197600000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010204"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Dashboard",
+      "MongoDB",
+      "Embedding"
+    ],
+    "skills_required": [
+      "Dashboard",
+      "MongoDB",
+      "Embedding"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003031"
+    },
+    "title": "Soát lỗi tiếng Việt trong UI",
+    "description": "Các message chatbot, badge, empty state và label form phải đọc tự nhiên. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng Testing, Postman, UI/UX. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010106"
+      },
+      {
+        "$oid": "68a100000000000000010207"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "UI/UX"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "UI/UX"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003032"
+    },
+    "title": "Sửa flow tạo task từ mobile",
+    "description": "Sau khi tạo xong phải thấy task mới trong project mà không cần tắt app. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng Dart, State Management, Mobile UI. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010302"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Mobile UI"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Mobile UI"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003033"
+    },
+    "title": "Tối ưu giao diện thêm project",
+    "description": "Giảm cảm giác form thô, nhóm thông tin theo phần và giữ nút lưu dễ thấy. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng UI/UX, Figma, Postman. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777975200000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010106"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "UI/UX",
+      "Figma",
+      "Postman"
+    ],
+    "skills_required": [
+      "UI/UX",
+      "Figma",
+      "Postman"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003034"
+    },
+    "title": "Tạo endpoint preview phân công AI",
+    "description": "Trả về top ứng viên, điểm kỹ năng, tải công việc và lý do đề xuất. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng REST API, File Upload, Embedding. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777888800000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "REST API",
+      "File Upload",
+      "Embedding"
+    ],
+    "skills_required": [
+      "REST API",
+      "File Upload",
+      "Embedding"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003035"
+    },
+    "title": "Soát lỗi tiếng Việt trong UI - Không gian demo 2",
+    "description": "Các message chatbot, badge, empty state và label form phải đọc tự nhiên. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Documentation, Testing, Data Cleaning. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010205"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Testing",
+      "Data Cleaning"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Testing",
+      "Data Cleaning"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003036"
+    },
+    "title": "Chuẩn hóa cập nhật trạng thái task theo deadline",
+    "description": "Task quá hạn tự chuyển late nếu chưa hoàn thành, task done giữ completed. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng File Upload, Express, Embedding. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780221600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "File Upload",
+      "Express",
+      "Embedding"
+    ],
+    "skills_required": [
+      "File Upload",
+      "Express",
+      "Embedding"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003037"
+    },
+    "title": "Thiết kế dữ liệu mẫu giống dự án thật",
+    "description": "Task phải có title, description, skill, người làm, deadline và trạng thái đa dạng. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng Data Modeling, Data Cleaning, Tailwind CSS. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "late",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Modeling",
+      "Data Cleaning",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Data Modeling",
+      "Data Cleaning",
+      "Tailwind CSS"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003038"
+    },
+    "title": "Tối ưu query danh sách project cho mobile - Ứng dụng mobile 2",
+    "description": "Populate team, đếm task và giữ response đủ nhẹ cho thiết bị thật. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Express, REST API, REST API. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780221600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010207"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "REST API"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "REST API"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003039"
+    },
+    "title": "Chuẩn hóa skill profile người dùng - Module gợi ý 2",
+    "description": "Mỗi user có kỹ năng sát với nhóm việc nhưng vẫn có vài kỹ năng phụ để test matching. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng Data Cleaning, Reporting, REST API. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777888800000"
+    },
+    "status": "late",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "REST API"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "REST API"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003040"
+    },
+    "title": "Cải thiện bảng kanban cho nhóm sinh viên",
+    "description": "Các cột backlog, đang làm, review và hoàn thành phải dễ kéo thả và dễ đọc. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng Tailwind CSS, Responsive Design, State Management. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780308000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010103"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "Responsive Design",
+      "State Management"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "Responsive Design",
+      "State Management"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003041"
+    },
+    "title": "Cập nhật biến môi trường cho LLM compatible",
+    "description": "Hỗ trợ base URL, API key, model name và fallback khi thiếu cấu hình. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Linux, Docker, Monitoring. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777888800000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010408"
+      },
+      {
+        "$oid": "68a100000000000000010405"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "Docker",
+      "Monitoring"
+    ],
+    "skills_required": [
+      "Linux",
+      "Docker",
+      "Monitoring"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003042"
+    },
+    "title": "Tối ưu query danh sách project cho mobile - Báo cáo tự 3",
+    "description": "Populate team, đếm task và giữ response đủ nhẹ cho thiết bị thật. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng File Upload, Express, Analytics. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778839200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010205"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "File Upload",
+      "Express",
+      "Analytics"
+    ],
+    "skills_required": [
+      "File Upload",
+      "Express",
+      "Analytics"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003043"
+    },
+    "title": "Làm màn hình thống kê nhân sự",
+    "description": "Hiển thị workload, task trễ và tỉ lệ hoàn thành của từng thành viên. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng React, UI/UX, REST API. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780653600000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010106"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "REST API"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "REST API"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003044"
+    },
+    "title": "Viết kiểm tra dữ liệu đầu vào khi tạo task - Kho học liệu 2",
+    "description": "Validate title, description, deadline, priority, difficulty và required skills. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng Express, REST API, REST API. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780740000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010204"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "REST API"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "REST API"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003045"
+    },
+    "title": "Thiết kế dữ liệu mẫu giống dự án thật - Onboarding thành viên 2",
+    "description": "Task phải có title, description, skill, người làm, deadline và trạng thái đa dạng. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng Data Cleaning, Reporting, Tailwind CSS. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777888800000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Tailwind CSS"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Tailwind CSS"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003046"
+    },
+    "title": "So khớp kỹ năng bằng embedding và TF-IDF - Hệ thống nhắc 2",
+    "description": "Kết hợp exact match, embedding similarity và keyword score để chấm ứng viên. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng TF-IDF, Prompt Engineering, State Management. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778839200000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010402"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "TF-IDF",
+      "Prompt Engineering",
+      "State Management"
+    ],
+    "skills_required": [
+      "TF-IDF",
+      "Prompt Engineering",
+      "State Management"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003047"
+    },
+    "title": "Bổ sung log cho chatbot planner",
+    "description": "Log action, confidence và reason để debug khi AI chọn sai tool. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Linux, Docker, Bug Report. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780999200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010408"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "Docker",
+      "Bug Report"
+    ],
+    "skills_required": [
+      "Linux",
+      "Docker",
+      "Bug Report"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003048"
+    },
+    "title": "Kiểm tra build debug APK",
+    "description": "Đảm bảo app build được trước khi demo bằng thiết bị USB. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng Environment Config, CI/CD, REST API. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780308000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010206"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Environment Config",
+      "CI/CD",
+      "REST API"
+    ],
+    "skills_required": [
+      "Environment Config",
+      "CI/CD",
+      "REST API"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003049"
+    },
+    "title": "Sửa trạng thái rỗng cho trang tìm kiếm - Hệ thống quản 3",
+    "description": "Khi không có kết quả phải có text rõ ràng và gợi ý cách tìm lại. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng React, UI/UX, Authentication. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1778148000000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010104"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Authentication"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Authentication"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003050"
+    },
+    "title": "Soát lỗi tiếng Việt trong UI - Ứng dụng mobile 3",
+    "description": "Các message chatbot, badge, empty state và label form phải đọc tự nhiên. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Regression, Bug Report, Documentation. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1781258400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010308"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Documentation"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003051"
+    },
+    "title": "Tinh chỉnh chi phí MCMF theo workload",
+    "description": "Người đang quá nhiều task bị tăng chi phí, người rảnh và đúng skill được ưu tiên. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng Embedding, Min-Cost Max-Flow, Reporting. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777543200000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      },
+      {
+        "$oid": "68a100000000000000010403"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "Reporting"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003052"
+    },
+    "title": "Cải thiện assignment preview trên mobile",
+    "description": "Không hiển thị như debug, thay bằng card có điểm số, lý do và nút chọn người. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng State Management, PDF Preview, Documentation. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780394400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "State Management",
+      "PDF Preview",
+      "Documentation"
+    ],
+    "skills_required": [
+      "State Management",
+      "PDF Preview",
+      "Documentation"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003053"
+    },
+    "title": "Thêm dữ liệu task hoàn thành đúng hạn - Kiểm thử và 3",
+    "description": "Cần đủ completed task để chart completion rate không bị toàn 0. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Reporting, Data Modeling, Reporting. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777802400000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "Data Modeling",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Reporting",
+      "Data Modeling",
+      "Reporting"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003054"
+    },
+    "title": "Chấm điểm rủi ro task",
+    "description": "Kết hợp deadline, priority, difficulty, trạng thái và người làm để xếp task cần xử lý trước. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng Prompt Engineering, NLP, Authentication. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Prompt Engineering",
+      "NLP",
+      "Authentication"
+    ],
+    "skills_required": [
+      "Prompt Engineering",
+      "NLP",
+      "Authentication"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003055"
+    },
+    "title": "Chuẩn hóa cập nhật trạng thái task theo deadline - Quản lý người 2",
+    "description": "Task quá hạn tự chuyển late nếu chưa hoàn thành, task done giữ completed. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng Node.js, MongoDB, Documentation. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778925600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010207"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Documentation"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Documentation"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003056"
+    },
+    "title": "Tạo bộ câu hỏi kiểm thử báo cáo",
+    "description": "Bao phủ báo cáo hôm nay, 7 ngày tới, theo project, theo cá nhân và theo nhân sự. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng MongoDB, Analytics, Reporting. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1779616800000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010204"
+      },
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Analytics",
+      "Reporting"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Analytics",
+      "Reporting"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003057"
+    },
+    "title": "Ghi hướng dẫn cài đặt local",
+    "description": "Nêu user/pass, lệnh seed database, start server, chạy app debug USB. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng Postman, Documentation, Reporting. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777802400000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010404"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Postman",
+      "Documentation",
+      "Reporting"
+    ],
+    "skills_required": [
+      "Postman",
+      "Documentation",
+      "Reporting"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003058"
+    },
+    "title": "Chuẩn hóa nút quay lại ở các trang con",
+    "description": "Trang thêm task, thêm project, overview và quản lý user phải có navigation rõ. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng State Management, PDF Preview, Authentication. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777197600000"
+    },
+    "status": "late",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010305"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "State Management",
+      "PDF Preview",
+      "Authentication"
+    ],
+    "skills_required": [
+      "State Management",
+      "PDF Preview",
+      "Authentication"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003059"
+    },
+    "title": "Làm bộ lọc task theo trạng thái và deadline - Không gian demo 2",
+    "description": "Cho phép lọc task trễ hạn, sắp đến hạn, chưa gán người và đang review. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Figma, React, Linux. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778925600000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010102"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Figma",
+      "React",
+      "Linux"
+    ],
+    "skills_required": [
+      "Figma",
+      "React",
+      "Linux"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003060"
+    },
+    "title": "Giải thích lý do gợi ý assignee - Nghiên cứu mở 2",
+    "description": "Mỗi đề xuất cần có điểm kỹ năng, điểm tải, deadline pressure và ghi chú ngắn. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng Prompt Engineering, NLP, Linux. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780394400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Prompt Engineering",
+      "NLP",
+      "Linux"
+    ],
+    "skills_required": [
+      "Prompt Engineering",
+      "NLP",
+      "Linux"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003061"
+    },
+    "title": "Tối ưu query danh sách project cho mobile - Hệ thống quản 4",
+    "description": "Populate team, đếm task và giữ response đủ nhẹ cho thiết bị thật. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng Node.js, MongoDB, Smoke Test. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780048800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010205"
+      },
+      {
+        "$oid": "68a100000000000000010207"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Smoke Test"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Smoke Test"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003062"
+    },
+    "title": "Tối ưu thanh trượt trọng số phân công - Ứng dụng mobile 2",
+    "description": "Slider phải mượt, không rebuild cả danh sách task khi kéo. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Dart, State Management, PDF Preview. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010302"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "PDF Preview"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "PDF Preview"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003063"
+    },
+    "title": "Viết kiểm tra dữ liệu đầu vào khi tạo task - Module gợi ý 3",
+    "description": "Validate title, description, deadline, priority, difficulty và required skills. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng MongoDB, Authentication, Prompt Engineering. Đây là task cố ý quá hạn để kiểm tra chatbot, dashboard và báo cáo trễ hạn.",
+    "due_date": {
+      "$numberLong": "1777197600000"
+    },
+    "status": "late",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Prompt Engineering"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Prompt Engineering"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003064"
+    },
+    "title": "Viết checklist test tạo task và upload file - Cổng thông tin 2",
+    "description": "Kiểm tra thêm task, sửa task, attach file, preview PDF và tải xuống. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng Bug Report, Smoke Test, Responsive Design. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780740000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010106"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Smoke Test",
+      "Responsive Design"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Smoke Test",
+      "Responsive Design"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003065"
+    },
+    "title": "Kiểm thử phân công tự động",
+    "description": "Chọn nhiều task chưa gán, xem top 3 người đề xuất, xác nhận apply và kiểm tra database. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Documentation, Testing, Smoke Test. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777716000000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010205"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Testing",
+      "Smoke Test"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Testing",
+      "Smoke Test"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003066"
+    },
+    "title": "Chuẩn hóa skill profile người dùng - Báo cáo tự 3",
+    "description": "Mỗi user có kỹ năng sát với nhóm việc nhưng vẫn có vài kỹ năng phụ để test matching. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng Dashboard, MongoDB, Prompt Engineering. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Dashboard",
+      "MongoDB",
+      "Prompt Engineering"
+    ],
+    "skills_required": [
+      "Dashboard",
+      "MongoDB",
+      "Prompt Engineering"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003067"
+    },
+    "title": "Test phân quyền employee - Quản lý người 2",
+    "description": "Employee chỉ xem dữ liệu được giao, không sửa deadline hoặc trạng thái tuỳ tiện. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng Testing, Postman, Responsive Design. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778580000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010106"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "Responsive Design"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "Responsive Design"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003068"
+    },
+    "title": "Làm màn hình thêm task có đính kèm file - Kho học liệu 2",
+    "description": "Cho phép chọn nhiều file, xem trước tên file, preview ảnh/PDF và gửi lên server. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng Dart, State Management, PDF Preview. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777284000000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010305"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "PDF Preview"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "PDF Preview"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003069"
+    },
+    "title": "Chuẩn hóa card task trong project detail",
+    "description": "Card phải có tên task, deadline, người làm, badge trạng thái và mức ưu tiên. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng UI/UX, Figma, Smoke Test. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777716000000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010102"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "UI/UX",
+      "Figma",
+      "Smoke Test"
+    ],
+    "skills_required": [
+      "UI/UX",
+      "Figma",
+      "Smoke Test"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003070"
+    },
+    "title": "Kiểm tra phân quyền manager khi sửa task",
+    "description": "Manager chỉ sửa task trong project thuộc team mình quản lý. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng REST API, File Upload, Prompt Engineering. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010208"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "REST API",
+      "File Upload",
+      "Prompt Engineering"
+    ],
+    "skills_required": [
+      "REST API",
+      "File Upload",
+      "Prompt Engineering"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003071"
+    },
+    "title": "Tạo task trễ nhiều mức độ - Không gian demo 2",
+    "description": "Có task trễ 1-3 ngày, 7 ngày và hơn 14 ngày để test ranking. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Reporting, Data Modeling, Responsive Design. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778580000000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010403"
+      },
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "Data Modeling",
+      "Responsive Design"
+    ],
+    "skills_required": [
+      "Reporting",
+      "Data Modeling",
+      "Responsive Design"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003072"
+    },
+    "title": "Viết API báo cáo tổng quan dự án",
+    "description": "Trả về số task hoàn thành, đang làm, trễ hạn, chưa gán và danh sách task rủi ro. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng File Upload, Express, Prompt Engineering. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780740000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "File Upload",
+      "Express",
+      "Prompt Engineering"
+    ],
+    "skills_required": [
+      "File Upload",
+      "Express",
+      "Prompt Engineering"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003073"
+    },
+    "title": "Soát lỗi tiếng Việt trong UI - Hệ thống quản 4",
+    "description": "Các message chatbot, badge, empty state và label form phải đọc tự nhiên. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng Testing, Postman, Data Modeling. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1778580000000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Testing",
+      "Postman",
+      "Data Modeling"
+    ],
+    "skills_required": [
+      "Testing",
+      "Postman",
+      "Data Modeling"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003074"
+    },
+    "title": "Chuẩn hóa cập nhật trạng thái task theo deadline - Ứng dụng mobile 3",
+    "description": "Task quá hạn tự chuyển late nếu chưa hoàn thành, task done giữ completed. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Express, REST API, Node.js. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1778320800000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010207"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003075"
+    },
+    "title": "Tạo bộ câu hỏi kiểm thử báo cáo - Module gợi ý 2",
+    "description": "Bao phủ báo cáo hôm nay, 7 ngày tới, theo project, theo cá nhân và theo nhân sự. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng Data Cleaning, Reporting, Node.js. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1781258400000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003076"
+    },
+    "title": "Sửa trạng thái rỗng cho trang tìm kiếm - Cổng thông tin 4",
+    "description": "Khi không có kết quả phải có text rõ ràng và gợi ý cách tìm lại. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng Tailwind CSS, Responsive Design, Flutter. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780567200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Tailwind CSS",
+      "Responsive Design",
+      "Flutter"
+    ],
+    "skills_required": [
+      "Tailwind CSS",
+      "Responsive Design",
+      "Flutter"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003077"
+    },
+    "title": "Tạo runbook demo cho hội đồng - Kiểm thử và 2",
+    "description": "Liệt kê thứ tự thao tác: đăng nhập, xem dashboard, tạo task, hỏi chatbot, phân công AI. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Linux, Docker, Docker. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777629600000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010408"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "Docker",
+      "Docker"
+    ],
+    "skills_required": [
+      "Linux",
+      "Docker",
+      "Docker"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003078"
+    },
+    "title": "Chuẩn hóa cập nhật trạng thái task theo deadline - Báo cáo tự 4",
+    "description": "Task quá hạn tự chuyển late nếu chưa hoàn thành, task done giữ completed. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng File Upload, Express, Data Modeling. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1779357600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "File Upload",
+      "Express",
+      "Data Modeling"
+    ],
+    "skills_required": [
+      "File Upload",
+      "Express",
+      "Data Modeling"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003079"
+    },
+    "title": "Tối ưu giao diện thêm project - Quản lý người 2",
+    "description": "Giảm cảm giác form thô, nhóm thông tin theo phần và giữ nút lưu dễ thấy. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng React, UI/UX, Node.js. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777888800000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010102"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003080"
+    },
+    "title": "Tạo endpoint preview phân công AI - Kho học liệu 2",
+    "description": "Trả về top ứng viên, điểm kỹ năng, tải công việc và lý do đề xuất. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng Express, REST API, Node.js. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Express",
+      "REST API",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003081"
+    },
+    "title": "Đối chiếu dữ liệu JSON với schema MongoDB",
+    "description": "Đảm bảo ObjectId, NumberLong, skills và attachments đúng cấu trúc app đang dùng. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng Data Cleaning, Reporting, React. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777629600000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      },
+      {
+        "$oid": "68a100000000000000010403"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Cleaning",
+      "Reporting",
+      "React"
+    ],
+    "skills_required": [
+      "Data Cleaning",
+      "Reporting",
+      "React"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003082"
+    },
+    "title": "Tinh chỉnh chi phí MCMF theo workload - Hệ thống nhắc 2",
+    "description": "Người đang quá nhiều task bị tăng chi phí, người rảnh và đúng skill được ưu tiên. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng TF-IDF, Prompt Engineering, Flutter. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1779703200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "TF-IDF",
+      "Prompt Engineering",
+      "Flutter"
+    ],
+    "skills_required": [
+      "TF-IDF",
+      "Prompt Engineering",
+      "Flutter"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003083"
+    },
+    "title": "Lập bộ regression cho API chính - Không gian demo 3",
+    "description": "Bao phủ auth, project, task, team, user, skill, attachment và assignment. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Documentation, Testing, Data Modeling. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1779789600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010404"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Documentation",
+      "Testing",
+      "Data Modeling"
+    ],
+    "skills_required": [
+      "Documentation",
+      "Testing",
+      "Data Modeling"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003084"
+    },
+    "title": "Chuẩn hóa README theo yêu cầu nộp bài",
+    "description": "Ghi link GitHub, cài đặt, tài khoản, lệnh chạy và cách import CSDL. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng Environment Config, CI/CD, Node.js. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780567200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Environment Config",
+      "CI/CD",
+      "Node.js"
+    ],
+    "skills_required": [
+      "Environment Config",
+      "CI/CD",
+      "Node.js"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003085"
+    },
+    "title": "Chuẩn hóa skill profile người dùng - Hệ thống quản 4",
+    "description": "Mỗi user có kỹ năng sát với nhóm việc nhưng vẫn có vài kỹ năng phụ để test matching. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng Data Modeling, Data Cleaning, JavaScript. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777370400000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Data Modeling",
+      "Data Cleaning",
+      "JavaScript"
+    ],
+    "skills_required": [
+      "Data Modeling",
+      "Data Cleaning",
+      "JavaScript"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003086"
+    },
+    "title": "Test phân quyền employee - Ứng dụng mobile 3",
+    "description": "Employee chỉ xem dữ liệu được giao, không sửa deadline hoặc trạng thái tuỳ tiện. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Regression, Bug Report, Regression. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778666400000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010308"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Regression",
+      "Bug Report",
+      "Regression"
+    ],
+    "skills_required": [
+      "Regression",
+      "Bug Report",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003087"
+    },
+    "title": "Thiết kế pipeline AI phân tích yêu cầu chatbot - Module gợi ý 2",
+    "description": "AI phải hiểu câu hỏi, chọn tool, đọc kết quả database và trả lời tự nhiên. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng Embedding, Min-Cost Max-Flow, MongoDB. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780135200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Embedding",
+      "Min-Cost Max-Flow",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003088"
+    },
+    "title": "Làm màn hình project overview",
+    "description": "Hiển thị chart trạng thái, workload theo thành viên và deadline pressure. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng State Management, PDF Preview, Regression. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780653600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010304"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "State Management",
+      "PDF Preview",
+      "Regression"
+    ],
+    "skills_required": [
+      "State Management",
+      "PDF Preview",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003089"
+    },
+    "title": "Chuẩn hóa skill profile người dùng - Kiểm thử và 5",
+    "description": "Mỗi user có kỹ năng sát với nhóm việc nhưng vẫn có vài kỹ năng phụ để test matching. Thuộc dự án \"Kiểm thử và triển khai hệ thống quản lý\". Cần kỹ năng Reporting, Data Modeling, MongoDB. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777543200000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000205"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010406"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 4,
+    "can_parallelize": true,
+    "required_skills": [
+      "Reporting",
+      "Data Modeling",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Reporting",
+      "Data Modeling",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003090"
+    },
+    "title": "Xây bộ test prompt cho chatbot agent",
+    "description": "Tạo nhiều câu hỏi tự nhiên về project, task, nhân sự, trễ hạn và phân công. Thuộc dự án \"Báo cáo tự động cho từng dự án\". Cần kỹ năng Prompt Engineering, NLP, Express. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778839200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000206"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 1,
+    "can_parallelize": false,
+    "required_skills": [
+      "Prompt Engineering",
+      "NLP",
+      "Express"
+    ],
+    "skills_required": [
+      "Prompt Engineering",
+      "NLP",
+      "Express"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003091"
+    },
+    "title": "Viết API báo cáo tổng quan dự án - Quản lý người 2",
+    "description": "Trả về số task hoàn thành, đang làm, trễ hạn, chưa gán và danh sách task rủi ro. Thuộc dự án \"Quản lý người dùng và phân quyền\". Cần kỹ năng Node.js, MongoDB, Regression. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000207"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010203"
+      },
+      {
+        "$oid": "68a100000000000000010205"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Node.js",
+      "MongoDB",
+      "Regression"
+    ],
+    "skills_required": [
+      "Node.js",
+      "MongoDB",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003092"
+    },
+    "title": "Phân tích workload theo thành viên - Kho học liệu 2",
+    "description": "Tạo chênh lệch tải công việc để thuật toán tránh giao quá nhiều cho một người. Thuộc dự án \"Kho học liệu và file đính kèm task\". Cần kỹ năng MongoDB, Analytics, MongoDB. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780567200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000208"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010204"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Analytics",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Analytics",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003093"
+    },
+    "title": "Kiểm tra dashboard với dữ liệu trễ hạn",
+    "description": "Đảm bảo chart không rỗng, filter hoạt động và số liệu khớp task list. Thuộc dự án \"Onboarding thành viên mới vào nhóm đồ án\". Cần kỹ năng Postman, Documentation, MongoDB. Đây là task hoàn thành để kiểm tra completion rate và biểu đồ tiến độ.",
+    "due_date": {
+      "$numberLong": "1777543200000"
+    },
+    "status": "completed",
+    "stage": "done",
+    "project": {
+      "$oid": "68a100000000000000000209"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010103"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Postman",
+      "Documentation",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "Postman",
+      "Documentation",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003094"
+    },
+    "title": "Sửa lỗi range khi cuộn nhanh danh sách task",
+    "description": "Danh sách chọn task không được truy cập index ngoài phạm vi khi data cập nhật. Thuộc dự án \"Hệ thống nhắc deadline và cảnh báo rủi ro\". Cần kỹ năng State Management, PDF Preview, Express. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778839200000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000210"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010308"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 4,
+    "can_parallelize": false,
+    "required_skills": [
+      "State Management",
+      "PDF Preview",
+      "Express"
+    ],
+    "skills_required": [
+      "State Management",
+      "PDF Preview",
+      "Express"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003095"
+    },
+    "title": "Cập nhật biến môi trường cho LLM compatible - Không gian demo 2",
+    "description": "Hỗ trợ base URL, API key, model name và fallback khi thiếu cấu hình. Thuộc dự án \"Không gian demo cho hội đồng nghiệm thu\". Cần kỹ năng Linux, Docker, Regression. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "review",
+    "project": {
+      "$oid": "68a100000000000000000211"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010408"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "Linux",
+      "Docker",
+      "Regression"
+    ],
+    "skills_required": [
+      "Linux",
+      "Docker",
+      "Regression"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003096"
+    },
+    "title": "So khớp kỹ năng bằng embedding và TF-IDF - Nghiên cứu mở 3",
+    "description": "Kết hợp exact match, embedding similarity và keyword score để chấm ứng viên. Thuộc dự án \"Nghiên cứu mở rộng tích hợp LLM\". Cần kỹ năng Prompt Engineering, NLP, CI/CD. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780653600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000212"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010407"
+      },
+      {
+        "$oid": "68a100000000000000010403"
+      }
+    ],
+    "difficulty": 4,
+    "priority": 3,
+    "can_parallelize": true,
+    "required_skills": [
+      "Prompt Engineering",
+      "NLP",
+      "CI/CD"
+    ],
+    "skills_required": [
+      "Prompt Engineering",
+      "NLP",
+      "CI/CD"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003097"
+    },
+    "title": "Làm bộ lọc task theo trạng thái và deadline - Hệ thống quản 3",
+    "description": "Cho phép lọc task trễ hạn, sắp đến hạn, chưa gán người và đang review. Thuộc dự án \"Hệ thống quản lý đồ án môn học\". Cần kỹ năng React, UI/UX, MongoDB. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1780999200000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000201"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010108"
+      }
+    ],
+    "difficulty": 1,
+    "priority": 1,
+    "can_parallelize": true,
+    "required_skills": [
+      "React",
+      "UI/UX",
+      "MongoDB"
+    ],
+    "skills_required": [
+      "React",
+      "UI/UX",
+      "MongoDB"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003098"
+    },
+    "title": "Cải thiện assignment preview trên mobile - Ứng dụng mobile 2",
+    "description": "Không hiển thị như debug, thay bằng card có điểm số, lý do và nút chọn người. Thuộc dự án \"Ứng dụng mobile theo dõi tiến độ nhóm\". Cần kỹ năng Dart, State Management, Mobile UI. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1781085600000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000202"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010305"
+      }
+    ],
+    "difficulty": 2,
+    "priority": 3,
+    "can_parallelize": false,
+    "required_skills": [
+      "Dart",
+      "State Management",
+      "Mobile UI"
+    ],
+    "skills_required": [
+      "Dart",
+      "State Management",
+      "Mobile UI"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003099"
+    },
+    "title": "Tạo endpoint preview phân công AI - Module gợi ý 3",
+    "description": "Trả về top ứng viên, điểm kỹ năng, tải công việc và lý do đề xuất. Thuộc dự án \"Module gợi ý phân công thông minh\". Cần kỹ năng MongoDB, Authentication, Embedding. Đây là task đang làm để kiểm tra workload, deadline gần và báo cáo nhân sự.",
+    "due_date": {
+      "$numberLong": "1778752800000"
+    },
+    "status": "in progress",
+    "stage": "backlog",
+    "project": {
+      "$oid": "68a100000000000000000203"
+    },
+    "assigned_to": [
+      {
+        "$oid": "68a100000000000000010202"
+      }
+    ],
+    "difficulty": 3,
+    "priority": 5,
+    "can_parallelize": true,
+    "required_skills": [
+      "MongoDB",
+      "Authentication",
+      "Embedding"
+    ],
+    "skills_required": [
+      "MongoDB",
+      "Authentication",
+      "Embedding"
+    ],
+    "attachments": []
+  },
+  {
+    "_id": {
+      "$oid": "68a100000000000000003100"
+    },
+    "title": "Soát lỗi tiếng Việt trong UI - Cổng thông tin 5",
+    "description": "Các message chatbot, badge, empty state và label form phải đọc tự nhiên. Thuộc dự án \"Cổng thông tin làm việc nhóm sinh viên\". Cần kỹ năng Bug Report, Smoke Test, UI/UX. Đây là task chưa gán người để test AI + MCMF đề xuất assignee.",
+    "due_date": {
+      "$numberLong": "1780740000000"
+    },
+    "status": "in progress",
+    "stage": "in-progress",
+    "project": {
+      "$oid": "68a100000000000000000204"
+    },
+    "assigned_to": [],
+    "difficulty": 4,
+    "priority": 2,
+    "can_parallelize": true,
+    "required_skills": [
+      "Bug Report",
+      "Smoke Test",
+      "UI/UX"
+    ],
+    "skills_required": [
+      "Bug Report",
+      "Smoke Test",
+      "UI/UX"
+    ],
+    "attachments": []
+  }
+]

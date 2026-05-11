@@ -1,93 +1,97 @@
-import { Card, CardBody, CardFooter, CardHeader, Chip, Progress, Typography } from "@material-tailwind/react";
+import { Card, CardBody, CardFooter, CardHeader, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import cookie from "cookie";
+import apiBase from "../helpers/apiBase";
 
-export default function PCWM({ title, dueDate, status, id }) {
-    const cookies = cookie.parse(document.cookie);
-    const [complete, setComplete] = useState(0);
-    const [late, setLate] = useState(0);
-    useEffect(() => {
-        axios.get(`http://localhost:1337/api/tasks/completed/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
-            .then(res => {
-                setComplete(res.data.completed);
-            })
-            .catch(err => {
-                alert(err);
-            });
-        axios.get(`http://localhost:1337/api/tasks/lated/${id}`, { headers: { Authorization: `Bearer ${cookies.token}` } })
-            .then(res => {
+const cardShell =
+  "overflow-hidden rounded-[28px] border border-slate-300/80 bg-[#fcf8f0] shadow-[10px_10px_0_rgba(17,24,39,0.12)] transition-transform duration-200 hover:-translate-y-1 hover:shadow-[12px_12px_0_rgba(17,24,39,0.16)]";
 
-                setLate(res.data.lated);
-            })
-            .catch(err => {
-                alert(err);
-            });
-    }, []);
-    return (
-        <Link to={`/projects/${id}`}>
-            <Card className="max-w-[24rem] overflow-hidden">
-                <CardHeader
-                    floated={false}
-                    shadow={false}
-                    color="transparent"
-                    className="m-0 rounded-none"
-                >
-                    <img
-                        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
-                        alt="ui/ux review check"
-                    />
-                </CardHeader>
-                <CardBody>
-                    <Typography variant="h4" color="blue-gray">
-                        {title}
-                    </Typography>
-        
+function getStatusMeta(status) {
+  if (status === "completed") return { label: "Completed", className: "ui-badge ui-badge--complete" };
+  if (status === "in progress") return { label: "In Progress", className: "ui-badge ui-badge--progress" };
+  return { label: "Late", className: "ui-badge ui-badge--late" };
+}
 
+function Meter({ label, value, trackClass, fillClass }) {
+  return (
+    <div className="rounded-[20px] border border-dashed border-slate-300 bg-white/80 p-4 shadow-[4px_4px_0_rgba(17,24,39,0.06)]">
+      <div className="mb-2 flex items-center justify-between gap-4 text-sm text-slate-600">
+        <span>{label}</span>
+        <span>{value}%</span>
+      </div>
+      <div className={`h-3 overflow-hidden rounded-full ${trackClass}`}>
+        <div className={`h-full rounded-full ${fillClass}`} style={{ width: `${Math.min(Math.max(Number(value) || 0, 0), 100)}%` }} />
+      </div>
+    </div>
+  );
+}
 
-                    {/* <Typography variant="lead" color="gray" className="mt-3 font-normal">
-                        Members: {members.join(", ")}
-                    </Typography> */}
-                    <div className="w-full mt-4 mb-4">
-                        <div className="flex items-center justify-between gap-4 mb-2">
-                            <Typography color="blue" variant="h6">Completed</Typography>
-                            <Typography color="blue" variant="h6">{complete + '%'}</Typography>
-                        </div>
-                        <Progress value={complete} />
-                    </div>
-                    <div className="w-full">
-                        <div className="flex items-center justify-between gap-4 mb-2">
-                            <Typography color="red" variant="h6">Late</Typography>
-                            <Typography color="red" variant="h6">{late + '%'}</Typography>
-                        </div>
-                        <Progress color='red' value={late} />
-                    </div>
-                </CardBody>
-                <CardFooter className="flex items-center justify-between">
-                    {/* <div className="flex items-center -space-x-3">
-                        {members.map((member, index) => (
-                            <Tooltip key={index} content={member}>
-                                <Avatar
-                                    size="sm"
-                                    variant="circular"
-                                    alt={member}
-                                    src={`https://i.pravatar.cc/150?u=${member}`}
-                                    className="border-2 border-white hover:z-10"
-                                />
-                            </Tooltip>
-                        ))}
-                    </div> */}
-                    <Typography className="font-normal">{new Date(dueDate).toLocaleDateString()}</Typography>
-                    <Chip
-                        className="w-max mt-2"
-                        variant="ghost"
-                        size="sm"
-                        value={(status === 'in progress') ? "In progress" : (status === "completed") ? "Completed" : "Late"}
-                        color={(status === 'in progress') ? "blue-gray" : (status === "completed") ? "green" : "red"}
-                    />
-                </CardFooter>
-            </Card>
-        </Link>
-    );
+export default function PCWM({ title, dueDate, status, id, members }) {
+  const cookies = cookie.parse(document.cookie);
+  const [complete, setComplete] = useState(0);
+  const [late, setLate] = useState(0);
+  const statusMeta = getStatusMeta(status);
+
+  useEffect(() => {
+    axios
+      .get(`${apiBase}/tasks/completed/${id}`, {
+        headers: { Authorization: `Bearer ${cookies.token}` },
+      })
+      .then((res) => setComplete(Number(res.data.completed || 0)))
+      .catch(() => setComplete(0));
+
+    axios
+      .get(`${apiBase}/tasks/lated/${id}`, {
+        headers: { Authorization: `Bearer ${cookies.token}` },
+      })
+      .then((res) => setLate(Number(res.data.lated || 0)))
+      .catch(() => setLate(0));
+  }, [cookies.token, id]);
+
+  const visibleMembers = useMemo(() => {
+    if (Array.isArray(members)) return members.slice(0, 4);
+    if (members) return [members];
+    return [];
+  }, [members]);
+
+  return (
+    <Link to={`/projects/${id}`} className="block h-full">
+      <Card className={cardShell}>
+        <CardHeader floated={false} shadow={false} color="transparent" className="m-0 rounded-none border-b border-dashed border-slate-300 bg-[linear-gradient(135deg,#f7eddc_0%,#fdfaf5_100%)] p-0">
+          <div className="flex h-40 items-end justify-between gap-4 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.22),_transparent_48%),linear-gradient(135deg,rgba(15,23,42,0.02),rgba(255,255,255,0.95))] p-6">
+            <div>
+              <Typography variant="small" className="tracking-[0.2em] text-slate-500 uppercase">
+                Project board
+              </Typography>
+              <Typography variant="h4" color="blue-gray" className="mt-2 line-clamp-2">
+                {title}
+              </Typography>
+            </div>
+            <span className={statusMeta.className}>{statusMeta.label}</span>
+          </div>
+        </CardHeader>
+        <CardBody className="space-y-5 p-6">
+          <Meter label="Completion" value={complete} trackClass="bg-amber-100" fillClass="bg-amber-400" />
+          <Meter label="Late risk" value={late} trackClass="bg-rose-100" fillClass="bg-rose-400" />
+          <div className="flex flex-wrap gap-2">
+            {visibleMembers.length > 0 ? (
+              visibleMembers.map((member, index) => (
+                <span key={`${member}-${index}`} className="ui-table-chip">
+                  {String(member)}
+                </span>
+              ))
+            ) : (
+              <span className="ui-table-chip">No member summary</span>
+            )}
+          </div>
+        </CardBody>
+        <CardFooter className="flex items-center justify-between border-t border-dashed border-slate-300/80 bg-white/50 px-6 py-4">
+          <Typography className="font-medium text-slate-600">Due {new Date(dueDate).toLocaleDateString()}</Typography>
+          <span className={statusMeta.className}>{statusMeta.label}</span>
+        </CardFooter>
+      </Card>
+    </Link>
+  );
 }

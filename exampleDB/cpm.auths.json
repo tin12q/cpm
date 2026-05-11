@@ -3,7 +3,7 @@
     "$oid": "647d56cc847d13b58548fa8c"
   },
   "username": "johndoe",
-  "password": "$2a$10$LJeG3gzCvDE1t2.HdwPKtuwxGbkpaRkIJ./5bRqA3gCiN2kwjIE66",
+  "password": "$2a$10$VnATbpYf1j5GFSzDLoOayO6KpCUZZO.DUyaX7Hzr.KAD45naiyZmK",
   "role": "employee",
   "user": {
     "$oid": "647d5743847d13b58548faa6"
@@ -14,7 +14,7 @@
     "$oid": "647d56cc847d13b58548fa8d"
   },
   "username": "janesmith",
-  "password": "$2a$10$06QnS1GeIa2cz7bQGbeL/.l/nPD6wWERWq9BkpNtqVsGnMrW3QW02",
+  "password": "$2a$10$VnATbpYf1j5GFSzDLoOayO6KpCUZZO.DUyaX7Hzr.KAD45naiyZmK",
   "role": "admin",
   "user": {
     "$oid": "647d5743847d13b58548faa7"
@@ -25,7 +25,7 @@
     "$oid": "647d56cc847d13b58548fa8e"
   },
   "username": "bobjohnson",
-  "password": "$2a$10$z6RzNmFn1wyZgGFS9chpeOR8p1jMmmcuWHmD1m0g8VI3WgB/3CAJm",
+  "password": "$2a$10$VnATbpYf1j5GFSzDLoOayO6KpCUZZO.DUyaX7Hzr.KAD45naiyZmK",
   "role": "manager",
   "user": {
     "$oid": "647d5743847d13b58548faa8"

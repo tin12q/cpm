@@ -1,135 +1,252 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, CardHeader, Dialog, Input, Typography,Alert } from "@material-tailwind/react";
+import {
+  Alert,
+  Button,
+  Dialog,
+  Typography,
+} from "@material-tailwind/react";
 import axios from "axios";
 import cookie from "cookie";
 import { useParams } from "react-router-dom";
-import Select from "react-select";
+import ReactSelect from "react-select";
+import apiBase from "../helpers/apiBase";
+import { getStageKey, normalizeStages } from "../helpers/stage";
+import "../css/project.css";
 
-export default function AddTask(props) {
-    const id = props.id;
-    const idp = useParams().id;
-    const [members, setMembers] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState("");
-    const [assignedTo, setAssignedTo] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
-    const [alert, setAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
+const selectPortalStyles = {
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+  menu: (base) => ({ ...base, zIndex: 9999 }),
+};
 
-    const handleOpen = () => {
-        setOpen((cur) => !cur);
-        setAssignedTo([]);
-    };
-    const handleAlert = () => {
-        setAlert((cur) => !cur);
-    }
-    useEffect(() => {
-        if (alert) {
-            setTimeout(() => {
-                handleAlert();
-            }, 3000);
-        }
-    }, [alert]);
-    useEffect(() => {
-        axios.get(`http://localhost:1337/api/teams/users/${id}`, { headers: { Authorization: `Bearer ${cookie.parse(document.cookie).token}` } })
-            .then(res => {
+export default function AddTask({ id, projectId, stages = [], onSuccess }) {
+  const routeProjectId = useParams().id;
+  const activeProjectId = projectId || routeProjectId;
+  const [members, setMembers] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [stage, setStage] = useState(normalizeStages(stages)[0]?.key || "backlog");
+  const [availableStages, setAvailableStages] = useState(normalizeStages(stages));
+  const [assignedTo, setAssignedTo] = useState([]);
+  const [attachments, setAttachments] = useState([]);
+  const [selectedOption, setSelectedOption] = useState([]);
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const cookies = cookie.parse(document.cookie);
+  const headers = useMemo(() => ({ Authorization: `Bearer ${cookies.token}` }), [cookies.token]);
 
-                setMembers(res.data.map((member) => {
-                    return {
-                        value: member._id,
-                        label: member.name
-                    }
-                }));
-            })
-            .catch(err => {
-                alert(err);
-            });
+  const handleOpen = () => setOpen((current) => !current);
 
-    }, []);
-    if (!members) {
-        return <h1>Loading...</h1>
-    }
-    const handleSubmit = async e => {
-        e.preventDefault();
-        const cookies = cookie.parse(document.cookie);
-        axios.post('http://localhost:1337/api/tasks',
-            {
-                title,
-                description,
-                due_date: dueDate,
-                status: 'in progress',
-                project: idp,
-                assigned_to: assignedTo
-            }
-            , { headers: { Authorization: `Bearer ${cookies.token}` } })
-            .then(res => {
-                setAlertMessage("Task added successfully");
-            })
-            .catch(err => {
-                setAlertMessage("Something went wrong");
-            });
-            handleAlert();
+  useEffect(() => {
+    setAvailableStages(normalizeStages(stages));
+    setStage(normalizeStages(stages)[0]?.key || "backlog");
+  }, [stages]);
 
+  useEffect(() => {
+    const requests = [];
+
+    if (id) {
+      requests.push(
+        axios
+          .get(`${apiBase}/teams/users/${id}`, { headers })
+          .then((res) => {
+            setMembers(
+              (res.data || []).map((member) => ({
+                value: member._id,
+                label: member.name,
+              }))
+            );
+          })
+      );
     }
 
-    return (
-        <React.Fragment>
-            <Button className="flex items-center gap-3" color="blue" size="sm" onClick={handleOpen}>
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Task
-            </Button>
-            <Dialog
-                size="xs"
-                open={open}
-                handler={handleOpen}
-                className="bg-transparent shadow-none"
-            >
-                <Card className="mx-auto w-full max-w-[24rem]">
-                    <CardHeader
-                        variant="gradient"
-                        color="blue"
-                        className="mb-4 grid h-28 place-items-center"
-                    >
-                        <Typography variant="h3" color="white">
-                            Add Task
-                        </Typography>
-                    </CardHeader>
-                    <CardBody className="">
-                        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                            <Input required label="Title" size="lg" onChange={(e) => setTitle(e.target.value)} />
-                            <Input required label="Description" size="lg"
-                                onChange={(e) => setDescription(e.target.value)} />
-                            <Input required label="Due Date" size="lg" type="date"
-                                onChange={(e) => setDueDate(new Date(e.target.value).getTime())} />
-                            {/* <Input label="Assigned To" size="lg"  onChange={(e) => setAssignedTo(e.target.value)} /> */}
-                            {/*TODO: create menu list */}
+    if (activeProjectId) {
+      requests.push(
+        axios
+          .get(`${apiBase}/projects/${activeProjectId}`, { headers })
+          .then((res) => {
+            const nextStages = normalizeStages(res.data?.stages);
+            setAvailableStages(nextStages);
+            setStage((current) => getStageKey(current, nextStages));
+          })
+          .catch(() => {
+            const nextStages = normalizeStages(stages);
+            setAvailableStages(nextStages);
+            setStage((current) => getStageKey(current, nextStages));
+          })
+      );
+    }
 
-                            <Select
-                                required
-                                isMulti
-                                options={members}
-                                onChange={(selected) => {
-                                    setSelectedOption(selected);
-                                    setAssignedTo(selected.map((option) => option.value));
-                                }}
-                                value={selectedOption}
-                                placeholder="Assign to members"
-                            />
-                            <Button type="submit" variant="gradient" onClick={handleOpen} fullWidth>
-                                Add Task
-                            </Button>
-                        </form>
-                    </CardBody>
+    Promise.allSettled(requests).then((results) => {
+      const rejected = results.find((result) => result.status === "rejected");
+      if (rejected) {
+        setToastMessage(rejected.reason?.response?.data?.error || rejected.reason?.message || "Unable to load task form data.");
+        setToastOpen(true);
+      }
+    });
+  }, [activeProjectId, headers, id, stages]);
 
-                </Card>
-            </Dialog>
-            <Alert  className="fixed top-20 right-4" open={alert} onClick={handleAlert}>
-                <div className="flex items-center gap-2">
-                    <Typography color="white">{alertMessage}</Typography>
+  useEffect(() => {
+    if (!toastOpen) return undefined;
+    const timer = setTimeout(() => setToastOpen(false), 3000);
+    return () => clearTimeout(timer);
+  }, [toastOpen]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("due_date", String(new Date(dueDate).getTime()));
+      formData.append("status", "in progress");
+      formData.append("stage", stage);
+      formData.append("project", activeProjectId);
+      formData.append("assigned_to", assignedTo.join(","));
+      attachments.forEach((file) => {
+        formData.append("attachments", file);
+      });
+
+      await axios.post(
+        `${apiBase}/tasks`,
+        formData,
+        { headers }
+      );
+      setToastMessage("Task added successfully");
+      setToastOpen(true);
+      setOpen(false);
+      setTitle("");
+      setDescription("");
+      setDueDate("");
+      setAssignedTo([]);
+      setAttachments([]);
+      setSelectedOption([]);
+      setStage(availableStages[0]?.key || "backlog");
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      setToastMessage(error.response?.data?.error || error.message || "Something went wrong");
+      setToastOpen(true);
+    }
+  };
+
+  return (
+    <>
+      <Button className="sketch-button flex items-center gap-3 px-4 py-2 text-sm font-semibold" variant="text" onClick={handleOpen}>
+        <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Task
+      </Button>
+      <Dialog size="md" open={open} handler={handleOpen} className="ui-modal ui-modal--no-overlay bg-transparent shadow-none">
+        <div className="mx-auto flex min-h-[calc(100vh-2rem)] items-center justify-center p-3 sm:p-5">
+          <div className="ui-modal__card max-w-[42rem]">
+            <div className="ui-modal__header bg-[linear-gradient(135deg,#dbeafe_0%,#f6fbff_100%)]">
+              <Typography variant="h4" className="sketch-heading">
+                Add Task
+              </Typography>
+              <Typography className="sketch-subtitle mt-1 text-sm">
+                Keep the task small enough to move, assign, and finish.
+              </Typography>
+            </div>
+            <div className="ui-modal__body">
+              <form className="ui-modal__stack" onSubmit={handleSubmit}>
+                <div className="ui-modal__field">
+                  <Typography variant="small" className="font-semibold text-slate-700">
+                    Title
+                  </Typography>
+                  <input className="sketch-input-plain" required value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Task title" />
                 </div>
-            </Alert>
-        </React.Fragment>
-    );
+                <div className="ui-modal__field">
+                  <Typography variant="small" className="font-semibold text-slate-700">
+                    Description
+                  </Typography>
+                  <textarea className="sketch-textarea-plain min-h-[120px]" required value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Task description" />
+                </div>
+                <div className="ui-modal__grid">
+                  <div className="ui-modal__field">
+                    <Typography variant="small" className="font-semibold text-slate-700">
+                      Due Date
+                    </Typography>
+                    <input className="sketch-input-plain" required type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} />
+                  </div>
+                  <div className="ui-modal__field">
+                    <Typography variant="small" className="font-semibold text-slate-700">
+                      Stage
+                    </Typography>
+                    <select className="sketch-select-plain" value={stage} onChange={(event) => setStage(event.target.value)}>
+                      {availableStages.map((item) => (
+                        <option key={item.key} value={item.key}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="ui-modal__field">
+                  <Typography variant="small" className="font-semibold text-slate-700">
+                    Assign to members
+                  </Typography>
+                  <ReactSelect
+                    isMulti
+                    classNamePrefix="sketch-select"
+                    options={members}
+                    onChange={(selected) => {
+                      const safeSelected = selected || [];
+                      setSelectedOption(safeSelected);
+                      setAssignedTo(safeSelected.map((option) => option.value));
+                    }}
+                    value={selectedOption}
+                    placeholder="Assign to members (optional)"
+                    menuPortalTarget={typeof document !== "undefined" ? document.body : null}
+                    menuPosition="fixed"
+                    styles={selectPortalStyles}
+                  />
+                </div>
+                <div className="ui-modal__field">
+                  <Typography variant="small" className="font-semibold text-slate-700">
+                    Attachments
+                  </Typography>
+                  <input
+                    className="sketch-input-plain"
+                    type="file"
+                    multiple
+                    onChange={(event) => setAttachments(Array.from(event.target.files || []))}
+                  />
+                  {attachments.length > 0 && (
+                    <div className="mt-3 grid gap-2">
+                      {attachments.map((file) => (
+                        <div key={`${file.name}-${file.size}-${file.lastModified}`} className="sketch-note flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                          <span className="truncate font-semibold text-slate-800">{file.name}</span>
+                          <span className="shrink-0 text-xs text-slate-500">{formatFileSize(file.size)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="ui-modal__actions">
+                  <Button type="button" variant="text" className="ui-button ui-button--ghost px-5 py-2 text-slate-800 shadow-none" onClick={handleOpen}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="ui-button ui-button--green px-5 py-2 font-semibold text-slate-800 shadow-none">
+                    Add Task
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+      <Alert open={toastOpen} onClick={() => setToastOpen(false)} className="fixed right-4 top-20 z-50 w-[min(22rem,calc(100vw-2rem))] sketch-note border-slate-300 bg-[#dbeafe] text-slate-900">
+        <Typography className="font-semibold text-slate-900">{toastMessage}</Typography>
+      </Alert>
+    </>
+  );
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb >= 100 ? kb.toFixed(0) : kb.toFixed(1)} KB`;
+  const mb = kb / 1024;
+  return `${mb >= 100 ? mb.toFixed(0) : mb.toFixed(1)} MB`;
 }

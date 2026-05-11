@@ -1,38 +1,36 @@
-const {useState} = require("react");
-const axios = require("axios");
+import { useEffect, useState } from "react";
+import axios from "axios";
+import "../css/project.css";
 
 function CardTest(props) {
-    return (
-        <div className="card">
-            <div className="card-body">
-                <h5 className="card-title mb-3 text-2xl font-semibold">
-                    {props.title}
-                </h5>
-                <p className="card-text m-0 max-w-[30ch] text-sm opacity-50">
-                    {props.text}
-                </p>
-            </div>
-        </div>
-    );
+  return (
+    <div className="sketch-note sketch-panel-hover p-5">
+      <h5 className="mb-3 text-2xl font-bold text-slate-900">{props.title}</h5>
+      <p className="m-0 max-w-[30ch] text-sm text-slate-600">{props.text}</p>
+    </div>
+  );
 }
 
 function CardlistTest() {
-    const [projects, setProjects] = useState([]);
-    axios.get("http://localhost:1337/api/projects").then((res) => {
-        setProjects(res.data);
-    });
+  const [projects, setProjects] = useState([]);
 
-    return (
-        <div>
-            {projects.map((project) => {
-                return <CardTest title={project.title} text={project.description}/>;
-            })}
-            <CardTest
-                title="Card title"
-                text="Some quick example text to build on the card title and make up the bulk of the card's content."
-            />
-        </div>
-    );
+  useEffect(() => {
+    axios.get("http://localhost:1337/api/projects").then((res) => {
+      setProjects(res.data || []);
+    });
+  }, []);
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {projects.map((project) => (
+        <CardTest key={project._id || project.title} title={project.title} text={project.description} />
+      ))}
+      <CardTest
+        title="Card title"
+        text="Some quick example text to build on the card title and make up the bulk of the card's content."
+      />
+    </div>
+  );
 }
 
 export default CardlistTest;
